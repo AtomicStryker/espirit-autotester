@@ -278,19 +278,23 @@ public class CrawlerTester implements Runnable {
 				e.printStackTrace();
 				throw new RuntimeException("CMSDialog hack failure - setStrict method...");
 			}
+		}
 
-			if (target instanceof AbstractButton) {
-				final AbstractButton fsb = (AbstractButton) target;
-				for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
-					if (bab.title.equals(((Dialog) w).getTitle())
-							&& bab.command.equals(fsb.getActionCommand())) {
-						debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.title, bab.command);
-						w.dispose();
-						return;
-					}
-				}
-				event = new ActionEvent(target, 42, fsb.getActionCommand());
+		if (target instanceof AbstractButton) {
+			final AbstractButton fsb = (AbstractButton) target;
+
+			if (fsb.getActionCommand().contains("prototype")) {
+				System.out.println();
 			}
+
+			for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
+				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || bab.title.equals(((Dialog) w).getTitle()))) {
+					debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
+					w.dispose();
+					return;
+				}
+			}
+			event = new ActionEvent(target, 42, fsb.getActionCommand());
 		} else if (target instanceof JToggleButton) {
 			// TODO handle this, toggle on off?
 			debugLog("JToggleButton, need to do something clever...\n");
