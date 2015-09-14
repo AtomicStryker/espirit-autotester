@@ -416,7 +416,7 @@ public class CrawlerTester implements Runnable {
 		String answer = ": ";
 		if (c instanceof AbstractButton) {
 			final AbstractButton ab = (AbstractButton) c;
-			answer = c.getClass().getSimpleName()+": "+ab.getText();
+			answer = c.getClass().getSimpleName()+": text:"+ab.getText()+", command:"+ab.getActionCommand();
 		} else if (c instanceof JDialog) {
 			final JDialog jd = (JDialog) c;
 			answer = c.getClass().getSimpleName()+": "+jd.getTitle();
