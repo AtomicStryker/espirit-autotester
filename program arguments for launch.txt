@@ -1,0 +1,1 @@
+de.espirit.firstspirit.client.CMSExplorer firstspirit_autotest.properties
