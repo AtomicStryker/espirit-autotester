@@ -281,7 +281,7 @@ public class CrawlerTester implements Runnable {
 
 			if (target instanceof AbstractButton) {
 				final AbstractButton fsb = (AbstractButton) target;
-				for (Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
+				for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
 					if (bab.title.equals(((Dialog) w).getTitle())
 							&& bab.command.equals(fsb.getActionCommand())) {
 						debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.title, bab.command);
@@ -368,8 +368,7 @@ public class CrawlerTester implements Runnable {
 				|| component instanceof JScrollPane
 				|| component instanceof JViewport
 				|| component instanceof JList
-				|| config.blackListedComponentsSimpleClassNames.contains(component.getClass().getSimpleName())
-				|| config.blackListedComponentsSimpleClassNames.contains(component.getClass().getName())) {
+				|| config.isComponentBlacklisted(component.getClass())) {
 
 			// not targets
 			if (log) debugLog("Ignoring %s\n", compdesc);

@@ -63,6 +63,18 @@ public class Config {
 		}
 	}
 
+	public boolean isComponentBlacklisted(final Class componentClass) {
+
+		final String name = componentClass.getName();
+		for (final String s : blackListedComponentsSimpleClassNames) {
+			if (name.contains(s)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public static class BlackListedAbstractButton {
 		String title;
 		String command;
