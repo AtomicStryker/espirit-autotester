@@ -291,7 +291,7 @@ public class CrawlerTester implements Runnable {
 			}
 			event = new ActionEvent(target, 42, fsb.getActionCommand());
 		} else if (target instanceof JToggleButton) {
-			// TODO handle this, toggle on off?
+			// TODO do more than toggle on off?
 			debugLog("JToggleButton, need to do something clever...\n");
 			final JToggleButton jtb = (JToggleButton) target;
 			final boolean select = jtb.isSelected();
@@ -321,6 +321,10 @@ public class CrawlerTester implements Runnable {
 			final boolean select = menuItem.isSelected();
 			menuItem.setSelected(!select);
 			menuItem.setSelected(select);
+		} else if (target instanceof JTextField) {
+			// TODO bwahaha evil strings come here
+			debugLog("JTextField, gonna do some voodoo here eventually\n");
+			return;
 		}
 		/*
 			// TODO this somehow breaks the flow, without it there is delay but it works
@@ -382,6 +386,7 @@ public class CrawlerTester implements Runnable {
 
 			// TODO textfields yay!
 			if (log) debugLog("\n%s\n%d: %s\n\n", "Special Textfield case!", componentIndexDebugPrint++, component);
+			componentList.add(component);
 		} else {
 
 			if (log) debugLog("%d: %s\n", componentIndexDebugPrint++, compdesc);
