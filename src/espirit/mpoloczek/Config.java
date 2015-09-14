@@ -18,7 +18,7 @@ public class Config {
 
 	public boolean loadConfigFile(final String filePath) {
 
-		final Path path = Paths.get(URI.create("file:/"+filePath));
+		final Path path = Paths.get(URI.create("file:/" + filePath));
 		properties = new Properties();
 
 		try {
@@ -53,13 +53,19 @@ public class Config {
 		for (int i = 0; i < entries.length; i++) {
 			final String[] keyValue = entries[i].split("#");
 			blackListedAbstractButtons[i] = new BlackListedAbstractButton();
-			blackListedAbstractButtons[i].title = keyValue[0];
-			blackListedAbstractButtons[i].command = keyValue[1];
+			blackListedAbstractButtons[i].command = keyValue[0];
+			if (keyValue.length > 1) {
+				blackListedAbstractButtons[i].title = keyValue[1];
+			} else {
+				blackListedAbstractButtons[i].title = "";
+			}
+			System.out.println("Blacklisted Abstract Button: ["+blackListedAbstractButtons[i].command+ '|' +blackListedAbstractButtons[i].title+ ']');
 		}
 
 		final String blcstr = properties.getProperty("blackListedComponentsSimpleClassNames");
 		for (final String e : blcstr.split(",")) {
 			blackListedComponentsSimpleClassNames.add(e);
+			System.out.println("Blacklisted Component classname: "+e);
 		}
 	}
 
