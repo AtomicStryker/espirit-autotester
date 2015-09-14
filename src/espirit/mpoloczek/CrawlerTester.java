@@ -282,15 +282,10 @@ public class CrawlerTester implements Runnable {
 
 		if (target instanceof AbstractButton) {
 			final AbstractButton fsb = (AbstractButton) target;
-
-			if (fsb.getActionCommand().contains("prototype")) {
-				System.out.println();
-			}
-
 			for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
 				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || bab.title.equals(((Dialog) w).getTitle()))) {
 					debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
-					w.dispose();
+					if (w != null) w.dispose();
 					return;
 				}
 			}
