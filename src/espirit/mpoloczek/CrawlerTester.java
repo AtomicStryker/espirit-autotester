@@ -68,6 +68,8 @@ public class CrawlerTester implements Runnable {
 	private Component lastPopup;
 	private JLabel time;
 	private Method setStrictCMSMethod;
+	private Method methodFsMultiPaneGetSlotCount;
+	private Method methodFsMultiPaneGetComponentsAtSlotID;
 
 
 	public CrawlerTester(final String configPath) {
@@ -261,7 +263,6 @@ public class CrawlerTester implements Runnable {
 		ActionEvent event = new ActionEvent(target, 42, "");
 
 		final Window w = SwingUtilities.getWindowAncestor(target);
-		// TODO magic hack, but i dont see a way to put this in a config, way too specific
 		if (w != null && "CMSDialog".equals(w.getClass().getSimpleName())) {
 
 			try {
@@ -342,13 +343,15 @@ public class CrawlerTester implements Runnable {
 	private void detectChildren(final Component component, final ArrayList<Component> componentList, final boolean log) {
 
 		final String compdesc = componentToString(component);
-		if (component == null || !component.isVisible() || component instanceof JFrame || component instanceof JPanel || component instanceof JRootPane || component instanceof JLayeredPane || component instanceof JMenuBar || component instanceof JToolBar || component instanceof JPopupMenu.Separator || component instanceof javax.swing.JSeparator || component instanceof Box.Filler || component instanceof JScrollPane || component instanceof JViewport || component instanceof JList || config.isComponentBlacklisted(component.getClass())) {
+		if (component == null) {
+			return;
+		}
+		if (!component.isVisible() || component instanceof JFrame || component instanceof JPanel || component instanceof JRootPane || component instanceof JLayeredPane || component instanceof JMenuBar || component instanceof JToolBar || component instanceof JPopupMenu.Separator || component instanceof javax.swing.JSeparator || component instanceof Box.Filler || component instanceof JScrollPane || component instanceof JViewport || component instanceof JList || config.isComponentBlacklisted(component.getClass())) {
 
 			// not targets
 			if (log) {
 				debugLog("Ignoring %s\n", compdesc);
 			}
-			return;
 
 		} else if ("JXLayer".equals(component.getClass().getSimpleName())) {
 
@@ -381,6 +384,30 @@ public class CrawlerTester implements Runnable {
 			}
 			if (log) {
 				debugLog("MENU END =================================================================================\n");
+			}
+		}
+
+		if ("FsMultiSplitPane".equals(component.getClass().getSimpleName())) {
+
+			if (methodFsMultiPaneGetComponentsAtSlotID == null) {
+				try {
+					methodFsMultiPaneGetComponentsAtSlotID = component.getClass().getDeclaredMethod("getComponentAt", int.class);
+					methodFsMultiPaneGetSlotCount = component.getClass().getDeclaredMethod("getSlotCount");
+				} catch (final NoSuchMethodException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			try {
+				final int slotCount = (int) methodFsMultiPaneGetSlotCount.invoke(component);
+				for (int i = 0; i < slotCount; i++) {
+					final Component chack = (Component) methodFsMultiPaneGetComponentsAtSlotID.invoke(component, i);
+					debugLog("Ran into FsMultiSplitPane, checking out component slot %d: %s\n", i, componentToString(chack));
+					detectChildren(chack, componentList, log);
+				}
+
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
 			}
 		}
 
