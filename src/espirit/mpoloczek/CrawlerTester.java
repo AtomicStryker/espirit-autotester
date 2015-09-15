@@ -325,21 +325,15 @@ public class CrawlerTester implements Runnable {
 
 				if (jTextComponent instanceof JTextField) {
 					for (final String s : problemStringManager.getProblemStrings()) {
-						debugLog("setting jtextfield text to [%s] and firing action event\n", s);
+						//debugLog("setting jtextfield text to [%s] and firing action event\n", s);
 						final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
 						setter.jTextComponent = jTextComponent;
 						setter.textToSet = s;
 						SwingUtilities.invokeLater(setter);
 						threadSleep(config.sleepTimeMillisTextfieldEntries);
 					}
-				} else {
-					final String s = problemStringManager.getRandomProblemString();
-					debugLog("setting jtextfield text to [%s]\n", s);
-					final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
-					setter.jTextComponent = jTextComponent;
-					setter.textToSet = s;
-					SwingUtilities.invokeLater(setter);
 				}
+				setJTextComponentToRandomString(jTextComponent);
 			}
 
 			return;
@@ -351,6 +345,16 @@ public class CrawlerTester implements Runnable {
 		actionDoer.event = event;
 		actionDoer.listeners = target.getListeners(ActionListener.class);
 		SwingUtilities.invokeLater(actionDoer);
+	}
+
+
+	private void setJTextComponentToRandomString(final JTextComponent jTextComponent) {
+		final String s = problemStringManager.getRandomProblemString();
+		debugLog("leaving jtextcomponent text at randomly chosen string [%s]\n", s);
+		final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
+		setter.jTextComponent = jTextComponent;
+		setter.textToSet = s;
+		SwingUtilities.invokeLater(setter);
 	}
 
 
@@ -444,6 +448,7 @@ public class CrawlerTester implements Runnable {
 	public void debugLog(final String s, final Object... args) {
 		System.out.printf(s, args);
 	}
+
 
 	static class EDTCompliantActionPerformer implements Runnable {
 
