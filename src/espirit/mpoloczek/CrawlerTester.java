@@ -439,7 +439,7 @@ public class CrawlerTester implements Runnable {
 	public void threadSleep(final long millis) {
 		try {
 			Thread.sleep(millis);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
