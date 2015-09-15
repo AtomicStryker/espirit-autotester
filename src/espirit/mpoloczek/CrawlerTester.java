@@ -38,6 +38,7 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Stack;
 
 
@@ -52,6 +53,7 @@ public class CrawlerTester implements Runnable {
 	public final StringProblemFactory problemStringManager;
 	public final Stack<TesterThread> testerThreadStack;
 	private final int delayToTestStartSeconds;
+	private final Random random;
 	public int popupComponentIndex;
 	public boolean isCurrentlyTesting;
 	public boolean expectingPopup;
@@ -85,6 +87,7 @@ public class CrawlerTester implements Runnable {
 		}
 
 		problemStringManager = new StringProblemFactory();
+		random = new Random();
 	}
 
 
@@ -272,16 +275,16 @@ public class CrawlerTester implements Runnable {
 		}
 
 		if (target instanceof JToggleButton) {
-			// TODO do more than toggle on off?
-			debugLog("JToggleButton, need to do something clever...\n");
+
 			final JToggleButton jtb = (JToggleButton) target;
 			final boolean select = jtb.isSelected();
 			// we just switch it on-off to trigger any code implemented in that change
 			jtb.setSelected(!select);
 			jtb.setSelected(select);
+			jtb.setSelected(random.nextBoolean());
+			debugLog("JToggleButton, randomly leaving it %s...\n", jtb.isSelected() ? "ON" : "OFF");
 
 		} else if (target instanceof JRadioButtonMenuItem) {
-			// TODO handle this, select everything, randomize, pseudorandom init?
 			if (adjacentComponents != null) {
 				final ArrayList<JRadioButtonMenuItem> otherRadioButtons = new ArrayList<>();
 				for (final Component otherC : adjacentComponents) {
@@ -302,6 +305,9 @@ public class CrawlerTester implements Runnable {
 			final boolean select = menuItem.isSelected();
 			menuItem.setSelected(!select);
 			menuItem.setSelected(select);
+
+			menuItem.setSelected(random.nextBoolean());
+			debugLog("JRadioButtonMenuItem, randomly leaving it %s...\n", menuItem.isSelected() ? "ON" : "OFF");
 
 		} else if (target instanceof AbstractButton) {
 			final AbstractButton fsb = (AbstractButton) target;
