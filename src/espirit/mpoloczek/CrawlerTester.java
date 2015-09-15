@@ -48,25 +48,23 @@ public class CrawlerTester implements Runnable {
 
 
 	public final String targetGuiName;
-	private final int delayToTestStartSeconds;
 	public final Config config;
 	public final StringProblemFactory problemStringManager;
-
-	private Window targetGUI;
 	public final Stack<TesterThread> testerThreadStack;
-
-	private int componentIndexDebugPrint;
+	private final int delayToTestStartSeconds;
 	public int popupComponentIndex;
 	public boolean isCurrentlyTesting;
-	private Component lastPopup;
-	protected JFrame masherframe;
 	public boolean expectingPopup;
-
 	public long startTimeTest;
-	private JLabel time;
-	protected Thread timerThread;
 	public int counterButtonsPushed;
 	public int counterWindowsHandled;
+	protected JFrame masherframe;
+	protected Thread timerThread;
+	private Window targetGUI;
+	private int componentIndexDebugPrint;
+	private Component lastPopup;
+	private JLabel time;
+	private Method setStrictCMSMethod;
 
 
 	public CrawlerTester(final String configPath) {
@@ -186,18 +184,6 @@ public class CrawlerTester implements Runnable {
 	}
 
 
-	class TimerRunner implements Runnable {
-
-		@Override
-		public void run() {
-			while (!Thread.interrupted()) {
-				final int seconds = (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000);
-				time.setText(String.format("%02d:%02d", (int) Math.floor(seconds / 60), seconds % 60));
-			}
-		}
-	}
-
-
 	private void initSwingPopupEventHook() {
 		final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		focusManager.addPropertyChangeListener(new PropertyChangeListener() {
@@ -262,9 +248,6 @@ public class CrawlerTester implements Runnable {
 			}
 		}
 	}
-
-
-	private Method setStrictCMSMethod;
 
 
 	public void pseudoClickButton(final Component target, final ArrayList<Component> adjacentComponents) {
@@ -371,44 +354,6 @@ public class CrawlerTester implements Runnable {
 	}
 
 
-	static class EDTCompliantActionPerformer implements Runnable {
-
-		ActionEvent event;
-		ActionListener[] listeners;
-
-
-		@Override
-		public void run() {
-			for (final ActionListener el : listeners) {
-				try {
-					el.actionPerformed(event);
-				} catch (final Exception | Error e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-
-	static class EDTCompliantTextSetter implements Runnable {
-
-		JTextComponent jTextComponent;
-		String textToSet;
-
-
-		@Override
-		public void run() {
-			if (jTextComponent instanceof JTextField) {
-				final JTextField jTextField = (JTextField) jTextComponent;
-				jTextField.setText(textToSet);
-				jTextField.postActionEvent();
-			} else {
-				jTextComponent.setText(textToSet);
-			}
-		}
-	}
-
-
 	private void detectChildren(final Component component, final ArrayList<Component> componentList) {
 		detectChildren(component, componentList, true);
 	}
@@ -498,6 +443,53 @@ public class CrawlerTester implements Runnable {
 
 	public void debugLog(final String s, final Object... args) {
 		System.out.printf(s, args);
+	}
+
+	static class EDTCompliantActionPerformer implements Runnable {
+
+		ActionEvent event;
+		ActionListener[] listeners;
+
+
+		@Override
+		public void run() {
+			for (final ActionListener el : listeners) {
+				try {
+					el.actionPerformed(event);
+				} catch (final Exception | Error e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	static class EDTCompliantTextSetter implements Runnable {
+
+		JTextComponent jTextComponent;
+		String textToSet;
+
+
+		@Override
+		public void run() {
+			if (jTextComponent instanceof JTextField) {
+				final JTextField jTextField = (JTextField) jTextComponent;
+				jTextField.setText(textToSet);
+				jTextField.postActionEvent();
+			} else {
+				jTextComponent.setText(textToSet);
+			}
+		}
+	}
+
+	class TimerRunner implements Runnable {
+
+		@Override
+		public void run() {
+			while (!Thread.interrupted()) {
+				final int seconds = (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000);
+				time.setText(String.format("%02d:%02d", (int) Math.floor(seconds / 60), seconds % 60));
+			}
+		}
 	}
 
 }
