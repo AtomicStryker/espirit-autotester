@@ -288,19 +288,7 @@ public class CrawlerTester implements Runnable {
 			}
 		}
 
-		if (target instanceof AbstractButton) {
-			final AbstractButton fsb = (AbstractButton) target;
-			for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
-				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || bab.title.equals(((Dialog) w).getTitle()))) {
-					debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
-					if (w != null) {
-						w.dispose();
-					}
-					return;
-				}
-			}
-			event = new ActionEvent(target, 42, fsb.getActionCommand());
-		} else if (target instanceof JToggleButton) {
+		if (target instanceof JToggleButton) {
 			// TODO do more than toggle on off?
 			debugLog("JToggleButton, need to do something clever...\n");
 			final JToggleButton jtb = (JToggleButton) target;
@@ -331,56 +319,73 @@ public class CrawlerTester implements Runnable {
 			final boolean select = menuItem.isSelected();
 			menuItem.setSelected(!select);
 			menuItem.setSelected(select);
-		} else {
-			if (target instanceof JTextComponent) {
-				// TODO bwahaha evil strings come here
 
-				final JTextComponent jTextComponent = (JTextComponent) target;
-				if (jTextComponent.isEditable()) {
-					debugLog("JTextComponent, now trying problematic strings lol\n");
+		} else if (target instanceof AbstractButton) {
+			final AbstractButton fsb = (AbstractButton) target;
+			for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
+				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || bab.title.equals(((Dialog) w).getTitle()))) {
+					debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
+					if (w != null) {
+						w.dispose();
+					}
+					return;
+				}
+			}
+			event = new ActionEvent(target, 42, fsb.getActionCommand());
 
-					if (jTextComponent instanceof JTextField) {
-						for (final String s : problemStringManager.getProblemStrings()) {
-							debugLog("setting jtextfield text to [%s] and firing action event\n", s);
-							final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
-							setter.jTextComponent = jTextComponent;
-							setter.textToSet = s;
-							SwingUtilities.invokeLater(setter);
-							threadSleep(config.sleepTimeMillisTextfieldEntries);
-						}
-					} else {
-						final String s = problemStringManager.getRandomProblemString();
-						debugLog("setting jtextfield text to [%s]\n", s);
+		} else if (target instanceof JTextComponent) {
+			// TODO bwahaha evil strings come here
+
+			final JTextComponent jTextComponent = (JTextComponent) target;
+			if (jTextComponent.isEditable()) {
+				debugLog("JTextComponent, now trying problematic strings lol\n");
+
+				if (jTextComponent instanceof JTextField) {
+					for (final String s : problemStringManager.getProblemStrings()) {
+						debugLog("setting jtextfield text to [%s] and firing action event\n", s);
 						final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
 						setter.jTextComponent = jTextComponent;
 						setter.textToSet = s;
 						SwingUtilities.invokeLater(setter);
+						threadSleep(config.sleepTimeMillisTextfieldEntries);
 					}
+				} else {
+					final String s = problemStringManager.getRandomProblemString();
+					debugLog("setting jtextfield text to [%s]\n", s);
+					final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
+					setter.jTextComponent = jTextComponent;
+					setter.textToSet = s;
+					SwingUtilities.invokeLater(setter);
 				}
+			}
 
-				return;
-			}
+			return;
 		}
-		/*
-			// TODO this somehow breaks the flow, without it there is delay but it works
-			else if (target instanceof JMenuItem) {
-			final JMenuItem jmi = (JMenuItem) target;
-			if (jmi.getText() != null && jmi.getText().contains("start browser (prototype)")) {
-				debugLog("Nope-ing away from prototype browser button\n");
-				return;
-			}
-		}
-		*/
 		counterButtonsPushed++;
 
 		// TODO improve fake clicking?
-		for (final ActionListener el : target.getListeners(ActionListener.class)) {
-			try {
-				el.actionPerformed(event);
-			} catch (final Exception | Error e) {
-				e.printStackTrace();
-			}
+		final EDTCompliantActionPerformer actionDoer = new EDTCompliantActionPerformer();
+		actionDoer.event = event;
+		actionDoer.listeners = target.getListeners(ActionListener.class);
+		SwingUtilities.invokeLater(actionDoer);
+	}
 
+
+	static class EDTCompliantActionPerformer implements Runnable {
+
+		ActionEvent event;
+		ActionListener[] listeners;
+
+
+		@Override
+		public void run() {
+			for (final ActionListener el : listeners) {
+				try {
+					el.actionPerformed(event);
+				} catch (final Exception | Error e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
