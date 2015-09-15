@@ -323,7 +323,7 @@ public class CrawlerTester implements Runnable {
 		} else if (target instanceof AbstractButton) {
 			final AbstractButton fsb = (AbstractButton) target;
 			for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
-				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || bab.title.equals(((Dialog) w).getTitle()))) {
+				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || (w != null && bab.title.equals(((Dialog) w).getTitle())))) {
 					debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
 					if (w != null) {
 						w.dispose();
