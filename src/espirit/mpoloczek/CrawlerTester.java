@@ -348,6 +348,8 @@ public class CrawlerTester implements Runnable {
 			if (log) {
 				debugLog("Ignoring %s\n", compdesc);
 			}
+			return;
+
 		} else if ("JXLayer".equals(component.getClass().getSimpleName())) {
 
 			if (log) {
