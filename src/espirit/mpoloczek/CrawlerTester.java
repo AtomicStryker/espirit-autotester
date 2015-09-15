@@ -178,7 +178,7 @@ public class CrawlerTester implements Runnable {
 		debugLog("all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
 		timerThread.interrupt();
 		// wait a wee bit, events may be still underway
-		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks*3);
+		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 3);
 		isCurrentlyTesting = false;
 
 		targetGUI.dispose();
@@ -340,25 +340,21 @@ public class CrawlerTester implements Runnable {
 					debugLog("JTextComponent, now trying problematic strings lol\n");
 
 					if (jTextComponent instanceof JTextField) {
-						final JTextField jTextField = (JTextField) jTextComponent;
 						for (final String s : problemStringManager.getProblemStrings()) {
-							try {
-								debugLog("setting jtextfield text to [%s] and firing action event\n", s);
-								jTextField.setText(s);
-								jTextField.postActionEvent();
-								threadSleep(config.sleepTimeMillisTextfieldEntries);
-							} catch (final Exception e) {
-								e.printStackTrace();
-							}
+							debugLog("setting jtextfield text to [%s] and firing action event\n", s);
+							final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
+							setter.jTextComponent = jTextComponent;
+							setter.textToSet = s;
+							SwingUtilities.invokeLater(setter);
+							threadSleep(config.sleepTimeMillisTextfieldEntries);
 						}
 					} else {
-						try {
-							final String s = problemStringManager.getRandomProblemString();
-							debugLog("setting jtextfield text to [%s]\n", s);
-							jTextComponent.setText(s);
-						} catch (final Exception e) {
-							e.printStackTrace();
-						}
+						final String s = problemStringManager.getRandomProblemString();
+						debugLog("setting jtextfield text to [%s]\n", s);
+						final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
+						setter.jTextComponent = jTextComponent;
+						setter.textToSet = s;
+						SwingUtilities.invokeLater(setter);
 					}
 				}
 
@@ -380,12 +376,30 @@ public class CrawlerTester implements Runnable {
 		// TODO improve fake clicking?
 		for (final ActionListener el : target.getListeners(ActionListener.class)) {
 			try {
-
 				el.actionPerformed(event);
 			} catch (final Exception | Error e) {
 				e.printStackTrace();
 			}
 
+		}
+	}
+
+
+	static class EDTCompliantTextSetter implements Runnable {
+
+		JTextComponent jTextComponent;
+		String textToSet;
+
+
+		@Override
+		public void run() {
+			if (jTextComponent instanceof JTextField) {
+				final JTextField jTextField = (JTextField) jTextComponent;
+				jTextField.setText(textToSet);
+				jTextField.postActionEvent();
+			} else {
+				jTextComponent.setText(textToSet);
+			}
 		}
 	}
 
