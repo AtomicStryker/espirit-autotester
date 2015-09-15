@@ -430,11 +430,6 @@ public class CrawlerTester implements Runnable {
 				debugLog("Disabled: %s\n", compdesc);
 			}
 		} else if (component instanceof JTextField) {
-
-			// TODO textfields yay!
-			if (log) {
-				debugLog("\n%s\n%d: %s\n\n", "Special Textfield case!", componentIndexDebugPrint++, component);
-			}
 			componentList.add(component);
 		} else {
 
