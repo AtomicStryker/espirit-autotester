@@ -113,8 +113,7 @@ public class CrawlerTester implements Runnable {
 		final JLabel giflabel = new JLabel(iicon);
 		giflabel.setVerticalTextPosition(JLabel.TOP);
 
-		@SuppressWarnings("serial")
-		final JButton aborter = new JButton(new AbstractAction("Abort Autotest") {
+		@SuppressWarnings("serial") final JButton aborter = new JButton(new AbstractAction("Abort Autotest") {
 			public void actionPerformed(final ActionEvent e) {
 				while (!testerThreadStack.empty()) {
 					testerThreadStack.peek().isThreadAborted = true;
@@ -143,17 +142,17 @@ public class CrawlerTester implements Runnable {
 			debugLog("\niterating rootWindow: %s\n", curWindow.getClass().getSimpleName());
 			if (targetGuiName.equals(curWindow.getClass().getSimpleName())) {
 
-					debugLog("In target GUI: %s\n", curWindow);
-					debugLog("\n");
-					componentIndexDebugPrint = 0;
+				debugLog("In target GUI: %s\n", curWindow);
+				debugLog("\n");
+				componentIndexDebugPrint = 0;
 
-					targetGUI = curWindow;
-					break;
+				targetGUI = curWindow;
+				break;
 			}
 		}
 
 		if (targetGUI == null) {
-			throw new RuntimeException("Did not find a target GUI named "+targetGuiName);
+			throw new RuntimeException("Did not find a target GUI named " + targetGuiName);
 		}
 
 		detectChildren(targetGUI, componentListPrev);
@@ -188,7 +187,7 @@ public class CrawlerTester implements Runnable {
 		public void run() {
 			while (!Thread.interrupted()) {
 				final int seconds = (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000);
-				time.setText(String.format("%02d:%02d", (int)Math.floor(seconds/60), seconds%60));
+				time.setText(String.format("%02d:%02d", (int) Math.floor(seconds / 60), seconds % 60));
 			}
 		}
 	}
@@ -218,6 +217,7 @@ public class CrawlerTester implements Runnable {
 			}
 		});
 	}
+
 
 	private void onDialogPopup(final Component popup) {
 
@@ -258,7 +258,9 @@ public class CrawlerTester implements Runnable {
 		}
 	}
 
+
 	private Method setStrictCMSMethod;
+
 
 	public void pseudoClickButton(final Component target, final ArrayList<Component> adjacentComponents) {
 
@@ -286,7 +288,9 @@ public class CrawlerTester implements Runnable {
 			for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
 				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || bab.title.equals(((Dialog) w).getTitle()))) {
 					debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
-					if (w != null) w.dispose();
+					if (w != null) {
+						w.dispose();
+					}
 					return;
 				}
 			}
@@ -351,56 +355,58 @@ public class CrawlerTester implements Runnable {
 		}
 	}
 
+
 	private void detectChildren(final Component component, final ArrayList<Component> componentList) {
 		detectChildren(component, componentList, true);
 	}
 
+
 	private void detectChildren(final Component component, final ArrayList<Component> componentList, final boolean log) {
 
 		final String compdesc = componentToString(component);
-		if (component == null
-				|| !component.isVisible()
-				|| component instanceof JFrame
-				|| component instanceof JPanel
-				|| component instanceof JRootPane
-				|| component instanceof JLayeredPane
-				|| component instanceof JMenuBar
-				|| component instanceof JToolBar
-				|| component instanceof JPopupMenu.Separator
-				|| component instanceof javax.swing.JSeparator
-				|| component instanceof Box.Filler
-				|| component instanceof JScrollPane
-				|| component instanceof JViewport
-				|| component instanceof JList
-				|| config.isComponentBlacklisted(component.getClass())) {
+		if (component == null || !component.isVisible() || component instanceof JFrame || component instanceof JPanel || component instanceof JRootPane || component instanceof JLayeredPane || component instanceof JMenuBar || component instanceof JToolBar || component instanceof JPopupMenu.Separator || component instanceof javax.swing.JSeparator || component instanceof Box.Filler || component instanceof JScrollPane || component instanceof JViewport || component instanceof JList || config.isComponentBlacklisted(component.getClass())) {
 
 			// not targets
-			if (log) debugLog("Ignoring %s\n", compdesc);
+			if (log) {
+				debugLog("Ignoring %s\n", compdesc);
+			}
 		} else if ("JXLayer".equals(component.getClass().getSimpleName())) {
 
-			if (log) debugLog("\nRan into JXLayer, skipping all of that (for now?!)\n\n"); //TODO browser exclusion?
+			if (log) {
+				debugLog("\nRan into JXLayer, skipping all of that (for now?!)\n\n"); //TODO browser exclusion?
+			}
 			return;
 		} else if (!component.isEnabled()) {
 
-			if (log) debugLog("Disabled: %s\n", compdesc);
+			if (log) {
+				debugLog("Disabled: %s\n", compdesc);
+			}
 		} else if (component instanceof JTextField) {
 
 			// TODO textfields yay!
-			if (log) debugLog("\n%s\n%d: %s\n\n", "Special Textfield case!", componentIndexDebugPrint++, component);
+			if (log) {
+				debugLog("\n%s\n%d: %s\n\n", "Special Textfield case!", componentIndexDebugPrint++, component);
+			}
 			componentList.add(component);
 		} else {
 
-			if (log) debugLog("%d: %s\n", componentIndexDebugPrint++, compdesc);
+			if (log) {
+				debugLog("%d: %s\n", componentIndexDebugPrint++, compdesc);
+			}
 			componentList.add(component);
 		}
 
 		if (component instanceof JMenu) {
 			final JMenu menu = (JMenu) component;
-			if (log) debugLog("found a menu [%s] with subitem count: [%d] ===================================\n", menu.getText(), menu.getMenuComponents().length);
+			if (log) {
+				debugLog("found a menu [%s] with subitem count: [%d] ===================================\n", menu.getText(), menu.getMenuComponents().length);
+			}
 			for (final Component c : menu.getMenuComponents()) {
 				detectChildren(c, componentList, log);
 			}
-			if (log) debugLog("MENU END =================================================================================\n");
+			if (log) {
+				debugLog("MENU END =================================================================================\n");
+			}
 		}
 
 		if (component instanceof Container) {
@@ -413,21 +419,25 @@ public class CrawlerTester implements Runnable {
 		}
 	}
 
+
 	/**
 	 * Get a slightly better or atleast more concise description of most elements over c.toString()
 	 */
 	public String componentToString(final Component c) {
-		if (c == null) return "null?!";
+		if (c == null) {
+			return "null?!";
+		}
 		String answer = ": ";
 		if (c instanceof AbstractButton) {
 			final AbstractButton ab = (AbstractButton) c;
-			answer = c.getClass().getSimpleName()+": text:"+ab.getText()+", command:"+ab.getActionCommand();
+			answer = c.getClass().getSimpleName() + ": text:" + ab.getText() + ", command:" + ab.getActionCommand();
 		} else if (c instanceof JDialog) {
 			final JDialog jd = (JDialog) c;
-			answer = c.getClass().getSimpleName()+": "+jd.getTitle();
+			answer = c.getClass().getSimpleName() + ": " + jd.getTitle();
 		}
 		return ": ".equals(answer) ? c.toString() : answer;
 	}
+
 
 	public void threadSleep(final long millis) {
 		try {
@@ -436,6 +446,7 @@ public class CrawlerTester implements Runnable {
 			e.printStackTrace();
 		}
 	}
+
 
 	public void debugLog(final String s, final Object... args) {
 		System.out.printf(s, args);
