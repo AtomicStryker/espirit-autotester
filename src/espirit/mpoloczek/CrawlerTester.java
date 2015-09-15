@@ -22,6 +22,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
@@ -48,7 +49,8 @@ public class CrawlerTester implements Runnable {
 
 	public final String targetGuiName;
 	private final int delayToTestStartSeconds;
-	final Config config;
+	public final Config config;
+	public final StringProblemFactory problemStringManager;
 
 	private Window targetGUI;
 	public final Stack<TesterThread> testerThreadStack;
@@ -83,7 +85,10 @@ public class CrawlerTester implements Runnable {
 
 			throw new RuntimeException("Invalid config file, check path.");
 		}
+
+		problemStringManager = new StringProblemFactory();
 	}
+
 
 	@Override
 	public void run() {
@@ -326,10 +331,35 @@ public class CrawlerTester implements Runnable {
 			final boolean select = menuItem.isSelected();
 			menuItem.setSelected(!select);
 			menuItem.setSelected(select);
-		} else if (target instanceof JTextField) {
-			// TODO bwahaha evil strings come here
-			debugLog("JTextField, gonna do some voodoo here eventually\n");
-			return;
+		} else {
+			if (target instanceof JTextComponent) {
+				// TODO bwahaha evil strings come here
+
+				final JTextComponent jTextComponent = (JTextComponent) target;
+				if (jTextComponent.isEditable()) {
+					debugLog("JTextComponent, now trying problematic strings lol\n");
+
+					if (jTextComponent instanceof JTextField) {
+						final JTextField jTextField = (JTextField) jTextComponent;
+						for (final String s : problemStringManager.getProblemStrings()) {
+							try {
+								jTextField.setText(s);
+								jTextField.postActionEvent();
+							} catch (final Exception e) {
+								e.printStackTrace();
+							}
+						}
+					} else {
+						try {
+							jTextComponent.setText(problemStringManager.getRandomProblemString());
+						} catch (final Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+
+				return;
+			}
 		}
 		/*
 			// TODO this somehow breaks the flow, without it there is delay but it works
