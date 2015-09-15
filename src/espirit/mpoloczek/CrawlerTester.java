@@ -5,6 +5,7 @@ import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -274,18 +275,12 @@ public class CrawlerTester implements Runnable {
 			}
 		}
 
-		if (target instanceof JToggleButton) {
-
+		if (target instanceof JToggleButton || target instanceof JRadioButtonMenuItem || target instanceof JCheckBoxMenuItem) {
 			final EDTCompliantSelector selector = new EDTCompliantSelector();
-			selector.buttonToSelect = (JToggleButton) target;
+			selector.buttonToSelect = (AbstractButton) target;
 			SwingUtilities.invokeLater(selector);
 
-		} else if (target instanceof JRadioButtonMenuItem) {
-			final EDTCompliantSelector selector = new EDTCompliantSelector();
-			selector.buttonToSelect = (JRadioButtonMenuItem) target;
-			SwingUtilities.invokeLater(selector);
-
-		} else if (target instanceof AbstractButton) {
+		} else if (target instanceof AbstractButton) { // order is important as AbstractButton is a base class of the above
 			final AbstractButton fsb = (AbstractButton) target;
 			for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
 				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || (w != null && bab.title.equals(((Dialog) w).getTitle())))) {
