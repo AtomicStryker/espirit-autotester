@@ -178,6 +178,7 @@ public class CrawlerTester implements Runnable {
 		isCurrentlyTesting = false;
 
 		targetGUI.dispose();
+		System.exit(0);
 	}
 
 
