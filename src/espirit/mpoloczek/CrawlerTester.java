@@ -276,38 +276,14 @@ public class CrawlerTester implements Runnable {
 
 		if (target instanceof JToggleButton) {
 
-			final JToggleButton jtb = (JToggleButton) target;
-			final boolean select = jtb.isSelected();
-			// we just switch it on-off to trigger any code implemented in that change
-			jtb.setSelected(!select);
-			jtb.setSelected(select);
-			jtb.setSelected(random.nextBoolean());
-			debugLog("JToggleButton, randomly leaving it %s...\n", jtb.isSelected() ? "ON" : "OFF");
+			final EDTCompliantSelector selector = new EDTCompliantSelector();
+			selector.buttonToSelect = (JToggleButton) target;
+			SwingUtilities.invokeLater(selector);
 
 		} else if (target instanceof JRadioButtonMenuItem) {
-			if (adjacentComponents != null) {
-				final ArrayList<JRadioButtonMenuItem> otherRadioButtons = new ArrayList<>();
-				for (final Component otherC : adjacentComponents) {
-					if (otherC != target && otherC instanceof JRadioButtonMenuItem) {
-						otherRadioButtons.add((JRadioButtonMenuItem) otherC);
-					}
-				}
-				for (final JRadioButtonMenuItem radioItem : otherRadioButtons) {
-					radioItem.setSelected(true);
-					radioItem.setSelected(false);
-				}
-
-				debugLog("JRadioButtonMenuItem, toggled it and %d other adjacents ...\n", otherRadioButtons.size());
-			} else {
-				debugLog("JRadioButtonMenuItem, it's alone so i just wiggle it once\n");
-			}
-			final JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) target;
-			final boolean select = menuItem.isSelected();
-			menuItem.setSelected(!select);
-			menuItem.setSelected(select);
-
-			menuItem.setSelected(random.nextBoolean());
-			debugLog("JRadioButtonMenuItem, randomly leaving it %s...\n", menuItem.isSelected() ? "ON" : "OFF");
+			final EDTCompliantSelector selector = new EDTCompliantSelector();
+			selector.buttonToSelect = (JRadioButtonMenuItem) target;
+			SwingUtilities.invokeLater(selector);
 
 		} else if (target instanceof AbstractButton) {
 			final AbstractButton fsb = (AbstractButton) target;
@@ -323,7 +299,6 @@ public class CrawlerTester implements Runnable {
 			event = new ActionEvent(target, 42, fsb.getActionCommand());
 
 		} else if (target instanceof JTextComponent) {
-			// TODO bwahaha evil strings come here
 
 			final JTextComponent jTextComponent = (JTextComponent) target;
 			if (jTextComponent.isEditable()) {
@@ -489,6 +464,18 @@ public class CrawlerTester implements Runnable {
 			} else {
 				jTextComponent.setText(textToSet);
 			}
+		}
+	}
+
+	class EDTCompliantSelector implements Runnable {
+
+		AbstractButton buttonToSelect;
+
+
+		@Override
+		public void run() {
+			buttonToSelect.setSelected(random.nextBoolean());
+			debugLog("Togglebutton %s, randomly leaving it %s...\n", componentToString(buttonToSelect), buttonToSelect.isSelected() ? "ON" : "OFF");
 		}
 	}
 
