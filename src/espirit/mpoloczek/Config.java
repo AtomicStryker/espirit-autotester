@@ -15,6 +15,8 @@ public class Config {
 	public Properties properties;
 	public BlackListedAbstractButton[] blackListedAbstractButtons;
 	public ArrayList<String> blackListedComponentsSimpleClassNames = new ArrayList<String>();
+	public long sleepTimeMillisTextfieldEntries;
+	public long sleepTimeMillisBetweenFakeMouseClicks;
 
 	public boolean loadConfigFile(final String filePath) {
 
@@ -25,7 +27,7 @@ public class Config {
 			final InputStream inStream = Files.newInputStream(path);
 			properties.load(inStream);
 			inStream.close();
-			loadBlackLists();
+			loadFileContent();
 			return true;
 
 		} catch (final IOException e1) {
@@ -35,7 +37,7 @@ public class Config {
 			try {
 				properties.load(inStream);
 				inStream.close();
-				loadBlackLists();
+				loadFileContent();
 				return true;
 
 			} catch (final IOException e2) {
@@ -46,7 +48,10 @@ public class Config {
 		}
 	}
 
-	private void loadBlackLists() {
+	private void loadFileContent() {
+		sleepTimeMillisTextfieldEntries = Long.valueOf(properties.getProperty("sleepTimeMillisTextfieldEntries", "100"));
+		sleepTimeMillisBetweenFakeMouseClicks = Long.valueOf(properties.getProperty("sleepTimeMillisBetweenFakeMouseClicks", "500"));
+
 		final String str = properties.getProperty("blackListedAbstractButtons", "");
 		final String[] entries = str.split("(?<!\\\\),");
 		blackListedAbstractButtons = new BlackListedAbstractButton[entries.length];

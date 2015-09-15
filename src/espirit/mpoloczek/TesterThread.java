@@ -43,7 +43,7 @@ class TesterThread extends Thread {
 				}
 
 				crawlerTester.pseudoClickButton(componentListToTest.get(indexCurrentComponentTested), componentListToTest);
-				crawlerTester.threadSleep(1000);
+				crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 			}
 		}
 
@@ -64,7 +64,7 @@ class TesterThread extends Thread {
 			while (!isThreadAborted && crawlerTester.expectingPopup) {
 				if (crawlerTester.testerThreadStack.peek().indexCurrentComponentTested +offset >= 0) {
 					crawlerTester.pseudoClickButton(peek.componentListToTest.get(peek.indexCurrentComponentTested + offset), null);
-					crawlerTester.threadSleep(1000);
+					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 					offset--;
 					skipStackPop = true;
 				} else {
@@ -94,7 +94,7 @@ class TesterThread extends Thread {
 			} else {
 
 				if (!isThreadAborted) {
-					crawlerTester.threadSleep(1000);
+					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 					crawlerTester.testerThreadStack.peek().isThreadPaused = false;
 					crawlerTester.debugLog("resumed isThreadPaused thread %s after popup handling\n", crawlerTester.testerThreadStack.peek());
 				} else {

@@ -178,7 +178,7 @@ public class CrawlerTester implements Runnable {
 		debugLog("all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
 		timerThread.interrupt();
 		// wait a wee bit, events may be still underway
-		threadSleep(3000);
+		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks*3);
 		isCurrentlyTesting = false;
 
 		targetGUI.dispose();
@@ -256,7 +256,7 @@ public class CrawlerTester implements Runnable {
 					popTester.indexCurrentComponentTested = popupComponentIndex;
 					popupComponentIndex = -1;
 					debugLog("resuming popup test from idx %d\n", popTester.indexCurrentComponentTested);
-					threadSleep(1000);
+					threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks);
 				}
 				popTester.start();
 			}
@@ -343,15 +343,19 @@ public class CrawlerTester implements Runnable {
 						final JTextField jTextField = (JTextField) jTextComponent;
 						for (final String s : problemStringManager.getProblemStrings()) {
 							try {
+								debugLog("setting jtextfield text to [%s] and firing action event\n", s);
 								jTextField.setText(s);
 								jTextField.postActionEvent();
+								threadSleep(config.sleepTimeMillisTextfieldEntries);
 							} catch (final Exception e) {
 								e.printStackTrace();
 							}
 						}
 					} else {
 						try {
-							jTextComponent.setText(problemStringManager.getRandomProblemString());
+							final String s = problemStringManager.getRandomProblemString();
+							debugLog("setting jtextfield text to [%s]\n", s);
+							jTextComponent.setText(s);
 						} catch (final Exception e) {
 							e.printStackTrace();
 						}
