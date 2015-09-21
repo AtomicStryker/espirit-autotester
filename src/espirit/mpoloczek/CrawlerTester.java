@@ -362,10 +362,8 @@ public class CrawlerTester implements Runnable {
 		} else if (!component.isEnabled()) {
 
 			if (log) {
-				debugLog("Disabled: %s\n", compdesc);
+				debugLog("Ignoring disabled: %s\n", compdesc);
 			}
-		} else if (component instanceof JTextField) {
-			componentList.add(component);
 		} else {
 
 			if (log) {
@@ -385,9 +383,7 @@ public class CrawlerTester implements Runnable {
 			if (log) {
 				debugLog("MENU END =================================================================================\n");
 			}
-		}
-
-		if ("FsMultiSplitPane".equals(component.getClass().getSimpleName())) {
+		} else if ("FsMultiSplitPane".equals(component.getClass().getSimpleName())) {
 
 			if (methodFsMultiPaneGetComponentsAtSlotID == null) {
 				try {
@@ -409,9 +405,8 @@ public class CrawlerTester implements Runnable {
 			} catch (final Exception e) {
 				throw new RuntimeException(e);
 			}
-		}
+		} else if (component instanceof Container) {
 
-		if (component instanceof Container) {
 			final Container container = (Container) component;
 			final int componentCount = container.getComponentCount();
 			for (int i = 0; i < componentCount; i++) {
