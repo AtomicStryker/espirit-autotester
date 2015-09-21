@@ -238,7 +238,7 @@ public class CrawlerTester implements Runnable {
 			if (!ignorePopup) {
 				expectingPopup = false;
 				testerThreadStack.peek().isThreadPaused = true;
-				debugLog("isThreadPaused thread %s for popup handling\n", testerThreadStack.peek());
+				debugLog("paused thread %s for popup handling\n", testerThreadStack.peek());
 
 				final ArrayList<Component> popupContent = new ArrayList<Component>();
 				detectChildren(windowAncestor, popupContent, popupComponentIndex < 1);
@@ -372,7 +372,7 @@ public class CrawlerTester implements Runnable {
 		} else {
 
 			if (log) {
-				debugLog("%d: %s\n", componentIndexDebugPrint++, compdesc);
+				debugLog("componentList add %d: %s\n", componentIndexDebugPrint++, compdesc);
 			}
 			componentList.add(component);
 		}

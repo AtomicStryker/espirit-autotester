@@ -97,7 +97,7 @@ class TesterThread extends Thread {
 				if (!isThreadAborted) {
 					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 					crawlerTester.testerThreadStack.peek().isThreadPaused = false;
-					crawlerTester.debugLog("resumed isThreadPaused thread %s after popup handling\n", crawlerTester.testerThreadStack.peek());
+					crawlerTester.debugLog("resumed paused thread %s after popup handling\n", crawlerTester.testerThreadStack.peek());
 				} else {
 					crawlerTester.testerThreadStack.peek().isThreadPaused = false;
 					crawlerTester.testerThreadStack.peek().isThreadAborted = true;
