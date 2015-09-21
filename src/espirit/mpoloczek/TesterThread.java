@@ -31,30 +31,41 @@ class TesterThread extends Thread {
 		crawlerTester.isCurrentlyTesting = true;
 		for (; !isThreadAborted && indexCurrentComponentTested < componentListToTest.size(); indexCurrentComponentTested++) {
 
-			while (isThreadPaused) { Thread.yield(); } // yield is necessary, else thread can be parked permanently wtf
-
 			if (!isThreadAborted) {
 				crawlerTester.debugLog("%s now testing it's component %d\n", this, indexCurrentComponentTested);
 				final Window w = SwingUtilities.getWindowAncestor(componentListToTest.get(indexCurrentComponentTested));
 				if (w != null && !w.isDisplayable()) {
 					//  was disposed, did our popup die?
-					crawlerTester.debugLog("tester lost a display context, attempting to recreate popup and continue from idx %d\n", indexCurrentComponentTested);
-					crawlerTester.popupComponentIndex = indexCurrentComponentTested;
+					if (crawlerTester.testerThreadStack.size() > 1) {
+						crawlerTester.debugLog("tester %s lost display context, attempting to recreate popup and continue from idx %d\n", this, indexCurrentComponentTested);
+						crawlerTester.popupComponentIndex = indexCurrentComponentTested;
+					} else {
+						crawlerTester.debugLog("tester %s lost display context, but there is no previous context to restore anything from...\n", this);
+					}
 					break;
 				}
 
 				crawlerTester.pseudoClickButton(componentListToTest.get(indexCurrentComponentTested), rootWindow, componentListToTest);
 				crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 			}
+
+			while (isThreadPaused) { Thread.yield(); } // yield is necessary, else thread can be parked permanently wtf
 		}
 
 		// was testing a popup, lost the context (closed it?)
 		boolean skipStackPop = false;
+		// or popup restore failed
+		boolean popupRestoreFailed = false;
 		if (!isThreadAborted && crawlerTester.popupComponentIndex >= 0) {
 
 			// we need to go back and create the popup again
 			// first delete this thread off the stack
-			crawlerTester.testerThreadStack.pop();
+			if (crawlerTester.testerThreadStack.peek() == this) {
+				crawlerTester.testerThreadStack.pop();
+			} else {
+				System.err.printf("#1 TesterThread running %s is not the one ontop of the stack %s WTF\n", this, crawlerTester.testerThreadStack.peek());
+			}
+
 			// then re-do the last thing
 			final TesterThread peek = crawlerTester.testerThreadStack.peek();
 			if (peek.indexCurrentComponentTested == peek.componentListToTest.size()) peek.indexCurrentComponentTested--;
@@ -63,7 +74,7 @@ class TesterThread extends Thread {
 			crawlerTester.expectingPopup = true;
 			int offset = 0;
 			while (!isThreadAborted && crawlerTester.expectingPopup) {
-				if (crawlerTester.testerThreadStack.peek().indexCurrentComponentTested +offset >= 0) {
+				if (crawlerTester.testerThreadStack.peek().indexCurrentComponentTested + offset >= 0) {
 					crawlerTester.pseudoClickButton(peek.componentListToTest.get(peek.indexCurrentComponentTested + offset), null, null);
 					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 					offset--;
@@ -73,6 +84,7 @@ class TesterThread extends Thread {
 					skipStackPop = false;
 					crawlerTester.popupComponentIndex = -1;
 					crawlerTester.expectingPopup = false;
+					popupRestoreFailed = true;
 				}
 			}
 		}
@@ -80,13 +92,23 @@ class TesterThread extends Thread {
 		if (!skipStackPop) {
 			// finished testing this threads queue
 			// remove this thread from the stack
-			if (!crawlerTester.testerThreadStack.empty()) crawlerTester.testerThreadStack.pop();
+			if (!popupRestoreFailed) {
+				if (!crawlerTester.testerThreadStack.empty()) {
+					if (crawlerTester.testerThreadStack.peek() == this) {
+						crawlerTester.testerThreadStack.pop();
+					} else {
+						System.err.printf("#2 TesterThread running %s is not the one ontop of the stack %s WTF\n", this, crawlerTester.testerThreadStack.peek());
+					}
+				}
+			}
+
 			// also murder the topmost rootWindow just in case
 			if (rootWindow instanceof Window && !crawlerTester.targetGuiName.equals(rootWindow.getClass().getSimpleName())) {
 				final Window windowCast = (Window) rootWindow;
-				crawlerTester.debugLog("Finshed testing %s, disposing\n", crawlerTester.componentToString(rootWindow));
+				crawlerTester.debugLog("Finshed testing %s from %s, disposing\n", crawlerTester.componentToString(rootWindow), this);
 				windowCast.dispose();
 				crawlerTester.counterWindowsHandled++;
+				crawlerTester.previousWindows.add(rootWindow);
 			}
 
 			if (crawlerTester.testerThreadStack.empty()) {
@@ -96,11 +118,11 @@ class TesterThread extends Thread {
 
 				if (!isThreadAborted) {
 					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
+					crawlerTester.debugLog("resuming paused thread %s after popup handling\n", crawlerTester.testerThreadStack.peek());
 					crawlerTester.testerThreadStack.peek().isThreadPaused = false;
-					crawlerTester.debugLog("resumed paused thread %s after popup handling\n", crawlerTester.testerThreadStack.peek());
 				} else {
-					crawlerTester.testerThreadStack.peek().isThreadPaused = false;
 					crawlerTester.testerThreadStack.peek().isThreadAborted = true;
+					crawlerTester.testerThreadStack.peek().isThreadPaused = false;
 				}
 			}
 		}
