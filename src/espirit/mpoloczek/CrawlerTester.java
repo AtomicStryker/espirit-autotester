@@ -298,16 +298,19 @@ public class CrawlerTester implements Runnable {
 
 			final JTextComponent jTextComponent = (JTextComponent) target;
 			if (jTextComponent.isEditable()) {
-				debugLog("JTextComponent, now trying problematic strings lol\n");
 
-				if (jTextComponent instanceof JTextField) {
-					for (final String s : problemStringManager.getProblemStrings()) {
-						//debugLog("setting jtextfield text to [%s] and firing action event\n", s);
-						final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
-						setter.jTextComponent = jTextComponent;
-						setter.textToSet = s;
-						SwingUtilities.invokeLater(setter);
-						threadSleep(config.sleepTimeMillisTextfieldEntries);
+				if (jTextComponent.isVisible()) {
+					debugLog("visible JTextComponent, now trying problematic strings\n");
+
+					if (jTextComponent instanceof JTextField) {
+						for (final String s : problemStringManager.getProblemStrings()) {
+							//debugLog("setting jtextfield text to [%s] and firing action event\n", s);
+							final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
+							setter.jTextComponent = jTextComponent;
+							setter.textToSet = s;
+							SwingUtilities.invokeLater(setter);
+							threadSleep(config.sleepTimeMillisTextfieldEntries);
+						}
 					}
 				}
 				setJTextComponentToRandomString(jTextComponent);
