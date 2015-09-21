@@ -479,12 +479,23 @@ public class CrawlerTester implements Runnable {
 					if (!oldComponentList.remove(c)) {
 						debugLog("Found new Component after pushing a button and comparing with old component list!!\n");
 						debugLog("new Component: %s\n", c);
+						final ArrayList<Component> newlyDetectedComponents = new ArrayList<>();
+						detectChildren(c, newlyDetectedComponents, false);
+						int actualAdditions = 0;
+						for (final Component newc : newlyDetectedComponents) {
+							if (!componentList.contains(newc)) {
+								componentList.add(newc);
+								actualAdditions++;
+							}
+						}
+						debugLog("resulted in %d elements, %d new ones, for the master component list\n", newlyDetectedComponents.size(), actualAdditions);
 					}
 				}
 
 				for (final Component c : oldComponentList) {
 					debugLog("Found an old Component gone after pushing a button and comparing with old component list!!\n");
 					debugLog("old AWOL Component: %s\n", c);
+					// TODO maybe remove those?
 				}
 			}
 		}
