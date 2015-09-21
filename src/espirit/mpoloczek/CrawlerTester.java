@@ -341,7 +341,8 @@ public class CrawlerTester implements Runnable {
 
 
 	private void detectChildren(final Component component, final ArrayList<Component> componentList) {
-		detectChildren(component, componentList, true);
+		// TODO if you need debugging set this true again
+		detectChildren(component, componentList, false);
 	}
 
 
@@ -496,8 +497,8 @@ public class CrawlerTester implements Runnable {
 				}
 
 				for (final Component c : oldComponentList) {
-					debugLog("Found an old Component gone after pushing a button and comparing with old component list!!\n");
-					debugLog("old AWOL Component: %s\n", c);
+					//debugLog("Found an old Component gone after pushing a button and comparing with old component list!!\n");
+					//debugLog("old AWOL Component: %s\n", c);
 					// TODO maybe remove those?
 				}
 			}
