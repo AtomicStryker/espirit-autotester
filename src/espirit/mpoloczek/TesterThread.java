@@ -2,6 +2,7 @@ package espirit.mpoloczek;
 
 import javax.swing.SwingUtilities;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Window;
 import java.util.ArrayList;
 
@@ -10,14 +11,14 @@ class TesterThread extends Thread {
 
 	final CrawlerTester crawlerTester;
 	final ArrayList<Component> componentListToTest;
-	final Component rootWindow;
+	final Container rootWindow;
 
 	int indexCurrentComponentTested;
 	boolean isThreadAborted;
 	boolean isThreadPaused;
 
 
-	protected TesterThread(final CrawlerTester crawlerTester, final ArrayList<Component> componentListToTest, final Component rootWindow) {
+	protected TesterThread(final CrawlerTester crawlerTester, final ArrayList<Component> componentListToTest, final Container rootWindow) {
 		this.crawlerTester = crawlerTester;
 		this.componentListToTest = componentListToTest;
 		this.rootWindow = rootWindow;
@@ -42,7 +43,7 @@ class TesterThread extends Thread {
 					break;
 				}
 
-				crawlerTester.pseudoClickButton(componentListToTest.get(indexCurrentComponentTested), componentListToTest);
+				crawlerTester.pseudoClickButton(componentListToTest.get(indexCurrentComponentTested), rootWindow, componentListToTest);
 				crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 			}
 		}
@@ -63,7 +64,7 @@ class TesterThread extends Thread {
 			int offset = 0;
 			while (!isThreadAborted && crawlerTester.expectingPopup) {
 				if (crawlerTester.testerThreadStack.peek().indexCurrentComponentTested +offset >= 0) {
-					crawlerTester.pseudoClickButton(peek.componentListToTest.get(peek.indexCurrentComponentTested + offset), null);
+					crawlerTester.pseudoClickButton(peek.componentListToTest.get(peek.indexCurrentComponentTested + offset), null, null);
 					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 					offset--;
 					skipStackPop = true;

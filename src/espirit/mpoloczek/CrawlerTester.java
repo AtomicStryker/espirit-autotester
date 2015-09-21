@@ -256,7 +256,7 @@ public class CrawlerTester implements Runnable {
 	}
 
 
-	public void pseudoClickButton(final Component target, final ArrayList<Component> adjacentComponents) {
+	public void pseudoClickButton(final Component target, final Container root, final ArrayList<Component> adjacentComponents) {
 
 		debugLog("about to pseudo click component %s\n", componentToString(target));
 
@@ -321,6 +321,8 @@ public class CrawlerTester implements Runnable {
 		final EDTCompliantActionPerformer actionDoer = new EDTCompliantActionPerformer();
 		actionDoer.event = event;
 		actionDoer.listeners = target.getListeners(ActionListener.class);
+		actionDoer.componentRoot = root;
+		actionDoer.componentList = adjacentComponents;
 		SwingUtilities.invokeLater(actionDoer);
 	}
 
@@ -450,10 +452,12 @@ public class CrawlerTester implements Runnable {
 	}
 
 
-	static class EDTCompliantActionPerformer implements Runnable {
+	class EDTCompliantActionPerformer implements Runnable {
 
 		ActionEvent event;
 		ActionListener[] listeners;
+		Container componentRoot;
+		ArrayList<Component> componentList;
 
 
 		@Override
@@ -463,6 +467,24 @@ public class CrawlerTester implements Runnable {
 					el.actionPerformed(event);
 				} catch (final Exception | Error e) {
 					e.printStackTrace();
+				}
+			}
+
+			if (componentRoot != null && componentList != null) {
+				final ArrayList<Component> oldComponentList = new ArrayList<>(componentList);
+				final ArrayList<Component> newComponentList = new ArrayList<>(componentList.size());
+				detectChildren(componentRoot, newComponentList, false);
+
+				for (final Component c : newComponentList) {
+					if (!oldComponentList.remove(c)) {
+						debugLog("Found new Component after pushing a button and comparing with old component list!!\n");
+						debugLog("new Component: %s\n", c);
+					}
+				}
+
+				for (final Component c : oldComponentList) {
+					debugLog("Found an old Component gone after pushing a button and comparing with old component list!!\n");
+					debugLog("old AWOL Component: %s\n", c);
 				}
 			}
 		}
