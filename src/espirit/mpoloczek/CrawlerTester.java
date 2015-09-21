@@ -39,6 +39,7 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Stack;
 
@@ -53,6 +54,7 @@ public class CrawlerTester implements Runnable {
 	public final Config config;
 	public final StringProblemFactory problemStringManager;
 	public final Stack<TesterThread> testerThreadStack;
+	public final HashSet<Component> previousWindows;
 	private final int delayToTestStartSeconds;
 	private final Random random;
 	public int popupComponentIndex;
@@ -91,6 +93,7 @@ public class CrawlerTester implements Runnable {
 
 		problemStringManager = new StringProblemFactory();
 		random = new Random();
+		previousWindows = new HashSet<>();
 	}
 
 
@@ -233,6 +236,11 @@ public class CrawlerTester implements Runnable {
 					ignorePopup = true;
 					break;
 				}
+			}
+
+			if (previousWindows.contains(popup)) {
+				debugLog("Window %s was already fully handled previously, loop occurring? Skipping it.\n", componentToString(windowAncestor));
+				ignorePopup = true;
 			}
 
 			if (!ignorePopup) {
