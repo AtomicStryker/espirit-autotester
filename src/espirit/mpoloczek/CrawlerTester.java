@@ -184,7 +184,7 @@ public class CrawlerTester implements Runnable {
 		debugLog("all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
 		// wait a wee bit, events may be still underway
 
-		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 3);
+		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 10);
 		if (!testerThreadStack.empty()) {
 			debugLog("all done? NOT done. There was atleast one new testthread added during the final sleep. Continue!\n");
 			return; // the new testerthread will call onTestingFinished again
