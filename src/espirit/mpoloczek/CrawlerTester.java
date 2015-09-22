@@ -293,20 +293,23 @@ public class CrawlerTester implements Runnable {
 		}
 
 		if (target instanceof JToggleButton || target instanceof JRadioButtonMenuItem || target instanceof JCheckBoxMenuItem) {
+			if (isBlackListedButton((AbstractButton) target, w)) {
+				if (w != null) {
+					w.dispose();
+				}
+				return;
+			}
 			final EDTCompliantSelector selector = new EDTCompliantSelector();
 			selector.buttonToSelect = (AbstractButton) target;
 			SwingUtilities.invokeLater(selector);
 
 		} else if (target instanceof AbstractButton) { // order is important as AbstractButton is a base class of the above
 			final AbstractButton fsb = (AbstractButton) target;
-			for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
-				if (bab.command.equals(fsb.getActionCommand()) && (bab.title.isEmpty() || (w != null && bab.title.equals(((Dialog) w).getTitle())))) {
-					debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
-					if (w != null) {
-						w.dispose();
-					}
-					return;
+			if (isBlackListedButton(fsb, w)) {
+				if (w != null) {
+					w.dispose();
 				}
+				return;
 			}
 			event = new ActionEvent(target, 42, fsb.getActionCommand());
 
@@ -343,6 +346,28 @@ public class CrawlerTester implements Runnable {
 		actionDoer.componentRoot = root;
 		actionDoer.componentList = adjacentComponents;
 		SwingUtilities.invokeLater(actionDoer);
+	}
+
+
+	private boolean isBlackListedButton(final AbstractButton fsb, final Object w) {
+		for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
+			if ((bab.command.isEmpty() || bab.command.equals(fsb.getActionCommand())) && (bab.title.isEmpty() || (w != null && bab.title.equals(getTitle(w))))) {
+				debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	private String getTitle(final Object w) {
+		if (w instanceof Dialog) {
+			return ((Dialog) w).getTitle();
+		}
+		if (w instanceof JFrame) {
+			return ((JFrame) w).getTitle();
+		}
+		return "";
 	}
 
 
