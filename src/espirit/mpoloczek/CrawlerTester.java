@@ -257,7 +257,7 @@ public class CrawlerTester implements Runnable {
 				}
 
 				final ArrayList<Component> popupContent = new ArrayList<Component>();
-				detectChildren(windowAncestor, popupContent, popupComponentIndex < 1);
+				detectChildren(windowAncestor, popupContent, false);
 				final TesterThread popTester = new TesterThread(this, popupContent, windowAncestor);
 				testerThreadStack.push(popTester);
 				if (popupComponentIndex >= 0) {
