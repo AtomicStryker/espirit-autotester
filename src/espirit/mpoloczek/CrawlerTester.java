@@ -190,6 +190,7 @@ public class CrawlerTester implements Runnable {
 			return; // the new testerthread will call onTestingFinished again
 		}
 
+		debugLog("Cooldown ended. Cleaning up the mess now...\n");
 		masherframe.dispose();
 		timerThread.interrupt();
 		isCurrentlyTesting = false;
