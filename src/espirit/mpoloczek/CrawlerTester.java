@@ -445,7 +445,7 @@ public class CrawlerTester implements Runnable {
 				final int slotCount = (int) methodFsMultiPaneGetSlotCount.invoke(component);
 				for (int i = 0; i < slotCount; i++) {
 					final Component chack = (Component) methodFsMultiPaneGetComponentsAtSlotID.invoke(component, i);
-					debugLog("Ran into FsMultiSplitPane, checking out component slot %d: %s\n", i, componentToString(chack));
+					//debugLog("Ran into FsMultiSplitPane, checking out component slot %d: %s\n", i, componentToString(chack));
 					detectChildren(chack, componentList, log);
 				}
 
