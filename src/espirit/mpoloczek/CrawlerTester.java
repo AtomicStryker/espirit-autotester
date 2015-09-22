@@ -181,13 +181,18 @@ public class CrawlerTester implements Runnable {
 
 	public void onTestingFinished() {
 
-		masherframe.dispose();
 		debugLog("all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
-		timerThread.interrupt();
 		// wait a wee bit, events may be still underway
-		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 3);
-		isCurrentlyTesting = false;
 
+		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 3);
+		if (!testerThreadStack.empty()) {
+			debugLog("all done? NOT done. There was atleast one new testthread added during the final sleep. Continue!\n");
+			return; // the new testerthread will call onTestingFinished again
+		}
+
+		masherframe.dispose();
+		timerThread.interrupt();
+		isCurrentlyTesting = false;
 		targetGUI.dispose();
 		System.exit(0);
 	}
@@ -245,8 +250,10 @@ public class CrawlerTester implements Runnable {
 
 			if (!ignorePopup) {
 				expectingPopup = false;
-				testerThreadStack.peek().isThreadPaused = true;
-				debugLog("paused thread %s for popup handling\n", testerThreadStack.peek());
+				if (!testerThreadStack.empty()) {
+					testerThreadStack.peek().isThreadPaused = true;
+					debugLog("paused thread %s for popup handling\n", testerThreadStack.peek());
+				}
 
 				final ArrayList<Component> popupContent = new ArrayList<Component>();
 				detectChildren(windowAncestor, popupContent, popupComponentIndex < 1);
