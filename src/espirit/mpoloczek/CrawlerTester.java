@@ -522,8 +522,8 @@ public class CrawlerTester implements Runnable {
 
 				for (final Component c : newComponentList) {
 					if (!oldComponentList.remove(c)) {
-						debugLog("Found new Component after pushing a button and comparing with old component list!!\n");
-						debugLog("new Component: %s\n", c);
+						//debugLog("Found new Component after pushing a button and comparing with old component list!!\n");
+						//debugLog("detected new Component: %s\n", c);
 						final ArrayList<Component> newlyDetectedComponents = new ArrayList<>();
 						detectChildren(c, newlyDetectedComponents, false);
 						int actualAdditions = 0;
@@ -533,7 +533,9 @@ public class CrawlerTester implements Runnable {
 								actualAdditions++;
 							}
 						}
-						debugLog("resulted in %d elements, %d new ones, for the master component list\n", newlyDetectedComponents.size(), actualAdditions);
+						if (actualAdditions > 0) {
+							debugLog("last buttonpress resulted in %d elements, %d new ones, for the master component list\n", newlyDetectedComponents.size(), actualAdditions);
+						}
 					}
 				}
 
