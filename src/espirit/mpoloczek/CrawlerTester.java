@@ -534,7 +534,7 @@ public class CrawlerTester implements Runnable {
 							}
 						}
 						if (actualAdditions > 0) {
-							debugLog("last buttonpress resulted in %d elements, %d new ones, for the master component list\n", newlyDetectedComponents.size(), actualAdditions);
+							debugLog("last buttonpress resulted in %d new components for the master component list\n", actualAdditions);
 						}
 					}
 				}
