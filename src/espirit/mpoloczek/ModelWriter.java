@@ -36,12 +36,10 @@ public class ModelWriter {
 	public void logTransition(final Component prevState, final Component transitioner, final Component resultState) {
 
 		final String transString = wrappedToString(transitioner);
-		if (!graph.containsVertex(transString)) {
-			wrappedAddVertex(transString);
-			System.out.printf("MW adding transition: %s -> %s -> %s\n", wrappedToString(prevState), transString, wrappedToString(resultState));
-			graph.addEdge(wrappedToString(prevState), transString);
-			graph.addEdge(transString, wrappedToString(resultState));
-		}
+		wrappedAddVertex(transString);
+		System.out.printf("MW adding transition: %s -> %s -> %s\n", wrappedToString(prevState), transString, wrappedToString(resultState));
+		graph.addEdge(wrappedToString(prevState), transString);
+		graph.addEdge(transString, wrappedToString(resultState));
 	}
 
 	public void exportToFile() {
