@@ -170,7 +170,7 @@ public class CrawlerTester implements Runnable {
 		detectChildren(targetGUI, componentListPrev);
 
 		popupComponentIndex = -1;
-		testerThreadStack.add(new TesterThread(this, componentListPrev, targetGUI));
+		testerThreadStack.push(new TesterThread(this, componentListPrev, targetGUI));
 		testerThreadStack.peek().start();
 
 		timerThread = new Thread(new TimerRunner());
