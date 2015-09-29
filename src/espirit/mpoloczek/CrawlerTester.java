@@ -6,7 +6,6 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -52,6 +51,7 @@ public class CrawlerTester implements Runnable {
 
 	public final String targetGuiName;
 	public final Config config;
+	public final ModelWriter modelWriter;
 	public final StringProblemFactory problemStringManager;
 	public final Stack<TesterThread> testerThreadStack;
 	public final HashSet<Component> previousWindows;
@@ -94,6 +94,7 @@ public class CrawlerTester implements Runnable {
 		problemStringManager = new StringProblemFactory();
 		random = new Random();
 		previousWindows = new HashSet<>();
+		modelWriter = new ModelWriter();
 	}
 
 
@@ -167,6 +168,7 @@ public class CrawlerTester implements Runnable {
 			throw new RuntimeException("Did not find a target GUI named " + targetGuiName);
 		}
 
+		modelWriter.logState(targetGUI);
 		detectChildren(targetGUI, componentListPrev);
 
 		popupComponentIndex = -1;
@@ -191,6 +193,7 @@ public class CrawlerTester implements Runnable {
 		}
 
 		debugLog("Cooldown ended. Cleaning up the mess now...\n");
+		modelWriter.exportToFile();
 		masherframe.dispose();
 		timerThread.interrupt();
 		isCurrentlyTesting = false;
@@ -252,8 +255,11 @@ public class CrawlerTester implements Runnable {
 			if (!ignorePopup) {
 				expectingPopup = false;
 				if (!testerThreadStack.empty()) {
-					testerThreadStack.peek().isThreadPaused = true;
+					final TesterThread peek = testerThreadStack.peek();
+					peek.isThreadPaused = true;
 					debugLog("paused thread %s for popup handling\n", testerThreadStack.peek());
+					modelWriter.logState(popup);
+					modelWriter.logTransition(peek.rootWindow, peek.componentListToTest.get(peek.indexCurrentComponentTested), popup);
 				}
 
 				final ArrayList<Component> popupContent = new ArrayList<Component>();

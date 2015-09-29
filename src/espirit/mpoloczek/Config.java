@@ -17,6 +17,7 @@ public class Config {
 	public ArrayList<String> blackListedComponentsSimpleClassNames = new ArrayList<String>();
 	public long sleepTimeMillisTextfieldEntries;
 	public long sleepTimeMillisBetweenFakeMouseClicks;
+	public static String modelOutputFolder;
 
 	public boolean loadConfigFile(final String filePath) {
 
@@ -51,6 +52,7 @@ public class Config {
 	private void loadFileContent() {
 		sleepTimeMillisTextfieldEntries = Long.valueOf(properties.getProperty("sleepTimeMillisTextfieldEntries", "100"));
 		sleepTimeMillisBetweenFakeMouseClicks = Long.valueOf(properties.getProperty("sleepTimeMillisBetweenFakeMouseClicks", "500"));
+		modelOutputFolder = properties.getProperty("modelOutputFolder");
 
 		final String str = properties.getProperty("blackListedAbstractButtons", "");
 		final String[] entries = str.split("(?<!\\\\),");
