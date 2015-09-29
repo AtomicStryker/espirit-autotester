@@ -238,14 +238,14 @@ public class CrawlerTester implements Runnable {
 			boolean ignorePopup = false;
 			for (final TesterThread tt : testerThreadStack) {
 				if (tt.rootWindow == windowAncestor) {
-					debugLog("Window %s is already being handed by Thread %s, ignoring popup\n", componentToString(windowAncestor), tt);
+					debugLog("Window %s is already being handed by Thread %s, ignoring popup\n", Util.componentToString(windowAncestor), tt);
 					ignorePopup = true;
 					break;
 				}
 			}
 
 			if (previousWindows.contains(popup)) {
-				debugLog("Window %s was already fully handled previously, loop occurring? Skipping it.\n", componentToString(windowAncestor));
+				debugLog("Window %s was already fully handled previously, loop occurring? Skipping it.\n", Util.componentToString(windowAncestor));
 				ignorePopup = true;
 			}
 
@@ -266,6 +266,7 @@ public class CrawlerTester implements Runnable {
 					debugLog("resuming popup test from idx %d\n", popTester.indexCurrentComponentTested);
 					threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks);
 				}
+				debugLog("starting new popup thread %s\n", popTester);
 				popTester.start();
 			}
 		}
@@ -274,7 +275,7 @@ public class CrawlerTester implements Runnable {
 
 	public void pseudoClickButton(final Component target, final Container root, final ArrayList<Component> adjacentComponents) {
 
-		debugLog("about to pseudo click component %s\n", componentToString(target));
+		debugLog("about to pseudo click component %s\n", Util.componentToString(target));
 
 		ActionEvent event = new ActionEvent(target, 42, "");
 
@@ -389,7 +390,7 @@ public class CrawlerTester implements Runnable {
 
 	private void detectChildren(final Component component, final ArrayList<Component> componentList, final boolean log) {
 
-		final String compdesc = componentToString(component);
+		final String compdesc = Util.componentToString(component);
 		if (component == null) {
 			return;
 		}
@@ -461,25 +462,6 @@ public class CrawlerTester implements Runnable {
 				detectChildren(nextComp, componentList, log);
 			}
 		}
-	}
-
-
-	/**
-	 * Get a slightly better or atleast more concise description of most elements over c.toString()
-	 */
-	public String componentToString(final Component c) {
-		if (c == null) {
-			return "null?!";
-		}
-		String answer = ": ";
-		if (c instanceof AbstractButton) {
-			final AbstractButton ab = (AbstractButton) c;
-			answer = c.getClass().getSimpleName() + ": text:" + ab.getText() + ", command:" + ab.getActionCommand();
-		} else if (c instanceof JDialog) {
-			final JDialog jd = (JDialog) c;
-			answer = c.getClass().getSimpleName() + ": " + jd.getTitle();
-		}
-		return ": ".equals(answer) ? c.toString() : answer;
 	}
 
 
@@ -574,7 +556,7 @@ public class CrawlerTester implements Runnable {
 		@Override
 		public void run() {
 			buttonToSelect.setSelected(random.nextBoolean());
-			debugLog("Togglebutton %s, randomly leaving it %s...\n", componentToString(buttonToSelect), buttonToSelect.isSelected() ? "ON" : "OFF");
+			debugLog("Togglebutton %s, randomly leaving it %s...\n", Util.componentToString(buttonToSelect), buttonToSelect.isSelected() ? "ON" : "OFF");
 		}
 	}
 

@@ -69,7 +69,7 @@ class TesterThread extends Thread {
 			// then re-do the last thing
 			final TesterThread peek = crawlerTester.testerThreadStack.peek();
 			if (peek.indexCurrentComponentTested == peek.componentListToTest.size()) peek.indexCurrentComponentTested--;
-			crawlerTester.debugLog("tester attempting to restore rootWindow context from button %s\n", crawlerTester.componentToString(peek.componentListToTest.get(peek.indexCurrentComponentTested)));
+			crawlerTester.debugLog("tester attempting to restore rootWindow context from button %s\n", Util.componentToString(peek.componentListToTest.get(peek.indexCurrentComponentTested)));
 
 			crawlerTester.expectingPopup = true;
 			int offset = 0;
@@ -105,7 +105,7 @@ class TesterThread extends Thread {
 			// also murder the topmost rootWindow just in case
 			if (rootWindow instanceof Window && !crawlerTester.targetGuiName.equals(rootWindow.getClass().getSimpleName())) {
 				final Window windowCast = (Window) rootWindow;
-				crawlerTester.debugLog("Finshed testing %s from %s, disposing\n", crawlerTester.componentToString(rootWindow), this);
+				crawlerTester.debugLog("Finshed testing %s from %s, disposing\n", Util.componentToString(rootWindow), this);
 				windowCast.dispose();
 				crawlerTester.counterWindowsHandled++;
 				crawlerTester.previousWindows.add(rootWindow);
@@ -134,6 +134,6 @@ class TesterThread extends Thread {
 
 	@Override
 	public String toString() {
-		return super.toString()+ '[' +crawlerTester.componentToString(rootWindow)+ ']';
+		return super.toString()+ '[' +Util.componentToString(rootWindow)+ ']';
 	}
 }
