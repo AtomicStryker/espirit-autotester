@@ -77,6 +77,7 @@ public class CrawlerTester implements Runnable {
 	private Method setStrictCMSMethod;
 	private Method methodFsMultiPaneGetSlotCount;
 	private Method methodFsMultiPaneGetComponentsAtSlotID;
+	private boolean finishing;
 
 
 	public CrawlerTester(final String configPath) {
@@ -189,23 +190,26 @@ public class CrawlerTester implements Runnable {
 
 	public void onTestingFinished() {
 
-		debugLog(Level.INFO, "all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
-		// wait a wee bit, events may be still underway
+		if (!finishing) {
+			finishing = true;
+			debugLog(Level.INFO, "all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
+			// wait a wee bit, events may be still underway
 
-		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 10);
-		if (!testerThreadStack.empty()) {
-			debugLog(Level.INFO, "all done? NOT done. There was atleast one new testthread added during the final sleep. Continue!\n");
-			return; // the new testerthread will call onTestingFinished again
+			threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 10);
+			if (!testerThreadStack.empty()) {
+				debugLog(Level.INFO, "all done? NOT done. There was atleast one new testthread added during the final sleep. Continue!\n");
+				return; // the new testerthread will call onTestingFinished again
+			}
+
+			debugLog(Level.INFO, "Cooldown ended. Cleaning up the mess now...\n");
+			modelWriter.exportToFile();
+			masherframe.dispose();
+			timerThread.interrupt();
+			isCurrentlyTesting = false;
+			targetGUI.dispose();
+			debugLog(Level.INFO, "Calling System.exit(0)!\n");
+			System.exit(0);
 		}
-
-		debugLog(Level.INFO, "Cooldown ended. Cleaning up the mess now...\n");
-		modelWriter.exportToFile();
-		masherframe.dispose();
-		timerThread.interrupt();
-		isCurrentlyTesting = false;
-		targetGUI.dispose();
-		debugLog(Level.INFO, "Calling System.exit(0)!\n");
-		System.exit(0);
 	}
 
 
