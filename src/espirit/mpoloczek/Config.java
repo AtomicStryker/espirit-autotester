@@ -1,5 +1,6 @@
 package espirit.mpoloczek;
 
+import java.awt.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -76,7 +77,7 @@ public class Config {
 		}
 	}
 
-	public boolean isComponentBlacklisted(final Class componentClass) {
+	public boolean isComponentBlacklisted(final Class<? extends Component> componentClass) {
 
 		final String name = componentClass.getName();
 		for (final String s : blackListedComponentsSimpleClassNames) {
