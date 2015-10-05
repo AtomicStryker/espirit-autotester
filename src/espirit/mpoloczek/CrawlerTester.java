@@ -240,17 +240,26 @@ public class CrawlerTester implements Runnable {
 		if (windowAncestor != null && isCurrentlyTesting) {
 
 			boolean ignorePopup = false;
+			final String windowStringRepresentation = Util.componentToString(windowAncestor);
 			for (final TesterThread tt : testerThreadStack) {
 				if (tt.rootWindow == windowAncestor) {
-					debugLog("Window %s is already being handed by Thread %s, ignoring popup\n", Util.componentToString(windowAncestor), tt);
+					debugLog("Window %s is already being handed by Thread %s, ignoring popup\n", windowStringRepresentation, tt);
 					ignorePopup = true;
 					break;
 				}
 			}
 
 			if (previousWindows.contains(popup)) {
-				debugLog("Window %s was already fully handled previously, loop occurring? Skipping it.\n", Util.componentToString(windowAncestor));
+				debugLog("Window %s was already fully handled previously, loop occurring? Skipping it.\n", windowStringRepresentation);
 				ignorePopup = true;
+			}
+
+			for (final String keyword : config.blackListedWindowKeywords) {
+				if (windowStringRepresentation.contains(keyword)) {
+					debugLog("Window %s contains banned window keyword [%s]. Skipping it.\n", windowStringRepresentation, keyword);
+					ignorePopup = true;
+					break;
+				}
 			}
 
 			if (!ignorePopup) {

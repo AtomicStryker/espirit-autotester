@@ -16,6 +16,7 @@ public class Config {
 	public Properties properties;
 	public BlackListedAbstractButton[] blackListedAbstractButtons;
 	public ArrayList<String> blackListedComponentsSimpleClassNames = new ArrayList<String>();
+	public ArrayList<String> blackListedWindowKeywords = new ArrayList<String>();
 	public long sleepTimeMillisTextfieldEntries;
 	public long sleepTimeMillisBetweenFakeMouseClicks;
 	public static String modelOutputFolder;
@@ -74,6 +75,12 @@ public class Config {
 		for (final String e : blcstr.split(",")) {
 			blackListedComponentsSimpleClassNames.add(e);
 			System.out.println("Blacklisted Component classname: "+e);
+		}
+
+		final String blcstrwdw = properties.getProperty("blackListedWindowKeywords");
+		for (final String s : blcstrwdw.split(",")) {
+			blackListedWindowKeywords.add(s);
+			System.out.println("Blacklisted Window Keyword: "+s);
 		}
 	}
 
