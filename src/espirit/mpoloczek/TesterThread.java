@@ -113,6 +113,7 @@ class TesterThread extends Thread {
 			if (rootWindow instanceof Window && !crawlerTester.targetGuiName.equals(rootWindow.getClass().getSimpleName())) {
 				final Window windowCast = (Window) rootWindow;
 				debugLog(Level.FINE, "Finshed testing %s from %s, disposing\n", Util.componentToString(rootWindow), this);
+				// TODO fake keyboardevent ESC to kill immortal windows like the ABOUT screen?
 				windowCast.dispose();
 				crawlerTester.counterWindowsHandled++;
 				crawlerTester.previousWindows.add(rootWindow);

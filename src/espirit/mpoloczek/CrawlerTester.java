@@ -220,7 +220,7 @@ public class CrawlerTester implements Runnable {
 			public void propertyChange(final PropertyChangeEvent e) {
 
 				final String prop = e.getPropertyName();
-				//debugLog("Keyboardfocusmanager prop [%s], [%s]->[%s]\n", prop, e.getOldValue(), e.getNewValue());
+				debugLog(Level.FINEST, "Keyboardfocusmanager prop [%s], [%s]->[%s]\n", prop, e.getOldValue(), e.getNewValue());
 				if (e.getOldValue() == null && "activeWindow".equals(prop)) {
 
 					if (e.getNewValue() instanceof Component) {
@@ -366,7 +366,6 @@ public class CrawlerTester implements Runnable {
 		}
 		counterButtonsPushed++;
 
-		// TODO improve fake clicking?
 		final EDTCompliantActionPerformer actionDoer = new EDTCompliantActionPerformer();
 		actionDoer.event = event;
 		actionDoer.listeners = target.getListeners(ActionListener.class);
@@ -427,7 +426,7 @@ public class CrawlerTester implements Runnable {
 
 		} else if ("JXLayer".equals(component.getClass().getSimpleName())) {
 
-			debugLog(logLevel, "\nRan into JXLayer, skipping all of that (for now?!)\n\n"); //TODO browser exclusion?
+			debugLog(logLevel, "\nRan into JXLayer, skipping all of that (for now?!)\n\n");
 			return;
 		} else if (!component.isEnabled()) {
 
@@ -460,7 +459,7 @@ public class CrawlerTester implements Runnable {
 				final int slotCount = (int) methodFsMultiPaneGetSlotCount.invoke(component);
 				for (int i = 0; i < slotCount; i++) {
 					final Component chack = (Component) methodFsMultiPaneGetComponentsAtSlotID.invoke(component, i);
-					//debugLog("Ran into FsMultiSplitPane, checking out component slot %d: %s\n", i, componentToString(chack));
+					debugLog(Level.FINEST, "Ran into FsMultiSplitPane, checking out component slot %d: %s\n", i, Util.componentToString(chack));
 					detectChildren(chack, componentList, logLevel);
 				}
 
@@ -519,8 +518,8 @@ public class CrawlerTester implements Runnable {
 
 				for (final Component c : newComponentList) {
 					if (!oldComponentList.remove(c)) {
-						//debugLog("Found new Component after pushing a button and comparing with old component list!!\n");
-						//debugLog("detected new Component: %s\n", c);
+						debugLog(Level.FINEST, "Found new Component after pushing a button and comparing with old component list!!\n");
+						debugLog(Level.FINEST, "detected new Component: %s\n", c);
 						final ArrayList<Component> newlyDetectedComponents = new ArrayList<>();
 						detectChildren(c, newlyDetectedComponents, Level.FINER);
 						int actualAdditions = 0;
@@ -536,13 +535,10 @@ public class CrawlerTester implements Runnable {
 					}
 				}
 
-				/*
 				for (final Component c : oldComponentList) {
-					debugLog(Level.TRACE, "Found an old Component gone after pushing a button and comparing with old component list!!\n");
-					debugLog(Level.TRACE, "old AWOL Component: %s\n", c);
-					// TODO maybe remove those?
+					debugLog(Level.FINEST, "Found an old Component gone after pushing a button and comparing with old component list!!\n");
+					debugLog(Level.FINEST, "old AWOL Component: %s\n", c);
 				}
-				*/
 			}
 		}
 	}
