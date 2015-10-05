@@ -14,14 +14,13 @@ import java.awt.Component;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+//import java.util.regex.Pattern;
 
 
 public class ModelWriter {
 
 	private final DirectedGraph<String, DefaultEdge> graph;
-	private final Pattern suffixCatcher = Pattern.compile("^(.*)-(\\d*)$");
+	//private final Pattern suffixCatcher = Pattern.compile("^(.*)-(\\d*)$");
 
 	public ModelWriter() {
 
