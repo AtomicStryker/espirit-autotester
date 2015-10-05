@@ -185,7 +185,7 @@ public class CrawlerTester {
 	}
 
 
-	public synchronized void onTestingFinished() {
+	public void onTestingFinished() {
 
 		if (!finishing) {
 			finishing = true;
