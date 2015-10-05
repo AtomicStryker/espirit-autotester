@@ -2,6 +2,8 @@ package espirit.mpoloczek;
 
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Launcher {
@@ -11,15 +13,16 @@ public class Launcher {
 					"Automatic mode:\n" +
 					"  java -cp autotest.jar[;<your_class_path>] espirit.mpoloczek.Launcher <your_main_class> <your_test_config>\n";
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		final Method mainMethod;
 		final Class<?> mainClass;
 		final String[] newArgs;
 		boolean launch = false;
+		final Logger logger = Util.getLogger("Launcher");
 
 		if(args.length == 0) {
-			System.err.println(HELP);
+			logger.log(Level.INFO, HELP);
 			return;
 		} else if (args.length == 2) {
 			newArgs = new String[0];
@@ -33,12 +36,10 @@ public class Launcher {
 			mainClass = Class.forName(args[0]);
 			mainMethod = mainClass.getMethod("main", String[].class);
 		} catch(final ClassNotFoundException ex) {
-			String msg = MessageFormat.format("ERROR: can not find class {0} specified as argument. Please check classpath and class name.", args[0]);
-			System.err.println(msg);
+			logger.log(Level.SEVERE, MessageFormat.format("ERROR: can not find class {0} specified as argument. Please check classpath and class name.", args[0]));
 			return;
 		} catch(final NoSuchMethodException ex) {
-			String msg = MessageFormat.format("ERROR: can not find main method in the class {0}.", args[0]);
-			System.err.println(msg);
+			logger.log(Level.SEVERE, MessageFormat.format("ERROR: can not find main method in the class {0}.", args[0]));
 			return;
 		}
 
@@ -46,9 +47,7 @@ public class Launcher {
 		try {
 			mainMethod.invoke(mainClass, new Object[] {newArgs});
 		} catch(final Exception ex) {
-			String msg = MessageFormat.format("ERROR: cannot invoke main method in the class {0}.", args[0]);
-			System.err.println(msg);
-			ex.printStackTrace(System.err);
+			logger.log(Level.SEVERE, MessageFormat.format("ERROR: cannot invoke main method in the class {0}.", args[0]), ex);
 		}
 
 		if (launch) new Thread(new CrawlerTester(args[1])).start();
