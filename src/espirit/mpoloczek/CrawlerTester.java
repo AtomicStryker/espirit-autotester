@@ -198,6 +198,7 @@ public class CrawlerTester implements Runnable {
 		timerThread.interrupt();
 		isCurrentlyTesting = false;
 		targetGUI.dispose();
+		debugLog("Calling System.exit(0)!\n");
 		System.exit(0);
 	}
 
