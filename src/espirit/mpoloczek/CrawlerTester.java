@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 /**
  * Master-Abschlussarbeit Matthäus Poloczek, TU Dortmund, e-Spirit 2015
  */
-public class CrawlerTester implements Runnable {
+public class CrawlerTester {
 
 
 	public final String targetGuiName;
@@ -105,14 +105,11 @@ public class CrawlerTester implements Runnable {
 		logger = Util.getLogger("CrawlerTester");
 	}
 
-
-	@Override
-	public void run() {
+	public void execute() {
 		threadSleep(delayToTestStartSeconds * 1000l);
 		initSwingPopupEventHook();
 		initTesterGUI();
 	}
-
 
 	private void initTesterGUI() {
 		isCurrentlyTesting = false;
@@ -188,7 +185,7 @@ public class CrawlerTester implements Runnable {
 	}
 
 
-	public void onTestingFinished() {
+	public synchronized void onTestingFinished() {
 
 		if (!finishing) {
 			finishing = true;
@@ -201,13 +198,14 @@ public class CrawlerTester implements Runnable {
 				return; // the new testerthread will call onTestingFinished again
 			}
 
-			debugLog(Level.INFO, "Cooldown ended. Cleaning up the mess now...\n");
+			debugLog(Level.INFO, "Cooldown ended. Exporting graphml file...\n");
 			modelWriter.exportToFile();
+			debugLog(Level.INFO, "Cleaning up the mess...\n");
 			masherframe.dispose();
 			timerThread.interrupt();
 			isCurrentlyTesting = false;
 			targetGUI.dispose();
-			debugLog(Level.INFO, "Calling System.exit(0)!\n");
+			debugLog(Level.INFO, "And finally calling System.exit(0)!\n");
 			System.exit(0);
 		}
 	}

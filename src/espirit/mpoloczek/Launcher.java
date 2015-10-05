@@ -50,6 +50,9 @@ public class Launcher {
 			logger.log(Level.SEVERE, MessageFormat.format("ERROR: cannot invoke main method in the class {0}.", args[0]), ex);
 		}
 
-		if (launch) new Thread(new CrawlerTester(args[1])).start();
+		if (launch) {
+			final CrawlerTester ct = new CrawlerTester(args[1]);
+			ct.execute();
+		}
 	}
 }
