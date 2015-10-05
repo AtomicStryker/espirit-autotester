@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -58,6 +60,7 @@ public class CrawlerTester implements Runnable {
 	public final Stack<TesterThread> testerThreadStack;
 	public final HashSet<Component> previousWindows;
 	private final int delayToTestStartSeconds;
+	private final Logger logger;
 	private final Random random;
 	public int popupComponentIndex;
 	public boolean isCurrentlyTesting;
@@ -83,11 +86,12 @@ public class CrawlerTester implements Runnable {
 			targetGuiName = config.properties.getProperty("targetGUISimpleClassName");
 			delayToTestStartSeconds = Integer.valueOf(config.properties.getProperty("testStartDelayInSeconds"));
 			testerThreadStack = new Stack<TesterThread>();
+			TesterThread.logger.setLevel(Level.FINE);
 		} else {
 			final Window[] allWindows = Window.getWindows();
-			debugLog("Invalid config specified, maybe you want to find a target GUI? I'll print all open GUIs now\n");
+			debugLog(Level.INFO, "Invalid config specified, maybe you want to find a target GUI? I'll print all open GUIs now\n");
 			for (final Window curWindow : allWindows) {
-				debugLog("[%s] is simple name of instance %s\n", curWindow.getClass().getSimpleName(), curWindow);
+				debugLog(Level.INFO,"[%s] is simple name of instance %s\n", curWindow.getClass().getSimpleName(), curWindow);
 			}
 
 			throw new RuntimeException("Invalid config file, check path.");
@@ -97,6 +101,7 @@ public class CrawlerTester implements Runnable {
 		random = new Random();
 		previousWindows = new HashSet<>();
 		modelWriter = new ModelWriter();
+		logger = Util.getLogger("CrawlerTester");
 	}
 
 
@@ -154,11 +159,10 @@ public class CrawlerTester implements Runnable {
 		masherframe.setVisible(true);
 
 		for (final Window curWindow : allWindows) {
-			debugLog("\niterating rootWindow: %s\n", curWindow.getClass().getSimpleName());
+			debugLog(Level.FINE, "\niterating rootWindow: %s\n", curWindow.getClass().getSimpleName());
 			if (targetGuiName.equals(curWindow.getClass().getSimpleName())) {
 
-				debugLog("In target GUI: %s\n", curWindow);
-				debugLog("\n");
+				debugLog(Level.FINE, "In target GUI: %s\n\n", curWindow);
 				componentIndexDebugPrint = 0;
 
 				targetGUI = curWindow;
@@ -185,22 +189,22 @@ public class CrawlerTester implements Runnable {
 
 	public void onTestingFinished() {
 
-		debugLog("all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
+		debugLog(Level.INFO, "all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
 		// wait a wee bit, events may be still underway
 
 		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 10);
 		if (!testerThreadStack.empty()) {
-			debugLog("all done? NOT done. There was atleast one new testthread added during the final sleep. Continue!\n");
+			debugLog(Level.INFO, "all done? NOT done. There was atleast one new testthread added during the final sleep. Continue!\n");
 			return; // the new testerthread will call onTestingFinished again
 		}
 
-		debugLog("Cooldown ended. Cleaning up the mess now...\n");
+		debugLog(Level.INFO, "Cooldown ended. Cleaning up the mess now...\n");
 		modelWriter.exportToFile();
 		masherframe.dispose();
 		timerThread.interrupt();
 		isCurrentlyTesting = false;
 		targetGUI.dispose();
-		debugLog("Calling System.exit(0)!\n");
+		debugLog(Level.INFO, "Calling System.exit(0)!\n");
 		System.exit(0);
 	}
 
@@ -220,7 +224,7 @@ public class CrawlerTester implements Runnable {
 						final Component comp = (Component) e.getNewValue();
 						if (comp != lastPopup && comp != masherframe && !targetGuiName.equals(comp.getClass().getSimpleName())) {
 
-							debugLog("Keyboardfocusmanager new popup detected: [%s]\n", e.getNewValue());
+							debugLog(Level.FINE, "Keyboardfocusmanager new popup detected: [%s]\n", e.getNewValue());
 							lastPopup = comp;
 							onDialogPopup((Component) e.getNewValue());
 						}
@@ -235,7 +239,7 @@ public class CrawlerTester implements Runnable {
 
 		componentIndexDebugPrint = 0;
 		final ArrayList<Component> popupParts = new ArrayList<Component>();
-		detectChildren(popup, popupParts, false);
+		detectChildren(popup, popupParts, Level.FINEST);
 		final Component lastComponent = popupParts.get(popupParts.size() - 1);
 
 		final Window windowAncestor = SwingUtilities.getWindowAncestor(lastComponent);
@@ -245,20 +249,20 @@ public class CrawlerTester implements Runnable {
 			final String windowStringRepresentation = Util.componentToString(windowAncestor);
 			for (final TesterThread tt : testerThreadStack) {
 				if (tt.rootWindow == windowAncestor) {
-					debugLog("Window %s is already being handed by Thread %s, ignoring popup\n", windowStringRepresentation, tt);
+					debugLog(Level.FINE, "Window %s is already being handed by Thread %s, ignoring popup\n", windowStringRepresentation, tt);
 					ignorePopup = true;
 					break;
 				}
 			}
 
 			if (previousWindows.contains(popup)) {
-				debugLog("Window %s was already fully handled previously, loop occurring? Skipping it.\n", windowStringRepresentation);
+				debugLog(Level.INFO, "Window %s was already fully handled previously, loop occurring? Skipping it.\n", windowStringRepresentation);
 				ignorePopup = true;
 			}
 
 			for (final String keyword : config.blackListedWindowKeywords) {
 				if (windowStringRepresentation.contains(keyword)) {
-					debugLog("Window %s contains banned window keyword [%s]. Skipping it.\n", windowStringRepresentation, keyword);
+					debugLog(Level.INFO, "Window %s contains banned window keyword [%s]. Skipping it.\n", windowStringRepresentation, keyword);
 					ignorePopup = true;
 					break;
 				}
@@ -269,22 +273,22 @@ public class CrawlerTester implements Runnable {
 				if (!testerThreadStack.empty()) {
 					final TesterThread peek = testerThreadStack.peek();
 					peek.isThreadPaused = true;
-					debugLog("paused thread %s for popup handling\n", testerThreadStack.peek());
+					debugLog(Level.FINE, "paused thread %s for popup handling\n", testerThreadStack.peek());
 					modelWriter.logState(popup);
 					modelWriter.logTransition(peek.rootWindow, peek.componentListToTest.get(peek.indexCurrentComponentTested), popup);
 				}
 
 				final ArrayList<Component> popupContent = new ArrayList<Component>();
-				detectChildren(windowAncestor, popupContent, false);
+				detectChildren(windowAncestor, popupContent, Level.FINEST);
 				final TesterThread popTester = new TesterThread(this, popupContent, windowAncestor);
 				testerThreadStack.push(popTester);
 				if (popupComponentIndex >= 0) {
 					popTester.indexCurrentComponentTested = popupComponentIndex;
 					popupComponentIndex = -1;
-					debugLog("resuming popup test from idx %d\n", popTester.indexCurrentComponentTested);
+					debugLog(Level.FINER, "resuming popup test from idx %d\n", popTester.indexCurrentComponentTested);
 					threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks);
 				}
-				debugLog("starting new popup thread %s\n", popTester);
+				debugLog(Level.INFO, "starting new popup thread %s\n", popTester);
 				popTester.start();
 			}
 		}
@@ -293,7 +297,7 @@ public class CrawlerTester implements Runnable {
 
 	public void pseudoClickButton(final Component target, @Nullable final Container root, @Nullable final ArrayList<Component> adjacentComponents) {
 
-		debugLog("about to pseudo click component %s\n", Util.componentToString(target));
+		debugLog(Level.FINER, "about to pseudo click component %s\n", Util.componentToString(target));
 
 		ActionEvent event = new ActionEvent(target, 42, "");
 
@@ -306,7 +310,7 @@ public class CrawlerTester implements Runnable {
 				}
 				setStrictCMSMethod.invoke(w, false);
 			} catch (final Exception e) {
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "CMSDialog hack failure - setStrict method", e);
 				throw new RuntimeException("CMSDialog hack failure - setStrict method...");
 			}
 		}
@@ -338,11 +342,11 @@ public class CrawlerTester implements Runnable {
 			if (jTextComponent.isEditable()) {
 
 				if (jTextComponent.isVisible()) {
-					debugLog("visible JTextComponent, now trying problematic strings\n");
+					debugLog(Level.FINE, "is visible JTextComponent, now trying problematic strings\n");
 
 					if (jTextComponent instanceof JTextField) {
 						for (final String s : problemStringManager.getProblemStrings()) {
-							//debugLog("setting jtextfield text to [%s] and firing action event\n", s);
+							debugLog(Level.FINER, "setting jtextfield text to [%s] and firing action event\n", s);
 							final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
 							setter.jTextComponent = jTextComponent;
 							setter.textToSet = s;
@@ -371,7 +375,7 @@ public class CrawlerTester implements Runnable {
 	private boolean isBlackListedButton(final AbstractButton fsb, @Nullable final Object w) {
 		for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
 			if ((bab.command.isEmpty() || bab.command.equals(fsb.getActionCommand())) && (bab.title.isEmpty() || (w != null && bab.title.equals(getTitle(w))))) {
-				debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
+				debugLog(Level.INFO, "Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
 				return true;
 			}
 		}
@@ -392,7 +396,7 @@ public class CrawlerTester implements Runnable {
 
 	private void setJTextComponentToRandomString(final JTextComponent jTextComponent) {
 		final String s = problemStringManager.getRandomProblemString();
-		debugLog("leaving jtextcomponent text at randomly chosen string [%s]\n", s);
+		debugLog(Level.INFO, "leaving jtextcomponent text at randomly chosen string [%s]\n", s);
 		final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
 		setter.jTextComponent = jTextComponent;
 		setter.textToSet = s;
@@ -401,12 +405,12 @@ public class CrawlerTester implements Runnable {
 
 
 	private void detectChildren(final Component component, final ArrayList<Component> componentList) {
-		// TODO if you need debugging set this true again
-		detectChildren(component, componentList, false);
+
+		detectChildren(component, componentList, Level.FINER);
 	}
 
 
-	private void detectChildren(final Component component, final ArrayList<Component> componentList, final boolean log) {
+	private void detectChildren(final Component component, final ArrayList<Component> componentList, final Level logLevel) {
 
 		final String compdesc = Util.componentToString(component);
 		if (component == null) {
@@ -415,40 +419,28 @@ public class CrawlerTester implements Runnable {
 		if (!component.isVisible() || component instanceof JFrame || component instanceof JPanel || component instanceof JRootPane || component instanceof JLayeredPane || component instanceof JMenuBar || component instanceof JToolBar || component instanceof JPopupMenu.Separator || component instanceof javax.swing.JSeparator || component instanceof Box.Filler || component instanceof JScrollPane || component instanceof JViewport || component instanceof JList || config.isComponentBlacklisted(component.getClass())) {
 
 			// not targets
-			if (log) {
-				debugLog("Ignoring %s\n", compdesc);
-			}
+			debugLog(logLevel, "Ignoring %s\n", compdesc);
 
 		} else if ("JXLayer".equals(component.getClass().getSimpleName())) {
 
-			if (log) {
-				debugLog("\nRan into JXLayer, skipping all of that (for now?!)\n\n"); //TODO browser exclusion?
-			}
+			debugLog(logLevel, "\nRan into JXLayer, skipping all of that (for now?!)\n\n"); //TODO browser exclusion?
 			return;
 		} else if (!component.isEnabled()) {
 
-			if (log) {
-				debugLog("Ignoring disabled: %s\n", compdesc);
-			}
+			debugLog(logLevel, "Ignoring disabled: %s\n", compdesc);
 		} else {
 
-			if (log) {
-				debugLog("componentList add %d: %s\n", componentIndexDebugPrint++, compdesc);
-			}
+			debugLog(logLevel, "componentList add %d: %s\n", componentIndexDebugPrint++, compdesc);
 			componentList.add(component);
 		}
 
 		if (component instanceof JMenu) {
 			final JMenu menu = (JMenu) component;
-			if (log) {
-				debugLog("found a menu [%s] with subitem count: [%d] ===================================\n", menu.getText(), menu.getMenuComponents().length);
-			}
+			debugLog(logLevel, "found a menu [%s] with subitem count: [%d] ===================================\n", menu.getText(), menu.getMenuComponents().length);
 			for (final Component c : menu.getMenuComponents()) {
-				detectChildren(c, componentList, log);
+				detectChildren(c, componentList, logLevel);
 			}
-			if (log) {
-				debugLog("MENU END =================================================================================\n");
-			}
+			debugLog(logLevel, "MENU END =================================================================================\n");
 		} else if ("FsMultiSplitPane".equals(component.getClass().getSimpleName())) {
 
 			if (methodFsMultiPaneGetComponentsAtSlotID == null) {
@@ -465,7 +457,7 @@ public class CrawlerTester implements Runnable {
 				for (int i = 0; i < slotCount; i++) {
 					final Component chack = (Component) methodFsMultiPaneGetComponentsAtSlotID.invoke(component, i);
 					//debugLog("Ran into FsMultiSplitPane, checking out component slot %d: %s\n", i, componentToString(chack));
-					detectChildren(chack, componentList, log);
+					detectChildren(chack, componentList, logLevel);
 				}
 
 			} catch (final Exception e) {
@@ -477,7 +469,7 @@ public class CrawlerTester implements Runnable {
 			final int componentCount = container.getComponentCount();
 			for (int i = 0; i < componentCount; i++) {
 				final Component nextComp = container.getComponent(i);
-				detectChildren(nextComp, componentList, log);
+				detectChildren(nextComp, componentList, logLevel);
 			}
 		}
 	}
@@ -487,13 +479,14 @@ public class CrawlerTester implements Runnable {
 		try {
 			Thread.sleep(millis);
 		} catch (final InterruptedException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Threadsleep got interrupted externally?!", e);
 		}
 	}
 
 
-	public void debugLog(final String s, final Object... args) {
-		System.out.printf(s, args);
+	private void debugLog(final Level prio, final String s, final Object... args) {
+
+		logger.log(prio, String.format(s, args));
 	}
 
 
@@ -511,21 +504,21 @@ public class CrawlerTester implements Runnable {
 				try {
 					el.actionPerformed(event);
 				} catch (final Exception | Error e) {
-					e.printStackTrace();
+					logger.log(Level.WARNING, "ActionListener threw something", e);
 				}
 			}
 
 			if (componentRoot != null && componentList != null) {
 				final ArrayList<Component> oldComponentList = new ArrayList<>(componentList);
 				final ArrayList<Component> newComponentList = new ArrayList<>(componentList.size());
-				detectChildren(componentRoot, newComponentList, false);
+				detectChildren(componentRoot, newComponentList, Level.FINER);
 
 				for (final Component c : newComponentList) {
 					if (!oldComponentList.remove(c)) {
 						//debugLog("Found new Component after pushing a button and comparing with old component list!!\n");
 						//debugLog("detected new Component: %s\n", c);
 						final ArrayList<Component> newlyDetectedComponents = new ArrayList<>();
-						detectChildren(c, newlyDetectedComponents, false);
+						detectChildren(c, newlyDetectedComponents, Level.FINER);
 						int actualAdditions = 0;
 						for (final Component newc : newlyDetectedComponents) {
 							if (!componentList.contains(newc)) {
@@ -534,16 +527,18 @@ public class CrawlerTester implements Runnable {
 							}
 						}
 						if (actualAdditions > 0) {
-							debugLog("last buttonpress resulted in %d new components for the master component list\n", actualAdditions);
+							debugLog(Level.FINER, "last buttonpress resulted in %d new components for the master component list\n", actualAdditions);
 						}
 					}
 				}
 
+				/*
 				for (final Component c : oldComponentList) {
-					//debugLog("Found an old Component gone after pushing a button and comparing with old component list!!\n");
-					//debugLog("old AWOL Component: %s\n", c);
+					debugLog(Level.TRACE, "Found an old Component gone after pushing a button and comparing with old component list!!\n");
+					debugLog(Level.TRACE, "old AWOL Component: %s\n", c);
 					// TODO maybe remove those?
 				}
+				*/
 			}
 		}
 	}
@@ -574,7 +569,7 @@ public class CrawlerTester implements Runnable {
 		@Override
 		public void run() {
 			buttonToSelect.setSelected(random.nextBoolean());
-			debugLog("Togglebutton %s, randomly leaving it %s...\n", Util.componentToString(buttonToSelect), buttonToSelect.isSelected() ? "ON" : "OFF");
+			debugLog(Level.INFO, "Togglebutton %s, randomly leaving it %s...\n", Util.componentToString(buttonToSelect), buttonToSelect.isSelected() ? "ON" : "OFF");
 		}
 	}
 

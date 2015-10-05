@@ -1,13 +1,19 @@
 package espirit.mpoloczek;
 
+
 import javax.swing.AbstractButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import java.awt.Component;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Util {
+
+	private static final ConsoleHandler handler = new ConsoleHandler();
 
 	/**
 	 * Get a slightly better or atleast more concise description of most elements over their respective .toString()
@@ -32,5 +38,13 @@ public class Util {
 			answer = c.getClass().getSimpleName() + ": [" + tf.getText() + ']';
 		}
 		return ": []".equals(answer) ? c.toString() : answer;
+	}
+
+	public static Logger getLogger(final String s) {
+		final Logger l = Logger.getLogger(s);
+		l.setLevel(Level.FINE);
+		handler.setLevel(Level.FINE);
+		l.addHandler(handler);
+		return l;
 	}
 }

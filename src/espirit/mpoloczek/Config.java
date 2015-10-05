@@ -1,5 +1,6 @@
 package espirit.mpoloczek;
 
+
 import java.awt.Component;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Config {
@@ -20,6 +23,7 @@ public class Config {
 	public long sleepTimeMillisTextfieldEntries;
 	public long sleepTimeMillisBetweenFakeMouseClicks;
 	public static String modelOutputFolder;
+	private final Logger logger = Util.getLogger("Config");
 
 	public boolean loadConfigFile(final String filePath) {
 
@@ -35,7 +39,7 @@ public class Config {
 
 		} catch (final IOException e1) {
 
-			System.out.printf("Reading [%s] as filepath didn't work, trying it as resource...\n", filePath);
+			logger.log(Level.INFO, String.format("Reading [%s] as filepath didn't work, trying it as resource...\n", filePath));
 			final InputStream inStream = getClass().getClassLoader().getResourceAsStream(filePath);
 			try {
 				properties.load(inStream);
@@ -44,8 +48,8 @@ public class Config {
 				return true;
 
 			} catch (final IOException e2) {
-				e1.printStackTrace();
-				e2.printStackTrace();
+				logger.log(Level.SEVERE, "Config read FAIL", e1);
+				logger.log(Level.SEVERE, "Config read FAIL", e2);
 				return false;
 			}
 		}
@@ -68,19 +72,19 @@ public class Config {
 			} else {
 				blackListedAbstractButtons[i].title = "";
 			}
-			System.out.println("Blacklisted Abstract Button: ["+blackListedAbstractButtons[i].command+ '|' +blackListedAbstractButtons[i].title+ ']');
+			logger.log(Level.INFO, "Blacklisted Abstract Button: [" + blackListedAbstractButtons[i].command + '|' + blackListedAbstractButtons[i].title + ']');
 		}
 
 		final String blcstr = properties.getProperty("blackListedComponentsSimpleClassNames");
 		for (final String e : blcstr.split(",")) {
 			blackListedComponentsSimpleClassNames.add(e);
-			System.out.println("Blacklisted Component classname: "+e);
+			logger.log(Level.INFO, "Blacklisted Component classname: " + e);
 		}
 
 		final String blcstrwdw = properties.getProperty("blackListedWindowKeywords");
 		for (final String s : blcstrwdw.split(",")) {
 			blackListedWindowKeywords.add(s);
-			System.out.println("Blacklisted Window Keyword: "+s);
+			logger.log(Level.INFO, "Blacklisted Window Keyword: " + s);
 		}
 	}
 

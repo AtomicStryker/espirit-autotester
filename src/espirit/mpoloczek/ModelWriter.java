@@ -1,6 +1,7 @@
 package espirit.mpoloczek;
 
 
+
 import org.jgraph.graph.DefaultEdge;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.ext.GraphMLExporter;
@@ -14,17 +15,21 @@ import java.awt.Component;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //import java.util.regex.Pattern;
 
 
 public class ModelWriter {
 
 	private final DirectedGraph<String, DefaultEdge> graph;
+	private final Logger logger;
 	//private final Pattern suffixCatcher = Pattern.compile("^(.*)-(\\d*)$");
 
 	public ModelWriter() {
 
 		graph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+		logger = Util.getLogger("ModelWriter");
 	}
 
 	public void logState(final Component stateRootComponent) {
@@ -36,7 +41,7 @@ public class ModelWriter {
 
 		final String transString = wrappedToString(transitioner);
 		wrappedAddVertex(transString);
-		System.out.printf("MW adding transition: %s -> %s -> %s\n", wrappedToString(prevState), transString, wrappedToString(resultState));
+		logger.log(Level.INFO, String.format("MW adding transition: %s -> %s -> %s\n", wrappedToString(prevState), transString, wrappedToString(resultState)));
 		graph.addEdge(wrappedToString(prevState), transString);
 		graph.addEdge(transString, wrappedToString(resultState));
 	}
@@ -51,17 +56,17 @@ public class ModelWriter {
 			final FileWriter fw = new FileWriter(Config.modelOutputFolder + '/' + filename);
 			gml.export(fw, graph);
 		} catch (final Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "ModelWriter exportToFile problem", e);
 		}
 	}
 
 
-	private void wrappedAddVertex(Component c) {
+	private void wrappedAddVertex(final Component c) {
 
 		wrappedAddVertex(wrappedToString(c));
 	}
 
-	private void wrappedAddVertex(String asString) {
+	private void wrappedAddVertex(final String asString) {
 
 		/*
 		while (graph.containsVertex(asString)) {
@@ -82,7 +87,7 @@ public class ModelWriter {
 		}
 	}
 
-	private String wrappedToString(Component c) {
+	private String wrappedToString(final Component c) {
 
 		return wrappedToString(c, Util.componentToString(c));
 	}
