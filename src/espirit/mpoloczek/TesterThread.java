@@ -69,13 +69,14 @@ class TesterThread extends Thread {
 			// then re-do the last thing
 			final TesterThread peek = crawlerTester.testerThreadStack.peek();
 			if (peek.indexCurrentComponentTested == peek.componentListToTest.size()) peek.indexCurrentComponentTested--;
-			crawlerTester.debugLog("tester attempting to restore rootWindow context from button %s\n", Util.componentToString(peek.componentListToTest.get(peek.indexCurrentComponentTested)));
+			crawlerTester.debugLog("tester attempting to restore rootWindow context from button %s, index %d\n", Util.componentToString(peek.componentListToTest.get(peek.indexCurrentComponentTested)), peek.indexCurrentComponentTested);
 
 			crawlerTester.expectingPopup = true;
 			int offset = 0;
 			while (!isThreadAborted && crawlerTester.expectingPopup) {
 				if (crawlerTester.testerThreadStack.peek().indexCurrentComponentTested + offset >= 0) {
 					crawlerTester.pseudoClickButton(peek.componentListToTest.get(peek.indexCurrentComponentTested + offset), null, null);
+					crawlerTester.debugLog("tester now trying button index %d to recreate lost context\n", peek.indexCurrentComponentTested + offset);
 					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 					offset--;
 					skipStackPop = true;
