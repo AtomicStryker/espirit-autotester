@@ -1,5 +1,7 @@
 package espirit.mpoloczek;
 
+import org.jetbrains.annotations.Nullable;
+
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Box;
@@ -289,7 +291,7 @@ public class CrawlerTester implements Runnable {
 	}
 
 
-	public void pseudoClickButton(final Component target, final Container root, final ArrayList<Component> adjacentComponents) {
+	public void pseudoClickButton(final Component target, @Nullable final Container root, @Nullable final ArrayList<Component> adjacentComponents) {
 
 		debugLog("about to pseudo click component %s\n", Util.componentToString(target));
 
@@ -366,7 +368,7 @@ public class CrawlerTester implements Runnable {
 	}
 
 
-	private boolean isBlackListedButton(final AbstractButton fsb, final Object w) {
+	private boolean isBlackListedButton(final AbstractButton fsb, @Nullable final Object w) {
 		for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
 			if ((bab.command.isEmpty() || bab.command.equals(fsb.getActionCommand())) && (bab.title.isEmpty() || (w != null && bab.title.equals(getTitle(w))))) {
 				debugLog("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title);
