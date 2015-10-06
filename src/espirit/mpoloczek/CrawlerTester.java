@@ -532,13 +532,12 @@ public class CrawlerTester {
 							}
 						}
 					}
-					if (actualAdditions > 0) {
-						debugLog(Level.FINER, "last buttonpress resulted in %d new components for the master component list\n", actualAdditions);
+					if (actualAdditions > 0 || !oldComponentList.isEmpty()) {
+						debugLog(Level.FINER, "last buttonpress resulted in %d new components for the master component list, and %d old gone\n", actualAdditions, oldComponentList.size());
 					}
 
 					for (final Component c : oldComponentList) {
-						debugLog(Level.FINEST, "Found an old Component gone after pushing a button and comparing with old component list!!\n");
-						debugLog(Level.FINEST, "old AWOL Component: %s\n", c);
+						debugLog(Level.FINEST, "old AWOL Component: %s, removed: %s\n", c, componentList.remove(c) ? "success" : "notfound");
 					}
 				}
 			}
