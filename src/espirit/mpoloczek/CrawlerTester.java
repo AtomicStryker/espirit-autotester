@@ -186,14 +186,14 @@ public class CrawlerTester {
 
 	public void onTestingFinished() {
 
-		debugLog(Level.INFO, "all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
-		// wait a wee bit, events may be still underway
-
 		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 10);
 		if (!testerThreadStack.empty()) {
 			debugLog(Level.INFO, "all done? NOT done. There was atleast one new testthread added during the final sleep. Continue!\n");
 			return; // the new testerthread will call onTestingFinished again
 		}
+
+		debugLog(Level.INFO, "all done? all done. Ran %d seconds, pushed %d buttons, handled %d windows.\n", (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000), counterButtonsPushed, counterWindowsHandled);
+		// wait a wee bit, events may be still underway
 
 		debugLog(Level.INFO, "Cooldown ended. Exporting graphml file...\n");
 		modelWriter.exportToFile();
