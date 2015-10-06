@@ -42,8 +42,8 @@ public class Util {
 
 	public static Logger getLogger(final String s) {
 		final Logger l = Logger.getLogger(s);
-		l.setLevel(Level.FINE);
-		handler.setLevel(Level.FINE);
+		l.setLevel(Level.FINER);
+		handler.setLevel(Level.FINER);
 		l.addHandler(handler);
 		return l;
 	}
