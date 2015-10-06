@@ -183,7 +183,7 @@ public class CrawlerTester {
 		timerThread.start();
 	}
 
-
+	// TODO figure out why the logger prints to console twice, eventually
 	public void onTestingFinished() {
 
 		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 10);
@@ -203,8 +203,6 @@ public class CrawlerTester {
 		isCurrentlyTesting = false;
 		targetGUI.dispose();
 		debugLog(Level.INFO, "And finally calling System.exit(0)!\n");
-		logger.log(Level.INFO, "Logger test");
-		System.out.println("System out test");
 		System.exit(0);
 	}
 
