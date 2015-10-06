@@ -70,10 +70,11 @@ public class CrawlerTester {
 	public int counterWindowsHandled;
 	protected JFrame masherframe;
 	protected Thread timerThread;
+	private final TimerRunner deadLockDetector;
 	private Window targetGUI;
 	private int componentIndexDebugPrint;
 	private Component lastPopup;
-	private JLabel time;
+	private JLabel labelTime;
 	private Method setStrictCMSMethod;
 	private Method methodFsMultiPaneGetSlotCount;
 	private Method methodFsMultiPaneGetComponentsAtSlotID;
@@ -102,6 +103,7 @@ public class CrawlerTester {
 		previousWindows = new HashSet<>();
 		modelWriter = new ModelWriter();
 		logger = Util.getLogger("CrawlerTester");
+		deadLockDetector = new TimerRunner();
 	}
 
 	public void execute() {
@@ -141,11 +143,11 @@ public class CrawlerTester {
 		aborter.setVerticalTextPosition(AbstractButton.BOTTOM);
 		aborter.setHorizontalTextPosition(AbstractButton.LEADING);
 
-		time = new JLabel("0", JLabel.CENTER);
+		labelTime = new JLabel("0", JLabel.CENTER);
 
 		final JPanel abortPanel = new JPanel(new GridLayout(3, 1));
 		abortPanel.add(giflabel);
-		abortPanel.add(time);
+		abortPanel.add(labelTime);
 		abortPanel.add(aborter);
 		masherframe.getContentPane().add(abortPanel);
 
@@ -178,7 +180,7 @@ public class CrawlerTester {
 		testerThreadStack.push(new TesterThread(this, componentListPrev, targetGUI));
 		testerThreadStack.peek().start();
 
-		timerThread = new Thread(new TimerRunner());
+		timerThread = new Thread(deadLockDetector);
 		timerThread.setPriority(Thread.MIN_PRIORITY);
 		timerThread.start();
 	}
@@ -296,6 +298,7 @@ public class CrawlerTester {
 	public void pseudoClickButton(final Component target, @Nullable final Container root, @Nullable final ArrayList<Component> adjacentComponents) {
 
 		debugLog(Level.FINER, "about to pseudo click component %s\n", Util.componentToString(target));
+		applicationHeartbeat();
 
 		ActionEvent event = new ActionEvent(target, 42, "");
 
@@ -475,7 +478,9 @@ public class CrawlerTester {
 
 	public void threadSleep(final long millis) {
 		try {
+			applicationHeartbeat();
 			Thread.sleep(millis);
+			applicationHeartbeat();
 		} catch (final InterruptedException e) {
 			logger.log(Level.SEVERE, "Threadsleep got interrupted externally?!", e);
 		}
@@ -485,6 +490,12 @@ public class CrawlerTester {
 	private void debugLog(final Level prio, final String s, final Object... args) {
 
 		logger.log(prio, String.format(s, args));
+	}
+
+
+	public void applicationHeartbeat() {
+		// to prove to the background timer we are still alive and kicking
+		deadLockDetector.lastAction = System.currentTimeMillis();
 	}
 
 
@@ -574,11 +585,21 @@ public class CrawlerTester {
 
 	class TimerRunner implements Runnable {
 
+		long lastAction;
+
 		@Override
 		public void run() {
 			while (!Thread.interrupted()) {
-				final int seconds = (int) Math.rint((System.currentTimeMillis() - startTimeTest) / 1000);
-				time.setText(String.format("%02d:%02d", (int) Math.floor(seconds / 60), seconds % 60));
+				final long curTime = System.currentTimeMillis();
+
+				if (lastAction > 0 && curTime - lastAction > 10000l) {
+					// nothing happened for 10 seconds! are we deadlocked?!
+					lastAction = -1;
+					debugLog(Level.SEVERE, "No actions were taken for 10 seconds, deadlock situation");
+				}
+
+				final int seconds = (int) Math.rint((curTime - startTimeTest) / 1000);
+				labelTime.setText(String.format("%02d:%02d", (int) Math.floor(seconds / 60), seconds % 60));
 			}
 		}
 	}
