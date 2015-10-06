@@ -35,6 +35,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
@@ -496,6 +498,35 @@ public class CrawlerTester {
 	public void applicationHeartbeat() {
 		// to prove to the background timer we are still alive and kicking
 		deadLockDetector.lastAction = System.currentTimeMillis();
+	}
+
+
+	public void killWindow(final Window rootWindow, final String killer) {
+
+		final EDTCompliantWindowMurderer murder = new EDTCompliantWindowMurderer();
+		murder.windowCast = rootWindow;
+		murder.killer = killer;
+		SwingUtilities.invokeLater(murder);
+	}
+
+	class EDTCompliantWindowMurderer implements Runnable {
+
+		Window windowCast;
+		String killer;
+
+		@Override
+		public void run() {
+			// TODO this still does not kill the freaking about screen?!
+			try {
+				windowCast.dispatchEvent(new KeyEvent(windowCast, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_ESCAPE, (char)KeyEvent.VK_ESCAPE));
+				windowCast.dispatchEvent(new WindowEvent(windowCast, WindowEvent.WINDOW_CLOSING));
+			} catch (final Exception e) {
+				logger.log(Level.FINE, "Exception thrown by fake key/window events", e);
+			}
+			threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks);
+			if (windowCast.isValid()) windowCast.dispose();
+			debugLog(Level.FINE, "%s disposed by %s., disposing\n", Util.componentToString(windowCast), killer);
+		}
 	}
 
 
