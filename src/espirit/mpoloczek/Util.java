@@ -26,7 +26,7 @@ public class Util {
 		String answer = ": []";
 		if (c instanceof AbstractButton) {
 			final AbstractButton ab = (AbstractButton) c;
-			answer = c.getClass().getSimpleName() + ": [" + ab.getText() + ']';
+			answer = c.getClass().getSimpleName() + ": [" + ab.getText() + '|' + ab.getName() + '|' + ab.getToolTipText() + ']';
 		} else if (c instanceof JDialog) {
 			final JDialog jd = (JDialog) c;
 			answer = c.getClass().getSimpleName() + ": [" + jd.getTitle() + ']';
