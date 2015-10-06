@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import java.awt.Component;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +45,9 @@ public class Util {
 		final Logger l = Logger.getLogger(s);
 		l.setLevel(Level.FINER);
 		handler.setLevel(Level.FINER);
+		for (final Handler h : l.getHandlers()) {
+			l.removeHandler(h);
+		}
 		l.addHandler(handler);
 		return l;
 	}

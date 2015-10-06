@@ -203,6 +203,8 @@ public class CrawlerTester {
 		isCurrentlyTesting = false;
 		targetGUI.dispose();
 		debugLog(Level.INFO, "And finally calling System.exit(0)!\n");
+		logger.log(Level.INFO, "Logger test");
+		System.out.println("System out test");
 		System.exit(0);
 	}
 
