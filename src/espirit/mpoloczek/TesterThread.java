@@ -119,7 +119,7 @@ class TesterThread extends Thread {
 			if (rootWindow instanceof Window && !crawlerTester.targetGuiName.equals(rootWindow.getClass().getSimpleName())) {
 				final Window windowCast = (Window) rootWindow;
 				debugLog(Level.FINE, "Finshed testing %s from %s, disposing\n", Util.componentToString(rootWindow), this);
-				// TODO fake keyboardevent ESC to kill immortal windows like the ABOUT screen?
+				// TODO this still does not kill the freaking about screen?!
 				try {
 					windowCast.dispatchEvent(new KeyEvent(windowCast, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_ESCAPE, (char)KeyEvent.VK_ESCAPE));
 					windowCast.dispatchEvent(new WindowEvent(windowCast, WindowEvent.WINDOW_CLOSING));
