@@ -5,6 +5,8 @@ import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -118,7 +120,14 @@ class TesterThread extends Thread {
 				final Window windowCast = (Window) rootWindow;
 				debugLog(Level.FINE, "Finshed testing %s from %s, disposing\n", Util.componentToString(rootWindow), this);
 				// TODO fake keyboardevent ESC to kill immortal windows like the ABOUT screen?
+				try {
+					windowCast.dispatchEvent(new KeyEvent(windowCast, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_ESCAPE, (char)KeyEvent.VK_ESCAPE));
+					windowCast.dispatchEvent(new WindowEvent(windowCast, WindowEvent.WINDOW_CLOSING));
+				} catch (final Exception e) {
+					logger.log(Level.FINE, "Exception thrown by fake key/window events", e);
+				}
 				windowCast.dispose();
+				debugLog(Level.FINE, "%s disposed by %s., disposing\n", Util.componentToString(rootWindow), this);
 				crawlerTester.counterWindowsHandled++;
 				crawlerTester.previousWindows.add(rootWindow);
 			}
