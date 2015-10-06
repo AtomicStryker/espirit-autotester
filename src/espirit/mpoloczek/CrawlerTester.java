@@ -365,6 +365,7 @@ public class CrawlerTester {
 		actionDoer.listeners = target.getListeners(ActionListener.class);
 		actionDoer.componentRoot = root;
 		actionDoer.componentList = adjacentComponents;
+		actionDoer.componentTarget = target;
 		SwingUtilities.invokeLater(actionDoer);
 	}
 
@@ -493,45 +494,50 @@ public class CrawlerTester {
 		ActionListener[] listeners;
 		Container componentRoot;
 		ArrayList<Component> componentList;
+		Component componentTarget;
 
 
 		@Override
 		public void run() {
-			for (final ActionListener el : listeners) {
-				try {
-					el.actionPerformed(event);
-				} catch (final Exception | Error e) {
-					logger.log(Level.WARNING, "ActionListener threw something", e);
-				}
-			}
 
-			if (componentRoot != null && componentList != null) {
-				final ArrayList<Component> oldComponentList = new ArrayList<>(componentList);
-				final ArrayList<Component> newComponentList = new ArrayList<>(componentList.size());
-				detectChildren(componentRoot, newComponentList, Level.FINEST);
+			if (componentTarget.isVisible()) {
 
-				for (final Component c : newComponentList) {
-					if (!oldComponentList.remove(c)) {
-						debugLog(Level.FINEST, "Found new Component after pushing a button and comparing with old component list!!\n");
-						debugLog(Level.FINEST, "detected new Component: %s\n", c);
-						final ArrayList<Component> newlyDetectedComponents = new ArrayList<>();
-						detectChildren(c, newlyDetectedComponents, Level.FINEST);
-						int actualAdditions = 0;
-						for (final Component newc : newlyDetectedComponents) {
-							if (!componentList.contains(newc)) {
-								componentList.add(newc);
-								actualAdditions++;
-							}
-						}
-						if (actualAdditions > 0) {
-							debugLog(Level.FINER, "last buttonpress resulted in %d new components for the master component list\n", actualAdditions);
-						}
+				for (final ActionListener el : listeners) {
+					try {
+						el.actionPerformed(event);
+					} catch (final Exception | Error e) {
+						logger.log(Level.WARNING, "ActionListener threw something", e);
 					}
 				}
 
-				for (final Component c : oldComponentList) {
-					debugLog(Level.FINEST, "Found an old Component gone after pushing a button and comparing with old component list!!\n");
-					debugLog(Level.FINEST, "old AWOL Component: %s\n", c);
+				if (componentRoot != null && componentList != null) {
+					final ArrayList<Component> oldComponentList = new ArrayList<>(componentList);
+					final ArrayList<Component> newComponentList = new ArrayList<>(componentList.size());
+					detectChildren(componentRoot, newComponentList, Level.FINEST);
+
+					for (final Component c : newComponentList) {
+						if (!oldComponentList.remove(c)) {
+							debugLog(Level.FINEST, "Found new Component after pushing a button and comparing with old component list!!\n");
+							debugLog(Level.FINEST, "detected new Component: %s\n", c);
+							final ArrayList<Component> newlyDetectedComponents = new ArrayList<>();
+							detectChildren(c, newlyDetectedComponents, Level.FINEST);
+							int actualAdditions = 0;
+							for (final Component newc : newlyDetectedComponents) {
+								if (!componentList.contains(newc)) {
+									componentList.add(newc);
+									actualAdditions++;
+								}
+							}
+							if (actualAdditions > 0) {
+								debugLog(Level.FINER, "last buttonpress resulted in %d new components for the master component list\n", actualAdditions);
+							}
+						}
+					}
+
+					for (final Component c : oldComponentList) {
+						debugLog(Level.FINEST, "Found an old Component gone after pushing a button and comparing with old component list!!\n");
+						debugLog(Level.FINEST, "old AWOL Component: %s\n", c);
+					}
 				}
 			}
 		}
