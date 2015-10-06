@@ -344,7 +344,7 @@ public class CrawlerTester {
 
 					if (jTextComponent instanceof JTextField) {
 						for (final String s : problemStringManager.getProblemStrings()) {
-							debugLog(Level.FINER, "setting jtextfield text to [%s] and firing action event\n", s);
+							debugLog(Level.FINEST, "setting jtextfield text to [%s] and firing action event\n", s);
 							final EDTCompliantTextSetter setter = new EDTCompliantTextSetter();
 							setter.jTextComponent = jTextComponent;
 							setter.textToSet = s;
@@ -508,14 +508,14 @@ public class CrawlerTester {
 			if (componentRoot != null && componentList != null) {
 				final ArrayList<Component> oldComponentList = new ArrayList<>(componentList);
 				final ArrayList<Component> newComponentList = new ArrayList<>(componentList.size());
-				detectChildren(componentRoot, newComponentList, Level.FINER);
+				detectChildren(componentRoot, newComponentList, Level.FINEST);
 
 				for (final Component c : newComponentList) {
 					if (!oldComponentList.remove(c)) {
 						debugLog(Level.FINEST, "Found new Component after pushing a button and comparing with old component list!!\n");
 						debugLog(Level.FINEST, "detected new Component: %s\n", c);
 						final ArrayList<Component> newlyDetectedComponents = new ArrayList<>();
-						detectChildren(c, newlyDetectedComponents, Level.FINER);
+						detectChildren(c, newlyDetectedComponents, Level.FINEST);
 						int actualAdditions = 0;
 						for (final Component newc : newlyDetectedComponents) {
 							if (!componentList.contains(newc)) {
