@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,11 +33,14 @@ class TesterThread extends Thread {
 	@Override
 	public void run() {
 
+		// lets bring some chaos into the equation
+		Collections.shuffle(componentListToTest);
+
 		crawlerTester.isCurrentlyTesting = true;
 		for (; !isThreadAborted && indexCurrentComponentTested < componentListToTest.size(); indexCurrentComponentTested++) {
 
 			if (!isThreadAborted) {
-				debugLog(Level.FINE, "%s now testing it's component %d\n", this, indexCurrentComponentTested);
+				debugLog(Level.FINE, "%s now testing it's component %d (from %d)\n", this, indexCurrentComponentTested, componentListToTest.size());
 				final Window w = SwingUtilities.getWindowAncestor(componentListToTest.get(indexCurrentComponentTested));
 				if (w != null && !w.isDisplayable()) {
 					//  was disposed, did our popup die?
