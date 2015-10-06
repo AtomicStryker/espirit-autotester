@@ -517,23 +517,23 @@ public class CrawlerTester {
 					final ArrayList<Component> newComponentList = new ArrayList<>(componentList.size());
 					detectChildren(componentRoot, newComponentList, Level.FINEST);
 
+					int actualAdditions = 0;
 					for (final Component c : newComponentList) {
 						if (!oldComponentList.remove(c)) {
 							debugLog(Level.FINEST, "Found new Component after pushing a button and comparing with old component list!!\n");
 							debugLog(Level.FINEST, "detected new Component: %s\n", c);
 							final ArrayList<Component> newlyDetectedComponents = new ArrayList<>();
 							detectChildren(c, newlyDetectedComponents, Level.FINEST);
-							int actualAdditions = 0;
 							for (final Component newc : newlyDetectedComponents) {
 								if (!componentList.contains(newc)) {
 									componentList.add(newc);
 									actualAdditions++;
 								}
 							}
-							if (actualAdditions > 0) {
-								debugLog(Level.FINER, "last buttonpress resulted in %d new components for the master component list\n", actualAdditions);
-							}
 						}
+					}
+					if (actualAdditions > 0) {
+						debugLog(Level.FINER, "last buttonpress resulted in %d new components for the master component list\n", actualAdditions);
 					}
 
 					for (final Component c : oldComponentList) {
