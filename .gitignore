@@ -1,1 +1,8 @@
 bin/
+*.graphml
+*.gephi
+*.aux
+*.lof
+*.log
+*.toc
+*.pdf
