@@ -1,0 +1,51 @@
+\documentclass[a4paper,11pt,twoside,ngerman,color]{book}
+
+\include{header}
+
+\begin{document}
+% Titelseite
+\include{kapitel/titelseite}
+\blankpage
+%\include{chapters/titelseite_innen}
+%\blankpage
+
+\pagenumbering{roman}
+\tableofcontents
+\cleardoublepage
+\pagenumbering{arabic}
+
+% Kapitel
+\include{kapitel/einleitung}
+\include{kapitel/kapitel2}
+\include{kapitel/kapitel3}
+\include{kapitel/kapitel4}
+\include{kapitel/kapitel5}
+\include{kapitel/kapitelfazit}
+
+% Anhang
+\appendix
+
+%Abbildungsverzeichnis
+\listoffigures
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+\cleardoublepage
+
+% Algorithmenverzeichnis
+\listofalgorithms
+\addcontentsline{toc}{chapter}{Algorithmenverzeichnis}
+\cleardoublepage
+
+% Literaturverzeichnis
+\bibliographystyle{gerplain}
+\bibliography{literatur/literatur}
+\addcontentsline{toc}{chapter}{\bibname}
+
+% Erklaerung
+\thispagestyle{myheadings}
+\markboth{}{ERKLÄRUNG}
+\addcontentsline{toc}{chapter}{Erklärung}
+\include{kapitel/erklaerung}
+\cleardoublepage
+
+\end{document}
+% EOF

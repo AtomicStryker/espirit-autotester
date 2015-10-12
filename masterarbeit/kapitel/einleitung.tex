@@ -1,0 +1,71 @@
+\iffalse
+
+% neue seite:
+\newpage
+
+%Zitat: 
+\cite{website:biu}
+
+%Kapitelnummer: 
+\ref{problems}
+
+%Seitennummer: 
+\pageref{fig:mvcpattern}
+
+%Hyperlink: 
+\url{http://www.freesound.org/}
+
+% Bild:
+\begin{figure}
+	\centering
+		\includegraphics[width=0.75\textwidth]{bilder/mammenkonzept2.jpg}
+	\caption{Bildliche Darstellung der Implementation des zweiten Spielkonzepts aus "`Swarming for Games"', auf Seite 6, \cite{swarmimmersion}. Man sieht das GUI für Eingaben des Spielers 
+	sowie das Spielfeld mit Spielementen und verschiedene Hilfslinien, wie zum Beispiel die Kreise, die das Wahrnehmungsumfeld der Schwarmentitäten anzeigen.}
+	\label{fig:application_lifecycle_diagram}
+\end{figure}
+
+%Bildverweis:
+\ref{fig:application_lifecycle_diagram}
+
+% Liste:
+\begin{itemize}
+	\item \textsc{Tap} heisst Tippen oder Klicken der Spielfläche ein- oder mehrmalig. Primäre Spezifikation von Koordinaten.
+  \item \textsc{Pan} ist eine Berührung des Spielfelds gefolgt von Ziehen darüber ohne loszulassen. Dient zur Bewegung oder um viele Koordinaten schnell zu markieren.
+  \item \textsc{Pinch} bedeutet die Berührung oder Ziehen von zwei Punkten oder Pans gleichzeitig.
+  \item \textsc{Zoom} bedeutet Pinch mit Veränderung der Distanz zwischen den Berührpunkten. Auf dem PC mittels Mausrad implementiert. Steuert den Kamerazoom.
+\end{itemize}
+
+% Algorithmus:
+\begin{algorithm}
+ \SetAlgoLined
+ \KwData{Vektormenge $A$; Koordinaten $x,y$; maximale vorkommende Vektorlänge $max$}
+ \KwResult{$A$ enthält neues Optimum und Zwischenwerte }
+ $x,y$ in Weltkoordinaten bringen\;
+ $vx \in A \longleftarrow x,y$ auf den nächsten Wert interpoliert\;
+ \For{Vektor $v \in A$}
+  {
+   \If{$v.length \geq vx.length$}
+	  {
+	   $v.coords \longleftarrow vx.coords$\;
+	  }
+		$max \longleftarrow max(max, v.length)$\;
+	 }
+ \caption{Update Fuzzy Map mit neuem Vektor}
+ \label{alg:swarmalgo}
+\end{algorithm}
+
+\fi
+
+
+
+% einleitung.tex
+\chapter{Einleitung}\label{intro}
+
+
+Yada yada Einleitung
+
+
+\section{Ziel dieser Arbeit}\label{structurelatex}
+
+
+
