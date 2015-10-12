@@ -3,9 +3,32 @@
 \chapter{Einleitung Vollautomatische GUI-Tests}\label{chapter:introfullautoguitesting}
 
 
-In diesem Kapitel
+In diesem Kapitel werden existierende GUI-Testverfahren betrachtet, welche das Prädikat
+``vollautomatisch'' zumindest teilweise für sich beanspruchen. Dieser Behauptung wird
+dann nachgegangen, eventuelle Fallstricke, Nachteile und Einschränkungen werden aufgezeigt
+und Schlussfolgerungen für das hier vorgestellte Konzept werden gezogen, soweit möglich.
 
 
 \section{Implementationen vollautomatischer GUI-Tests}\label{section:fullautoguitestsimpl}
 
 
+Existierende Arbeiten Ähnlichem Inhalts sind z.B. ``GUITest: a Java library for fully automated
+GUI robustness testing'' \cite{GUITestBauersfeld}: Eine Java-Bibliothek 
+(allerdings speziell für OSX entwickelt), die
+vollautomatisch mögliche Inputs in einer beliebigen (allerdings hier nur an einer getesteten)
+Applikation der ``Mac OSX Accessibility API'' aufspürt und durchführt. Ein Unterschied zum
+Vorschlag wäre, dass hier zufällig Inputs gewählt werden (anstelle eines systematischen,
+abdeckenden Ansatzes) und das Tool auch nicht auf die Applikation beschränkt ist (es wird
+erwähnt, dass die Shutdown- und Reset-Tasten des Host-Betriebssystems ausgenommen werden
+mussten). Meine Arbeit wäre für das vermutlich allgemeingültigere Java Swing. Es werden
+hierin auch weitere Arbeiten referenziert. 
+ 
+Ein anderes Beispiel wäre ``A GUI Crawling-Based Technique for Android Mobile Application
+Testing'' \cite{AGCBTFAMAT}. Hierbei wird in zwei seperaten Schritten zunächst eine graphische Applikation
+vollautomatisch auf mögliche Eingaben und anzeigbare Bildschirme durchsucht, also ein
+„Wegnetz“ ähnlich dem Vorschlagskonzept durch das Programm gelegt, um dann in einem zweiten
+Schritt mit üblichen (regressiven) Test-Applikationen und –Vorgehensweisen Abläufe zu
+planen und tatsächlich zu prüfen. Der Unterschied und die Einschränkung hier ist
+hauptsächlich die Android-GUI-API sowie die Testumgebung eines Android-Emulators am
+Rechner. Auch ist der zweite Vorgehensschritt nicht automatisch und erfordert in jedem Fall
+erheblichen Kontext bzw. Nutzerangaben, die Arbeit ist also eher ein Hilfsmittel als vollständige Lösung.

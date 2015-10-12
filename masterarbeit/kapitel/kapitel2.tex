@@ -8,4 +8,65 @@ Dieses Kapitel befasst sich
 
 \section{Automatisierte GUI-Tests}\label{section:automatedguitesting}
 
+\subsection{Kontinuierliche Qualitätskontrolle von Webanwendungen auf Basis maschinengelernter Modelle}\label{ssection:windmueller}
 
+Die ``Dissertation Kontinuierliche Qualitätskontrolle von Webanwendungen auf 
+Basis maschinengelernter Modelle'' \cite{diss:windmueller} befasst sich mit
+
+
+\subsection{An Empirical Study of the Robustness of Windows NT Applications Using Random Testing}\label{ssection:windmueller}
+
+Diese etwas ältere Arbeit der Herren Forrester und Miller \cite{winNTforrester} befasst sich 
+mit dem Verhalten einer Auswahl von Anwendungem im Betriebssystem Windows, wenn zufällige 
+Daten als Eingaben verwendet wurden.
+Es wurden sowohl Anwendungen mit und ohne grafischer Nutzeroberfläche getestet. Der Ansatz hierbei
+ist Black-Box; es gibt keinerlei Wissen über Inhalt, Zweck oder Verhalten der zu testenden Software.
+Als zufällige Eingaben dienen sowohl gültige Signale von Tastatur und Maus, wie ein Nutzer sie erzeugen
+könnte, sowie Windows-spezifische, sogenannte ``Win32'' Signale. Diese sind auch im aktuellsten Windows
+nach wie vor im Einsatz, aufgrund der Abwärtskompatibilität vermutlich sogar in nahezu identischer Form.
+
+Forrester und Miller nennen ihr Vorgehen ``Fuzz Testing''. Vor Windows wandten sie dasselbe Verfahren
+in 2 Vorgänger-Arbeiten auf Linux-Anwendungen an. Bei gängigen Applikationen zeigte sich, dass zwischen
+ein Viertel und ein Drittel der geprüften Anwendungen nicht mit den zufälligen Eingabedaten zurecht kam.
+Das einzige Kriterium für den ``Erfolg'' ist die Abnahme der Eingabe sowie ein ordnungsgemässes Beenden
+des Programms - selbst wenn dies lediglich eine sofortige Ausgabe einer Fehlermeldung ist.
+
+Die Eingabe von zufälligen Maus- und Tastatursignalen ist definitiv einem realen Anwendungsfall zuzuordnen,
+dieser Fall könnte schliesslich genau so auch auftreten. Die zufälligen Win32-Signale testen eher die
+allgemeine Stabilität bzw. Sicherheit, die Fehlererkennung, eines Programms.
+
+Eine Eingabe mittels Maus oder Tastatur löst zunächst eine Prozessor-Unterbrechung aus. Die Unterbrechung
+leitet die Eingabedaten an den jeweiligen Gerätetreiber weiter, welcher den Inhalt der Nachricht ausliest
+(welche Taste wurde gedrückt, wo befindet sich der Mauszeiger etc.). Dies wird dann in ein Win32-Ereignis
+konvertiert. Das Betriebssystem stellt dann fest, welche Applikation das Ziel der Eingabe war, und kopiert
+das Ereignis in den Ereignis-Eingang dieser Applikation. Anwendungen haben üblicherweise eine interne
+Endlossschleife, welche diesen Eingang auf neue Nachrichten überprüft, diese dann ausliest und das
+Programm entsprechend reagieren lässt. Obwohl im Normalfall davon ausgegangen werden kann, dass ein System
+nur gültige Win32-Nachrichten verschickt, sollte ein Programmierer nicht davon absehen, dies auch
+zu kontrollieren. Ein Angreifer könnte ansonsten ein Fehlverhalten des Programms bei ungültigen Eingaben
+ausnutzen, es könnten Sicherheitslücken auftreten ö.Ä..
+Zu beachten ist allerdings, dass ``Fuzz'' eine gewaltige Anzahl von Eingaben praktisch gleichzeitig tätigt
+(zehntausende). Man könnte zu Recht argumentieren, dass ein normaler Anwendungsfall eine solche Menge von
+Eingaben in einer kurzen Zeit nicht vorsieht, und damit vorsätzlich interne Puffer zur 
+Verarbeitung von Eingaben überlastet werden
+könnten. Modernere Versionen derselben Applikationen bzw. desselben Betriebssystems könnten diesen Fall 
+unter Umständen besser abfangen.
+
+
+
+Ergebnisse
+Getestet wurden verschiedene bekannte Applikationen der Firmen Adobe und Microsoft sowie Mozilla - es
+finden sich der Acrobat Reader, Office, Internet Explorer sowie der Netscape Navigator 
+(Vorläufer von Firefox) in der Liste. Getestet wurde unter Windows NT und Windows 2000.
+
+21\% der getesteten Applikationen stürzten ab, wenn zufällige, gültige Maus- und Tastatureingaben 
+getätigt wurden. Weitere 24\% versagten in Form von Endlosschleifen. Dies ist eine Fehlerrate von 45\%
+allein für völlig legale und im Zweifelsfall möglicherweise auftretende Eingaben.
+
+Im Fall der zufälligen (auch ungültigen) Win32-Signale lag die Fehlerrate bei nahezu 100\%. Dies ist
+laut den Autoren, die den Quellcode einiger Applikationen einsehen konnten, damit zu erklären,
+dass Programmierer von der Verlässlichkeit der empfangenen Signale ausgehen (diese Garantie ist offensichtlich
+nicht gegeben). Die Autoren nennen dies eine grobe Schwachstelle der Win32-API, insbesondere bezüglich
+Sicherheit, da schliesslich jedes Programm der Systemebene diese Win32-Signale beliebiger Zusammensetzung
+an andere Programme versenden kann. Dies könnte in neueren Windows-Versionen anders sein, das Betriebssystem
+könnte eine automatische Fehlerkorrektur der Win32-Nachrichten vornehmen.

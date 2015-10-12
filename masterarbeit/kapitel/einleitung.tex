@@ -1,26 +1,30 @@
 \iffalse
+% das iffalse verhindert, dass irgendetwas bis zum \fi von latex verarbeitet wird.
+% beginn latex-cheatsheet
 
-% neue seite:
+%Neue seite:
 \newpage
 
-%Zitat: 
+%Zitat:
 \cite{website:biu}
 
-%Kapitelnummer: 
+%Kapitelnummer:
 \ref{problems}
 
-%Seitennummer: 
+%Seitennummer:
 \pageref{fig:mvcpattern}
 
-%Hyperlink: 
+%Hyperlink:
 \url{http://www.freesound.org/}
+
+%Anfuehrungszeichen:
+``Derp''
 
 % Bild:
 \begin{figure}
 	\centering
-		\includegraphics[width=0.75\textwidth]{bilder/mammenkonzept2.jpg}
-	\caption{Bildliche Darstellung der Implementation des zweiten Spielkonzepts aus "`Swarming for Games"', auf Seite 6, \cite{swarmimmersion}. Man sieht das GUI für Eingaben des Spielers 
-	sowie das Spielfeld mit Spielementen und verschiedene Hilfslinien, wie zum Beispiel die Kreise, die das Wahrnehmungsumfeld der Schwarmentitäten anzeigen.}
+	\includegraphics[width=0.75\textwidth]{bilder/mammenkonzept2.jpg}
+	\caption{Längerer Beschreibungstext Lorem Ipsum etc}
 	\label{fig:application_lifecycle_diagram}
 \end{figure}
 
@@ -29,31 +33,24 @@
 
 % Liste:
 \begin{itemize}
-	\item \textsc{Tap} heisst Tippen oder Klicken der Spielfläche ein- oder mehrmalig. Primäre Spezifikation von Koordinaten.
-  \item \textsc{Pan} ist eine Berührung des Spielfelds gefolgt von Ziehen darüber ohne loszulassen. Dient zur Bewegung oder um viele Koordinaten schnell zu markieren.
+  \item \textsc{Tap} heisst Tippen oder Klicken
+  \item \textsc{Pan} ist eine Berührung des Spielfelds
   \item \textsc{Pinch} bedeutet die Berührung oder Ziehen von zwei Punkten oder Pans gleichzeitig.
-  \item \textsc{Zoom} bedeutet Pinch mit Veränderung der Distanz zwischen den Berührpunkten. Auf dem PC mittels Mausrad implementiert. Steuert den Kamerazoom.
+  \item \textsc{Zoom} bedeutet Pinch mit Veränderung der Distanz zwischen den Berührpunkten.
 \end{itemize}
 
 % Algorithmus:
-\begin{algorithm}
- \SetAlgoLined
- \KwData{Vektormenge $A$; Koordinaten $x,y$; maximale vorkommende Vektorlänge $max$}
- \KwResult{$A$ enthält neues Optimum und Zwischenwerte }
- $x,y$ in Weltkoordinaten bringen\;
- $vx \in A \longleftarrow x,y$ auf den nächsten Wert interpoliert\;
- \For{Vektor $v \in A$}
+\begin{algorithm} \SetAlgoLined \KwData{Vektormenge $A$; Koordinaten $x,y$; maximale vorkommende Vektorlänge $max$} \KwResult{$A$ enthält neues Optimum und Zwischenwerte } $x,y$ in Weltkoordinaten bringen\; $vx \in A \longleftarrow x,y$ auf den nächsten Wert interpoliert\; \For{Vektor $v \in A$}
   {
    \If{$v.length \geq vx.length$}
 	  {
 	   $v.coords \longleftarrow vx.coords$\;
 	  }
 		$max \longleftarrow max(max, v.length)$\;
-	 }
- \caption{Update Fuzzy Map mit neuem Vektor}
- \label{alg:swarmalgo}
+	 } \caption{Update Fuzzy Map mit neuem Vektor} \label{alg:swarmalgo}
 \end{algorithm}
 
+% ende latex-cheatsheet
 \fi
 
 
@@ -62,10 +59,78 @@
 \chapter{Einleitung}\label{intro}
 
 
-Yada yada Einleitung
+Ein Hauptproblem der Softwareentwicklung ist der langwierige, häufig nichtdeterministische
+Prozess des Testens bzw. der Qualitätssicherung und die damit verbundenen hohen Kosten.
+Dies gilt insbesonders, wenn die Entwickler selbst beteiligt sind.
+Bekannte Ansätze zur Lösung dieses Problems sind z.B. die Durchführung von Tests
+durch dedizierte (weniger kostspielige) Tester, oder auch die Automatisierung von Tests. 
+ 
+Speziell für den Fall von in der Industrie weit verbreiteten graphischen Nutzeroberflächen
+mittels Java Swing \cite{JavaSwing} gibt es zahlreiche Möglichkeiten variierender
+Komplexität wie z.B. QF-Test \cite{website:qftest}, uispec4j \cite{website:uispec4j},
+FEST \cite{website:fest} oder auch Jemmy \cite{website:jemmy}. Viele bieten selbst interaktive
+GUI zur nutzerfreundlichen Testerstellung, erweiterbare Module und die Möglichkeit eigener Skripte. Auch
+Integration von JUnit \cite{website:junit} oder TestNG \cite{website:testng}
+und Eclipse-Unterstützung \cite{website:eclipse} sind verbreitet. Was diese
+Lösungsmöglichkeiten allerdings gemeinsam haben, ist die notwendige VORGABE der
+durchzuführenden Eingaben und der erwarteten, zu überprüfenden Resultate. Dies ist
+insofern ein Problem, dass ein Entwickler, der eine bestimmte, evtl. abwegige Eingabe nicht
+voraussieht, vermutlich auch keinen Test dafür vorsehen wird. Selbst ein Tester wird unter
+Umständen nicht ALLE möglichen Eingabekombinationen probieren, insbesondere auch
+ungültige, schwer mit einer europäischen Tastatur zu erstellende, oder auch unsinnige Varianten. 
+ 
 
 
 \section{Ziel dieser Arbeit}\label{structurelatex}
 
 
+Der hier vorgestellte Vorschlag soll nun in einem neuen Werkzeug resultieren, welches vollautomatisch
+funktionieren soll und das
+sich nicht primär mit dem gewünschten und erwartetem Verhalten der getesteten GUI beschäftigt, sondern
+vielmehr systematisch Vertreter aller technisch möglichen Eingaben (Sonderzeichen, extrem
+lange Eingaben etc.) eingibt. Es wird völlig selbsttätig Knöpfe und Eingabemasken einer zu testenden
+Applikation erkennen und systematisch mögliche Eingabe-Kombinationen durchprobieren, und für eventuelle
+Folgebildschirme oder sich auf Knopfdruck öffnende neue Bildschirmelemente dasselbe tun.
+Wenn ein sinnhaltiger Login o.Ä. nötig ist, um an die
+„Innereien“ eines Programms zu kommen, muss das natürlich dennoch manuell vorgesehen oder
+durchgeführt werden. Ebenso sollten Eingaben eines gewissen Kontexts (z.B. ``Programm beenden'')
+vermieden werden, welche den Test vorzeitig beenden könnten.
+ 
+Das Vorgehen des Werkzeugs soll dann in einer Baum- oder Graphartigen
+Struktur mitprotokolliert werden - hierfür wird JGraphT verwendet \cite{website:jgrapht} - 
+um einerseits auch bei sich selbsttätig oder durch Eingaben schliessenden Elementen diese wieder
+zu öffnen zu können, um alle Eingaben ausprobieren zu können, oder auch, um auftretende Zyklen 
+zu erkennen sowie um erzeugte und erkannte Fehler letztendlich reproduzieren zu können.
+Eine ansehnliche Visualisierung btw. Modellierung des getesteten Programm ist ein angenehmer
+Seiteneffekt.
 
+Es ist unrealistisch, z.B. in
+einem Texteingabefeld jeden existierenden String zu probieren, hier muss eine möglichst
+problematische und dennoch endliche Untermenge gefunden werden.
+
+Schaltbare Elemente oder Auswahlen stellen ebenso
+eine potentiell unüberschaubare Zustandsmenge der Applikation dar und müssen für eine
+zufriedenstellende Abdeckung möglicher Anwendungsfälle mithilfe von
+Pseudozufallsmethoden getestet werden. Überlegungen bezüglich eventuell überdauernder Programmeinstellungen
+aus vorherigen Tests sind auch nötig - zufällige Tastendrücke könnten zu irreversiblen Schäden an
+Programmdateninhalten führen, und weitere Tests einschränken oder irrelevant machen. Ein Rücksetzen
+der Applikation auf einen ursprünglichen Gesamtzustand ist also evtl. notwendig, soweit anwendbar.
+ 
+Weiterhin gibt verschiedene Ansätze, so einen Test durchzuführen: Sollte überhaupt die
+grafische Oberfläche erzeugt, und dann Mausklicks darauf simuliert werden? Oder sollte der
+Tester eher alle möglichen Kontrollflüsse quasi statisch bzw. offline ausführen? Resultierende
+Fehler und Meldungen sollten geeignet von den System- und Errorstreams gelesen und
+protokolliert werden, und man könnte auch eine Schnittstelle für auftretende Exceptions oder
+Runtime-Errors vorsehen oder sie aus der Applikation abfangen oder mitschneiden. 
+ 
+Die Entwicklung und Implementierung sowie die Anwendung dieses Werkzeugs auf eine Java
+Swing Applikation der e-Spirit AG, FirstSpirit \cite{website:firstspirit}, ist der geplante 
+Umfang dieser Abschlussarbeit. Zunächst werden existierende Methoden und Lösungen der automatisierten
+Testverfahren auf graphischen Oberflächen betrachtet und im Kontext zum hier vorgestellten Konzept
+bewertet.
+ 
+Weitere Überlegungen, die vermutlich nicht mehr im Umfang dieser Master-Arbeit sein
+würden, aber die z.B. als Erweiterungsmöglichkeiten genannt werden könnten, sind die
+Nutzung von Bilderkennung / Computer Vision, um auch über Java Swing hinaus GUI testen zu
+können. Hierbei muss natürlich die Beschriftung von Knöpfen wiedererkannt werden können,
+und viele GUI benutzen Glyphen anstelle beschrifteter Schaltflächen. 
