@@ -11,6 +11,46 @@ Das folgende Kapitel
 
 \section{Implementation eines vollautomatischen GUI-Testers für Java Swing}\label{section:myfullautoguitest}
 
+\begin{algorithm} \SetAlgoLined
+	\KwData{Laufender Test $T$, neues Fenster/Popup $P$}
+	\KwResult{Alle an $P$ anhaengigen Komponenten wurden getestet, Test $T$ setzt fort}
+	vorherige Testinstanz $T$ anhalten, sichert Zustand\;
+	$Tn \longleftarrow Komponententester(P)$\;
+	vorherige Testinstanz $T$ starten, Zustand wiederherstellen\;
+	\caption{Popupbehandlung}
+	\label{alg:autotesterpopup}
+\end{algorithm}
+
+\begin{algorithm} \SetAlgoLined
+	\KwData{Wurzelkomponente/Fenster $A$, Liste von Problemstrings $StrL$;}
+	\KwResult{Alle an $A$ anhaengigen Komponenten wurden getestet}
+	$A$ auf Komponenten durchsuchen\;
+	\For{Komponente $k \in A$}
+	{
+		\If{$k \in Eingabeelemente$}
+		{
+			$k \longleftarrow ``Nutzereingabe''$\;
+			kurze Wartezeit (um GUI reagieren zu lassen)
+		}
+		\ElseIf{$k \in Texteingabeelemente$}
+		{
+			\For{String $s \in StrL$}
+			{
+				$k \longleftarrow ``Eintippen'' StrL$\;
+				$k \longleftarrow ``Bestaetigung''$\;
+				sehr kurze Wartezeit (um GUI reagieren zu lassen)
+			}
+			$k \longleftarrow ``Eintippen'' zufaelliges s \in StrL$\;
+		}
+		\If{$Auftreten neues Fenster/Popup P$}
+		{
+			Popupbehandlung($P$)\;
+		}
+	}
+	\caption{Komponententester}
+	\label{alg:autotestermain}
+\end{algorithm}
+
 
 \section{Problematische String-Eingaben}\label{section:naughtystrings}
 
