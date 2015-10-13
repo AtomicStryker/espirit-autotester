@@ -30,6 +30,18 @@ Im konkreten Fall soll aber Java Swing getestet werden, also ein Programm, welch
 bereits von sich aus sehr Plattformunabhängig ist (Eigenarten der JVM sind nicht üblicherweise
 Bestandteil von Tests).
 
+Ebenso treten eine Vielzahl von Problemen und gerade den Fehlern, die hiermit gesucht werden,
+nur im Online-Fall auf. Besonders mögliche Fehler interner Implementationen bei gewissen ungewöhnlichen
+Eingabemustern sind von Interesse. So wird der Tester aufgrund mangelnden Kontextes meist unsinnige
+Eingaben tätigen, welche ein Mensch von sich aus nicht vornehmen würde. Dementsprechend könnten
+diese auch Entwicklern und gewöhnlichen Testern entgangen sein. Ebenso werden grenzwertige
+Zeichenketten bei jeder sich bietenden Möglichkeit verwendet, um Probleme bei der Zeichenverarbeitung
+(eine grosse Fehlerquelle) aufzuzeigen.
+
+
+Java Swing benutzt OpenGL, welches aufgrund seines Konzepts als gewaltige
+Black-Box Zustandsmaschine häufig als übermässig Fehleranfällig kritisiert wird.
+
 
 \section{Implementation eines vollautomatischen GUI-Testers für Java Swing}\label{section:myfullautoguitest}
 
