@@ -12,23 +12,38 @@ und Schlussfolgerungen für das hier vorgestellte Konzept werden gezogen, soweit
 \section{Implementationen vollautomatischer GUI-Tests}\label{section:fullautoguitestsimpl}
 
 
-Existierende Arbeiten Ähnlichem Inhalts sind z.B. ``GUITest: a Java library for fully automated
-GUI robustness testing'' \cite{GUITestBauersfeld}: Eine Java-Bibliothek 
-(allerdings speziell für OSX entwickelt), die
+Existierende Arbeiten Ähnlichem Inhalts sind z.B. \textbf{``GUITest: a Java library for fully automated
+GUI robustness testing'' \cite{GUITestBauersfeld}}: Eine Java-Bibliothek 
+(allerdings speziell für das Betriebssystem Mac OSX entwickelt), die
 vollautomatisch mögliche Inputs in einer beliebigen (allerdings hier nur an einer getesteten)
 Applikation der ``Mac OSX Accessibility API'' aufspürt und durchführt. Ein Unterschied zum
-Vorschlag wäre, dass hier zufällig Inputs gewählt werden (anstelle eines systematischen,
-abdeckenden Ansatzes) und das Tool auch nicht auf die Applikation beschränkt ist (es wird
+hier vorgestellten Konzept ist, dass das Tool nicht auf die Applikation beschränkt ist (es wird
 erwähnt, dass die Shutdown- und Reset-Tasten des Host-Betriebssystems ausgenommen werden
-mussten). Meine Arbeit wäre für das vermutlich allgemeingültigere Java Swing. Es werden
-hierin auch weitere Arbeiten referenziert. 
- 
-Ein anderes Beispiel wäre ``A GUI Crawling-Based Technique for Android Mobile Application
-Testing'' \cite{AGCBTFAMAT}. Hierbei wird in zwei seperaten Schritten zunächst eine graphische Applikation
+mussten). Das hier implementierte Konzept ist für das wesentlich allgemeingültigere Java Swing
+ausgelegt und kann auf jeder Plattform ausgeführt werden, welche auch eine JVM stützen kann.
+
+Eine Gemeinsamkeit bzw. logische Konsequenz des vollautomatischen Tests ist, dass nur
+die Robustheit getestet werden kann. Ohne Kontext ist es nicht möglich, dem Verhalten eines
+Programms Begriffe wie ``korrekt'' oder ``falsch'' zuzuordnen. Lediglich auftretende
+Fehler und der Eingabeweg bis zu Ihrem Auftreten sind von Interesse.
+
+Die möglichen Eingaben durch die ``Mac OSX Accessibility API'' sind stärker normiert als bei
+Java Swing, wodurch weniger Variation möglich ist. Auch prüft dieses Programm nicht mögliche
+Textfeldeingaben wie das hier vorgestellte Konzept.
+
+\vspace{1cm}
+
+Ein anderes Beispiel wäre \textbf{``A GUI Crawling-Based Technique for Android Mobile Application
+Testing'' \cite{AGCBTFAMAT}}. Hierbei wird in zwei seperaten Schritten zunächst eine graphische Applikation
 vollautomatisch auf mögliche Eingaben und anzeigbare Bildschirme durchsucht, also ein
 „Wegnetz“ ähnlich dem Vorschlagskonzept durch das Programm gelegt, um dann in einem zweiten
 Schritt mit üblichen (regressiven) Test-Applikationen und –Vorgehensweisen Abläufe zu
 planen und tatsächlich zu prüfen. Der Unterschied und die Einschränkung hier ist
 hauptsächlich die Android-GUI-API sowie die Testumgebung eines Android-Emulators am
 Rechner. Auch ist der zweite Vorgehensschritt nicht automatisch und erfordert in jedem Fall
-erheblichen Kontext bzw. Nutzerangaben, die Arbeit ist also eher ein Hilfsmittel als vollständige Lösung.
+erheblichen Kontext bzw. Nutzerangaben.
+
+Ein Einsatz des vorgestellten Konzepts auf Android ist zwar theoretisch möglich, jedoch setzt
+man dort eine spezielle Variante von Swing ein, eine Anpassung bzw. Erweiterung des Programms
+wäre sehr wahrscheinlich notwendig. Auch stellt das Android-Betriebssystem seine eigenen Herausforderungen
+bezüglich Nutzbarkeit und insbesondere Programminteraktion.

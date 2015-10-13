@@ -3,14 +3,43 @@
 \chapter{Konzept eines Vollautomatischen GUI-Testers}\label{chapter:conceptfullautoguitesting}
 
 
-Das folgende Kapitel
+Das folgende Kapitel setzt sich mit der Idee des ``Vollautomatischen explorativen Crawler-Tests''
+auseinander. Bestehende GUI-Tests wurden in den vorherigen Kapiteln betrachtet. Hier wird nun zunächst 
+die Motivation für ein neues Konzept erläutert, sowie der potenzielle Einsatz und Nutzen desselben.
+Im Anschluss werden Entscheidungen während der Entwicklung und Implementation beleuchtet.
+Die genutzten Kernalgorithmen werden vorgestellt. Die letzte Sektion befasst sich mit der
+Zustandserfassung und -verfolgung sowie der Modellierung eines Graphen bzw. Automaten, welcher
+das Verhalten des getesteten Programms widerspiegelt.
 
 
 \section{Fragestellung: Online oder Offline testen?}\label{section:offoronlinetesting}
 
 
+Die erste Frage, die sich bei Konzeption eines Test-Tools stellt, ist, ob ein kompiliertes Programm
+oder lediglich die Quelldateien untersucht werden sollen. Quellcode kann mithilfe von statischen
+Methoden untersucht werden, welche keine Ausführung des Programms erfordern. Dies bezeichnet man
+entsprechend als ``Offline''-Test \cite{offlinetesting}, eine Unterart des Modellbasierten Tests.
+Letztendlich wird immer eine Art Pseudo-Programm erstellt bzw. kompiliert, welches die
+Eigenschaften oder das Verhalten aus dem Quellcode übernehmen und danach dessen Einhaltung durch
+das fertig kompilierte und ausgeführte Programm sicherstellen soll. Alternativ wird schon
+im Quelltext selbst nach bekannten Problemstrukturen gesucht, also statische Analyse betrieben.
+
+Der Vorteil liegt üblicherweise vor allen darin, dass eine solche Analyse unabhängig von der
+Plattform betrieben werden kann und die Ergebnisse sich auf alle möglichen Endnutzer beziehen.
+Im konkreten Fall soll aber Java Swing getestet werden, also ein Programm, welches vermutlich
+bereits von sich aus sehr Plattformunabhängig ist (Eigenarten der JVM sind nicht üblicherweise
+Bestandteil von Tests).
+
 
 \section{Implementation eines vollautomatischen GUI-Testers für Java Swing}\label{section:myfullautoguitest}
+
+
+Existierende GUI-Testlösungen haben verschiedene Einschränkungen. Allen voran die
+Notwendigkeit, Anwendungsspezifische Treiber zu implementieren oder ein Sollverhalten zu definieren.
+Treiber können dadurch umgangen werden, dass eine allgemeingültige API verwendet wird (schliesslich 
+muss jeder Nutzer mittels Maus und Tastatur mit der Oberfläche interagieren). Oder vielleicht
+wäre es besser zu sagen, es wird nur ein allgemeingültiger Treiber implementiert.
+
 
 
 Algorithmen auf Seiten \pageref{alg:autotesterpopup} und \pageref{alg:autotestermain}
