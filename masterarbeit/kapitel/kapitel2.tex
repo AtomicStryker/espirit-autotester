@@ -3,18 +3,106 @@
 \chapter{Funktionstests graphischer Oberflächen}\label{chapter:introguitesting}
 
 
-Dieses Kapitel befasst sich 
+Dieses Kapitel befasst sich mit einigen in der Industrie verbreiteten bzw. ``State of the Art'' Lösungen
+für das Problem automatischer GUI-Tests, einem alten Artikel sowie einer kürzlichen Doktorarbeit. 
+Es werden verschiedene Lösungen (für Java-Swing und Andere) vorgestellt,
+Ihr jeweiliger Implementationsaufwand begutachtet sowie eventuelle Vor- und Nachteile aufgezeigt.
+Auch wenn bereits im Ansatz ein Unterschied zum hier vorgestellten Konzept besteht, kann man dennoch
+Aufwand und Nutzen sowie Vor- und Nachteile vergleichen.
 
 
 \section{Automatisierte GUI-Tests}\label{section:automatedguitesting}
 
+
+uispec4j
+fest
+qf-test
+
+
 \subsection{Kontinuierliche Qualitätskontrolle von Webanwendungen auf Basis maschinengelernter Modelle}\label{ssection:windmueller}
 
+
 Die ``Dissertation Kontinuierliche Qualitätskontrolle von Webanwendungen auf 
-Basis maschinengelernter Modelle'' \cite{diss:windmueller} befasst sich mit
+Basis maschinengelernter Modelle'' \cite{diss:windmueller} stellt ein neuartiges Konzept
+zur Überprüfung des Verhaltens eines Webserver vor. Die Idee ist, mithilfe eines
+lernenden Algorithmus nach Angluin \cite{angluin} einen Automaten bzw. ein komplettes Modell
+der dem Algorithmus unbekannten, quasi ``Black Box'', Anwendung zu erstellen und zu vergleichen.
+
+Hierzu muss aber erwähnt werden, dass lediglich der das Modell erstellende Algorithmus nicht
+weiss, was das Programm macht - seitens des Testers ist erheblicher Aufwand für die Implementation
+von sogenannten Treibern notwendig, die jede mögliche Eingabe an die Anwendung bzw. jedes
+mögliche Wort des Eingabealphabets abdeckt. Ebenso müssen die bei Webanwendungen normierten
+Antworten auf die Eingaben gelesen und für Zustandsabbildung genutzt werden. Diese Treiber
+sind hochspezifisch für eine Anwendung und müssen sogar für verschiedene Versionen derselben
+Anwendung neu angepasst werden.
+
+Zurück zum Prinzip: Man hat als Resultat nun die erlernten Modelle der Anwendung bzw. spezifischer
+Versionen der Anwendung. Diese kann man nun mit einem Algorithmus vergleichen und Unterschiede
+herausstellen. Solche entstehen letztendlich nur aus zwei Gründen: Die Anwendung wurde verändert
+und es tritt eine gewünschte Funktionsänderung oder -erweiterung auf, oder ein neuartiger Fehler
+wurde (im Vergleich zur letzten Version) erschaffen. Diese Differenz ist offensichtlich nur
+aus dem Kontext heraus und nur durch einen Menschen zu verstehen.
+
+Insofern handelt es sich um eine Form des Regressionstests \cite{regression} - bestehende bzw.
+vorherige Funktion wird mit einem Momentanzustand verglichen und Diskrepanzen aufgedeckt. Der
+Ansatz hat dementsprechend dieselben Nachteile - jede gewünschte Änderung des Systems muss eine
+Neueinstellung oder Neuerstellung der Testkonfiguration nach sich ziehen. Bei häufigen
+Änderungen kann der Aufwand der Testerstellung schnell dem Entwicklungsaufwand gleichkommen bzw.
+diesen sogar überschreiten.
+
+Der Vorteil ist natürlich genauso, dass selbst geringfügige Abweichungen im Verhalten sofort
+auffallen und zur Analyse markiert werden. So wurden beim Praxiseinsatz auf verschiedenen
+Webanwendungen und ihren Versionskontrollsystemen bis dato unerkannte Programmfehler entdeckt.
+Diese wurden durch Eigenarten und Konzepte der bestehenden Tests maskiert und unsichtbar.
+Eine offensichtliche Schlussfolgerung ist, dass mehr und verschiedene Tests zu besseren
+Ergebnissen führen - das Problem liegt, wie immer, im Aufwand.
+
+Verglichen mit einem gewöhnlichen Regressionstest erspart dieser Ansatz dem Nutzer
+bzw. Entwickler die Definition der Zustandsfolgen. Zu beachten ist allerdings wieder:
+Es gibt für den Algorithmus kein richtig oder falsch, nur Unterschiede zwischen Versionen.
+Ein normaler GUI-Test definiert üblicherweise eine erwartete Antwort oder Reaktion auf einen
+bestimmten Knopfdruck. Hier würde so lange kein ``Problem'' auftreten, wie das Verhalten eines
+Programms konsistent ist - selbst wenn dieses Verhalten eigentlich fehlerhaft ist.
+
+Es gibt noch ein weiteres für das hier vorgestellte Konzept interessantes Feature,
+den sogenannten reuse-Filter. Da ein Automat mit einer endlichen Zustandsmenge unterstellt
+wird und gelernt werden soll (der Ansatz würde versagen, wenn das Programm nicht in dieses
+Schema fällt), muss eine bestimmte Eingabe von einem bestimmten Zustand aus erfolgen.
+Diesen Zustand allein durch Eingaben wieder zu erreichen - unter Umständen nach einem Programmneustart -
+kann erhebliche Verzögerungen im Testablauf hervorrufen.
+
+Die Idee ist folglich, Zustände des
+zu testenden Programms zu sichern und dann aus dem Speicher wiederherzustellen. Dies setzt
+natürlich voraus, dass dies möglich ist und man es für das Programm implementiert.
+Für den hier vorgestellten Ansatz und allgemeiner eine Java Virtual Machine ist dies nicht
+ohne weiteres möglich. Java-Programme sind Zustandsmässig unüberschaubar und können auch nicht
+grundsätzlich in einem bestimmten Zustand abgespeichert werden.
+
+Weitere mögliche Nebeneffekte, die bei den getesteten Programmen nicht vorkamen, sind
+Zustandsveränderungen auf einer persistenten Datenbank oder einem Speichermedium, die sogar
+über Instanzen des zu testenden Programms selbst überdauern. Hierfür müsste eine externe
+Lösung gefunden werden, zum Beispiel das Sichern eines gesamten Systemzustands in einer
+virtuellen Maschine und das jeweilige Neustarten eines Testablaufs von diesem gesicherten
+Zustand aus.
+
+\vspace{1cm}
+
+Im Vergleich mit Dr. Windmüller's Ansatz wird das hier vorgestellte Konzept erheblich weniger
+Kontextinformationen benötigen. So lange keine Programmspezifischen, mit der Java-Swing-API
+inkompatiblen Implementationen vorliegen, sollte ein Testdurchlauf ohne jede Information abseits
+des Startpunktes möglich sein. Es gibt kein Eingabealphabet, welches erst für ein zu testendes
+Programm definiert werden müsste.
+
+Des Weiteren haben Java-GUI-Anwendungen den Nachteil, nicht auf jede Eingabe antworten oder gar
+reagieren zu müssen. Eine Reaktion tritt nicht einmal im selben Kontrollfluss auf, obwohl Swing
+konzeptuell monolithisch abläuft. Ebenso ist die Definition eines Zustandes selbst nicht trivial,
+der interne Programmzustand ist unüberschaubar. Lediglich das Auftreten und die Erscheinung neuer
+Fenster und graphischer Programmkomponenten kann beobachtet und verzeichnet werden.
+
 
 
 \subsection{An Empirical Study of the Robustness of Windows NT Applications Using Random Testing}\label{ssection:windmueller}
+
 
 Diese etwas ältere Arbeit der Herren Forrester und Miller \cite{winNTforrester} befasst sich 
 mit dem Verhalten einer Auswahl von Anwendungem im Betriebssystem Windows, wenn zufällige 
@@ -45,16 +133,16 @@ Programm entsprechend reagieren lässt. Obwohl im Normalfall davon ausgegangen w
 nur gültige Win32-Nachrichten verschickt, sollte ein Programmierer nicht davon absehen, dies auch
 zu kontrollieren. Ein Angreifer könnte ansonsten ein Fehlverhalten des Programms bei ungültigen Eingaben
 ausnutzen, es könnten Sicherheitslücken auftreten ö.Ä..
+
 Zu beachten ist allerdings, dass ``Fuzz'' eine gewaltige Anzahl von Eingaben praktisch gleichzeitig tätigt
 (zehntausende). Man könnte zu Recht argumentieren, dass ein normaler Anwendungsfall eine solche Menge von
 Eingaben in einer kurzen Zeit nicht vorsieht, und damit vorsätzlich interne Puffer zur 
 Verarbeitung von Eingaben überlastet werden
 könnten. Modernere Versionen derselben Applikationen bzw. desselben Betriebssystems könnten diesen Fall 
-unter Umständen besser abfangen.
+unter Umständen besser abfangen. \\
 
 
-
-Ergebnisse
+Zu den Ergebnissen: \\
 Getestet wurden verschiedene bekannte Applikationen der Firmen Adobe und Microsoft sowie Mozilla - es
 finden sich der Acrobat Reader, Office, Internet Explorer sowie der Netscape Navigator 
 (Vorläufer von Firefox) in der Liste. Getestet wurde unter Windows NT und Windows 2000.
@@ -70,3 +158,8 @@ nicht gegeben). Die Autoren nennen dies eine grobe Schwachstelle der Win32-API, 
 Sicherheit, da schliesslich jedes Programm der Systemebene diese Win32-Signale beliebiger Zusammensetzung
 an andere Programme versenden kann. Dies könnte in neueren Windows-Versionen anders sein, das Betriebssystem
 könnte eine automatische Fehlerkorrektur der Win32-Nachrichten vornehmen.
+
+Für das hier vorgestellte Konzept stellen sich im Bezug auf diese Arbeit einige Fragen:
+Wie schnell sollten Eingaben erfolgen? Müssen Eingaben zwangsläufig funktional korrekt erfolgen?
+Auf welcher Abstraktionsebene erfolgen die Eingaben, und welche Möglichkeiten zur Datenmanipulation
+gibt es überhaupt? Wird die Nachstellung eines bösartigen Angriffs beabsichtigt?
