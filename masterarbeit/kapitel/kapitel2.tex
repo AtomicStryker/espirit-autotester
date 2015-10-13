@@ -14,9 +14,36 @@ Aufwand und Nutzen sowie Vor- und Nachteile vergleichen.
 \section{Automatisierte GUI-Tests}\label{section:automatedguitesting}
 
 
-uispec4j
-fest
-qf-test
+\textbf{uispec4j \cite{website:uispec4j}} ist ein Java-Programm zum Test von graphischen Nutzeroberflächen
+in Java. Es wird ein Programm implementiert, welches parallel zur zu testenden GUI läuft,
+vorgegebene Eingaben vornimmt, und im Anschluss einen gewünschten Zustand in den Elementen der GUI
+überprüfen kann. Ein Problem ist offensichtlich, dass nur oberflächliche Dinge geprüft werden können,
+wie z.B. die Existenz oder das Fehlen eines Fensters oder Elements. Andererseits muss für jede
+Prüfanfrage ein Entwickler ein entsprechendes Testsegment schreiben. Die Applikation muss also
+zumindest doppelt implementiert werden, was in einem hohen Aufwand resultiert.
+
+\vspace{0.5cm}
+
+\textbf{fest \cite{website:fest}} oder ``Fixtures for Easy Software Testing'' verfolgt denselben Ansatz.
+Es agiert als Kontrollprogramm auf einer zu testenden Applikation und kann gewisse Prüfungen
+auf dieser ausführen. Tatsächlich sind die beiden praktisch identisch, bauen sie doch beide
+auf JUnit \cite{website:junit} auf und erweitern dieses.
+
+\vspace{0.5cm}
+
+\textbf{QF-Test \cite{website:qftest}} bietet darüber hinaus eine eigene graphische Nutzeroberfläche
+und ein sogenanntes ``Capture / Replay'' System. Hierbei soll es Entwicklern erspart bleiben,
+Tests als Programme zu implementieren, anstattdessen bedient ein Tester durch die QF-Test-Maske
+hindurch ein zu prüfendes Programm, während die Eingaben und Ausgaben mitgeschnitten werden.
+Diese Aufnahme des Programmverhaltens gilt dann als ``Sollverhalten'' und wird in Folge
+durch automatisierte Wiederholung verglichen und geprüft. Dieselbe Serie von Eingaben muss
+bei Testdurchläufen eine identische Ausgabe zu diesem Soll hervorrufen, ansonsten
+wird ein Fehler im Programm vermutet. Dieser Fehler kann auch eine gewünschte Programmveränderung sein.
+
+Da allerdings hier ein Tester und nicht ein Entwickler die Tests erstellt und pflegt, ist dieses
+Verfahren arbeitszeittechnisch wesentlich effizienter als vorherige Methoden. Ein Tester muss
+nicht die Innereien des Programms verstehen oder verstehen können. Er muss das Programm lediglich
+bedienen können. Ebenso sind keine Programmierkenntnisse notwendig.
 
 
 \subsection{Kontinuierliche Qualitätskontrolle von Webanwendungen auf Basis maschinengelernter Modelle}\label{ssection:windmueller}
