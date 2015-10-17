@@ -16,7 +16,16 @@ Existierende Arbeiten Ähnlichem Inhalts sind z.B. \textbf{``GUITest: a Java lib
 GUI robustness testing'' \cite{GUITestBauersfeld}}: Eine Java-Bibliothek 
 (allerdings speziell für das Betriebssystem Mac OSX entwickelt), die
 vollautomatisch mögliche Inputs in einer beliebigen (allerdings hier nur an einer getesteten)
-Applikation der ``Mac OSX Accessibility API'' aufspürt und durchführt. Ein Unterschied zum
+Applikation der ``Mac OSX Accessibility API'' aufspürt und durchführt.
+
+Ähnlich wie die bei der Java Swing API existiert hierbei eine objektorientierte Baumstruktur,
+die sogenannte ``Widget Tree'', welche alle Elemente der graphischen Oberfläche enthält
+und insbesondere genormte Klassen und Schnittstellen zum Beispiel für Schalter
+und Knöpfe enthält. Dies erlaubt eine vollautomatische Verarbeitung:
+Jede tatsächlich implementierte Funktion lässt sich durch ein vorher definiertes
+``Eingabealphabet'' erreichen und auslösen.
+
+Ein Unterschied zum
 hier vorgestellten Konzept ist, dass das Tool nicht auf die Applikation beschränkt ist (es wird
 erwähnt, dass die Shutdown- und Reset-Tasten des Host-Betriebssystems ausgenommen werden
 mussten). Das hier implementierte Konzept ist für das wesentlich allgemeingültigere Java Swing
@@ -36,14 +45,17 @@ Textfeldeingaben wie das hier vorgestellte Konzept.
 Ein anderes Beispiel wäre \textbf{``A GUI Crawling-Based Technique for Android Mobile Application
 Testing'' \cite{AGCBTFAMAT}}. Hierbei wird in zwei seperaten Schritten zunächst eine graphische Applikation
 vollautomatisch auf mögliche Eingaben und anzeigbare Bildschirme durchsucht, also ein
-„Wegnetz“ ähnlich dem Vorschlagskonzept durch das Programm gelegt, um dann in einem zweiten
+``Wegnetz'' ähnlich dem Vorschlagskonzept durch das Programm gelegt, um dann in einem zweiten
 Schritt mit üblichen (regressiven) Test-Applikationen und –Vorgehensweisen Abläufe zu
 planen und tatsächlich zu prüfen. Der Unterschied und die Einschränkung hier ist
 hauptsächlich die Android-GUI-API sowie die Testumgebung eines Android-Emulators am
-Rechner. Auch ist der zweite Vorgehensschritt nicht automatisch und erfordert in jedem Fall
+PC-System. Auch ist der zweite Vorgehensschritt nicht vollautomatisch und erfordert in jedem Fall
 erheblichen Kontext bzw. Nutzerangaben.
 
 Ein Einsatz des vorgestellten Konzepts auf Android ist zwar theoretisch möglich, jedoch setzt
-man dort eine spezielle Variante von Swing ein, eine Anpassung bzw. Erweiterung des Programms
-wäre sehr wahrscheinlich notwendig. Auch stellt das Android-Betriebssystem seine eigenen Herausforderungen
-bezüglich Nutzbarkeit und insbesondere Programminteraktion.
+man dort eine spezielle Variante von Swing für die graphischen Oberflächen ein, 
+wodurch eine Anpassung bzw. Erweiterung des Programms sehr wahrscheinlich notwendig wäre. 
+Auch stellt das Android-Betriebssystem seine eigenen Herausforderungen
+bezüglich Nutzbarkeit und insbesondere auch Programminteraktion - das Konzept
+einer Android-Applikation als virtueller alleiniger Nutzer seines eigenen Systems
+erschwert offensichtlich jegliche Programmübergreifende Tätigkeiten.
