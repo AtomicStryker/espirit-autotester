@@ -5,8 +5,6 @@ import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -42,15 +40,15 @@ class TesterThread extends Thread {
 		for (; !isThreadAborted && indexCurrentComponentTested < componentListToTest.size(); indexCurrentComponentTested++) {
 
 			if (!isThreadAborted) {
-				debugLog(Level.FINE, "%s now testing it's component %d (from %d)\n", this, indexCurrentComponentTested, componentListToTest.size());
+				logger.log(Level.FINE, String.format("%s now testing it's component %d (from %d)\n", this, indexCurrentComponentTested, componentListToTest.size()));
 				final Window w = SwingUtilities.getWindowAncestor(componentListToTest.get(indexCurrentComponentTested));
 				if (w != null && !w.isDisplayable()) {
 					//  was disposed, did our popup die?
 					if (crawlerTester.testerThreadStack.size() > 1) {
-						debugLog(Level.FINE, "tester %s lost display context, attempting to recreate popup and continue from idx %d\n", this, indexCurrentComponentTested);
+						logger.log(Level.FINE, String.format("tester %s lost display context, attempting to recreate popup and continue from idx %d\n", this, indexCurrentComponentTested));
 						crawlerTester.popupComponentIndex = indexCurrentComponentTested;
 					} else {
-						debugLog(Level.FINE, "tester %s lost display context, but there is no previous context to restore anything from...\n", this);
+						logger.log(Level.FINE, String.format("tester %s lost display context, but there is no previous context to restore anything from...\n", this));
 					}
 					break;
 				}
@@ -73,14 +71,14 @@ class TesterThread extends Thread {
 			if (crawlerTester.testerThreadStack.peek() == this) {
 				crawlerTester.testerThreadStack.pop();
 			} else {
-				debugLog(Level.SEVERE, "#1 TesterThread running %s is not the one ontop of the stack %s WTF\n", this, crawlerTester.testerThreadStack.peek());
+				logger.log(Level.SEVERE, String.format("#1 TesterThread running %s is not the one ontop of the stack %s WTF\n", this, crawlerTester.testerThreadStack.peek()));
 			}
 
 			// then re-do the last thing
 			final TesterThread peek = crawlerTester.testerThreadStack.peek();
 			// subsequent presses may have removed components
-			peek.indexCurrentComponentTested = Math.max(peek.componentListToTest.size()-1, peek.indexCurrentComponentTested);
-			debugLog(Level.FINE, "tester attempting to restore rootWindow context from button %s, index %d\n", Util.componentToString(peek.componentListToTest.get(peek.indexCurrentComponentTested)), peek.indexCurrentComponentTested);
+			peek.indexCurrentComponentTested = Math.min(peek.componentListToTest.size()-1, peek.indexCurrentComponentTested);
+			logger.log(Level.FINE, String.format("tester attempting to restore rootWindow context from button %s, index %d\n", Util.componentToString(peek.componentListToTest.get(peek.indexCurrentComponentTested)), peek.indexCurrentComponentTested));
 
 			crawlerTester.expectingPopup = true;
 			int offset = 0;
@@ -88,13 +86,13 @@ class TesterThread extends Thread {
 			while (!isThreadAborted && crawlerTester.expectingPopup) {
 				if (remainingAttempts > 0 && crawlerTester.testerThreadStack.peek().indexCurrentComponentTested + offset >= 0) {
 					crawlerTester.pseudoClickButton(peek.componentListToTest.get(peek.indexCurrentComponentTested + offset), null, null);
-					debugLog(Level.FINEST, "tester now trying button index %d to recreate lost context\n", peek.indexCurrentComponentTested + offset);
+					logger.log(Level.FINEST, String.format("tester now trying button index %d to recreate lost context\n", peek.indexCurrentComponentTested + offset));
 					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
 					offset--;
 					remainingAttempts--;
 					skipStackPop = true;
 				} else {
-					debugLog(Level.FINE, "popup restoration failed ... just moving on\n");
+					logger.log(Level.FINE, "popup restoration failed ... just moving on");
 					skipStackPop = false;
 					crawlerTester.popupComponentIndex = -1;
 					crawlerTester.expectingPopup = false;
@@ -111,7 +109,7 @@ class TesterThread extends Thread {
 					if (crawlerTester.testerThreadStack.peek() == this) {
 						crawlerTester.testerThreadStack.pop();
 					} else {
-						debugLog(Level.SEVERE, "#2 TesterThread running %s is not the one ontop of the stack %s WTF\n", this, crawlerTester.testerThreadStack.peek());
+						logger.log(Level.SEVERE, String.format("#2 TesterThread running %s is not the one ontop of the stack %s WTF\n", this, crawlerTester.testerThreadStack.peek()));
 					}
 				}
 			}
@@ -119,7 +117,7 @@ class TesterThread extends Thread {
 			// also murder the topmost rootWindow just in case
 			if (rootWindow instanceof Window && !crawlerTester.targetGuiName.equals(rootWindow.getClass().getSimpleName())) {
 				final Window windowCast = (Window) rootWindow;
-				debugLog(Level.FINE, "Finshed testing %s from %s, disposing\n", Util.componentToString(rootWindow), this);
+				logger.log(Level.FINE, String.format("Finshed testing %s from %s, disposing\n", Util.componentToString(rootWindow), this));
 				crawlerTester.killWindow(windowCast, toString());
 				crawlerTester.counterWindowsHandled++;
 				crawlerTester.previousWindows.add(rootWindow);
@@ -133,7 +131,7 @@ class TesterThread extends Thread {
 
 				if (!isThreadAborted) {
 					crawlerTester.threadSleep(crawlerTester.config.sleepTimeMillisBetweenFakeMouseClicks);
-					debugLog(Level.FINE, "resuming paused thread %s after popup handling\n", crawlerTester.testerThreadStack.peek());
+					logger.log(Level.FINE, String.format("resuming paused thread %s after popup handling\n", crawlerTester.testerThreadStack.peek()));
 					crawlerTester.testerThreadStack.peek().isThreadPaused = false;
 				} else {
 					crawlerTester.testerThreadStack.peek().isThreadAborted = true;
@@ -143,14 +141,8 @@ class TesterThread extends Thread {
 		}
 
 		if (isThreadAborted) {
-			debugLog(Level.INFO, "Thread %s aborted.\n", this);
+			logger.log(Level.INFO, String.format("Thread %s aborted.\n", this));
 		}
-	}
-
-
-	private void debugLog(final Level lvl, final String strf, final Object... args) {
-
-		logger.log(lvl, String.format(strf, args));
 	}
 
 
