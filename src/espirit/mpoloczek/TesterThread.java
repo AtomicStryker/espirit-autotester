@@ -78,7 +78,8 @@ class TesterThread extends Thread {
 
 			// then re-do the last thing
 			final TesterThread peek = crawlerTester.testerThreadStack.peek();
-			if (peek.indexCurrentComponentTested == peek.componentListToTest.size()) peek.indexCurrentComponentTested--;
+			// subsequent presses may have removed components
+			peek.indexCurrentComponentTested = Math.max(peek.componentListToTest.size()-1, peek.indexCurrentComponentTested);
 			debugLog(Level.FINE, "tester attempting to restore rootWindow context from button %s, index %d\n", Util.componentToString(peek.componentListToTest.get(peek.indexCurrentComponentTested)), peek.indexCurrentComponentTested);
 
 			crawlerTester.expectingPopup = true;

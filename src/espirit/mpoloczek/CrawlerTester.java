@@ -626,7 +626,7 @@ public class CrawlerTester {
 				if (lastAction > 0 && curTime - lastAction > 10000l) {
 					// nothing happened for 10 seconds! are we deadlocked?!
 					lastAction = -1;
-					debugLog(Level.SEVERE, "No actions were taken for 10 seconds, deadlock situation");
+					debugLog(Level.SEVERE, "No actions were taken for 10 seconds, deadlock situation??");
 				}
 
 				final int seconds = (int) Math.rint((curTime - startTimeTest) / 1000);
