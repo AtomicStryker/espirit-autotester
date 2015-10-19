@@ -4,6 +4,7 @@ package espirit.mpoloczek;
 import javax.swing.AbstractButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.Component;
 import java.util.logging.ConsoleHandler;
@@ -37,6 +38,9 @@ public class Util {
 		} else if (c instanceof JTextField) {
 			final JTextField tf = (JTextField) c;
 			answer = c.getClass().getSimpleName() + ": [" + tf.getText() + ']';
+		} else if (c instanceof JLabel) {
+			final JLabel jl = (JLabel) c;
+			answer = c.getClass().getSimpleName() + ": [" + jl.getText() + ']';
 		}
 		return ": []".equals(answer) ? c.toString() : answer;
 	}
