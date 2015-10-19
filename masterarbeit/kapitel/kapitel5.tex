@@ -3,14 +3,17 @@
 \chapter{Konkret getestete Applikationen}\label{chapter:concretetests}
 
 
-Dieses Kapitel
+Dieses Kapitel stellt nun einige Ergebnisse, die mittels des nach dem Konzepts tatsächlich
+implementierten vollautomatischen GUI-Crawler und -Tester erzeugt wurden.
+Als getestetes Programm dient hierbei eine Enwicklerversion der von der
+e-Spirit AG entwickelten Software FirstSpirit \cite{website:firstspirit}.
 
 
 \section{Resultate}\label{section:testresults}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.85\textwidth]{bilder/screenshot_freespirit.png}
+	\includegraphics[angle=90,width=0.85\textwidth]{bilder/screenshot_freespirit.png}
 	\caption{Screenshot der e-Spirit CMS-Anwendung FirstSpirit \cite{website:firstspirit} 
 	sowie anhängigem Swing Explorer, der den Komponentenbaum der Applikation darstellt}
 	\label{fig:screenshot_freespirit}
@@ -18,10 +21,21 @@ Dieses Kapitel
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.85\textwidth]{bilder/model_freespirit.png}
+	\includegraphics[width=0.85\textwidth]{bilder/model_firstspirit_notext.png}
 	\caption{mit Gephi \cite{website:gephi} und dem Yifan Hu Algorithmus \cite{hu2005efficient}
     sowie noch für Lesbarkeit maneull angepasste visualierte Graphausgabe 
-	des Autotesters über FirstSpirit bei einem der ergiebigeren Durchläufe.}
+	des Autotesters über FirstSpirit, hoher Zoomfaktor, keine Beschriftungen.
+	Die Pfeile des gerichteten Graphen sind so sichtbar.}
+	\label{fig:model_firstspirit_notext}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[angle=90,width=0.85\textwidth]{bilder/model_freespirit.png}
+	\caption{mit Gephi \cite{website:gephi} und dem Yifan Hu Algorithmus \cite{hu2005efficient}
+    sowie noch für Lesbarkeit maneull angepasste visualierte Graphausgabe 
+	des Autotesters über FirstSpirit bei einem der ergiebigeren Durchläufe.
+	Beschriftungen aktiviert.}
 	\label{fig:model_freespirit_06.10.2015}
 \end{figure}
 
@@ -30,8 +44,9 @@ Dieses Kapitel
 Die Knoten sind in Dreiergruppen angeordnet: Ein Ursprungsfenster, ein Übergangsknoten
 (bzw. ein Wort des Modells), sowie der resultierende Zustand bzw. das sich öffnende Fenster.
 Dies ist schlicht eine Frage der Lesbarkeit - anstelle der mittleren Knoten für Übergänge sollten
-eigentlich schlicht beschriftete Kanten benutzt werden, aber dies schränkt die Möglichkeiten,
-den anhängigen Text in eine lesbare Form zu bringen, zu stark ein.
+eigentlich einfach beschriftete Kanten benutzt werden, aber dies schränkt die Möglichkeiten,
+den anhängigen Text in eine lesbare Form zu bringen, zu stark ein. Die Alternativen waren
+Platzhaltesymbole im Bild und eine gewaltige Legende, oder diese Variante.
 
 
 \section{Vergleich mit klassischen Tests}\label{section:testcomparisonclassic}
