@@ -164,10 +164,46 @@ wenigen Dutzend Millisekunden. Da realitätsnahe
 Eingaben simuliert werden sollen, würde es auch wenig Sinn
 machen, Eingaben noch schneller erfolgen zu lassen. Kein Mensch
 wäre in der Lage, so schnell so viele verschiedene Knöpfe
-zu drücken.
+zu drücken. Ein mögliches Problem stellt sich allerdings,
+wenn die Verarbeitung einer Eingabe durch das Programm länger dauert,
+als diese Wartezeit vorsieht - da es sich um mehrfach getrennte
+Kontrollflüsse handelt, gibt es keine Möglichkeit,
+festzustellen, wann die Verarbeitung einer Eingabe abgeschlossen ist.
 
+Folglich können schon neue Eingaben in die Warteschleife
+eingefügt werden, während das Programm noch mit der Verarbeitung
+vorheriger Instanzen beschäftigt ist, und insbesondere kann
+dadurch bei einem sich neu öffnendem Fenster bzw. einer Reaktion
+der getesteten Applikation nicht mit Sicherheit davon ausgegangen
+werden, dass die zuletzt getätigte Eingabe dafür verantwortlich zeichnet.
 
-Algorithmen auf Seiten \pageref{alg:autotesterpopup} und \pageref{alg:autotestermain}
+Die Herausforderung in diesem Zusammenhang ist der vollständige Test
+aller auftretenden Komponenten, die Eingaben akzeptieren, wobei aber
+die die Komponenten enthaltenen Fenster jederzeit aufgrund einer Eingabe
+schliessen können. Diese Fenster müssen wieder geöffnet werden, und dafür
+muss die Frage beantwortet werden können, welche getätigte Eingabe zum
+Öffnen dieses spezifischen Fensters geführt hat.
+
+Da jede Testerinstanz
+eine nach dem Crawldurchlauf und Mischung der Ergebnisse eine von 
+der Reihenfolge her immutable Liste enthält, lässt sich dieses Problem aber
+einfach lösen: Eine Testerinstanz gibt bei Verlust ihres getesteten Fensters
+an die übergeordnete Instanz zurück, welche dann rückwärts in der Liste
+schreitet und Eingaben durchführt, um das verlorene Fenster wieder aufzurufen.
+Eventuell auftretende falsche, schon abgehandelte Fenster werden ignoriert.
+Sobald das gesuchte Fenster wieder auftritt, geht der Kontrollfluss wieder an
+die zwischenzeitlich pausierte untergeordnete Instanz, und diese setzt ihren
+Test auf den restlichen, bisher ungetesteten Bestandteilen des Fensters fort.
+Dieser Algorithmus wird auf Seite \pageref{alg:autotesterwindowloss} erläutert.
+
+Die Hauptschleife des Testprogramms wird durch den Algorithmus auf auf Seite 
+\pageref{alg:autotestermain} beschrieben, die Behandlung von auftretenden
+Fenstern auf Seite \pageref{alg:autotesterpopup}. Der Tester selbst erzeugt
+ebenfalls eine graphische Oberfläche, dies ist allerdings in erster Linie
+ein Platzhalter für eventuelle Tests mit menschlicher Beteiligung und enthält
+lediglich eine Schaltfläche zum Abbruch des laufenden Tests sowie eine
+kontinuierliche Zeitanzeige, um eventuelle Deadlocks bzw. Verklemmungen \cite{deadlocks},
+die während des Tests auftreten, zu erkennen.
 
 
 \begin{algorithm} \SetAlgoLined
@@ -183,8 +219,9 @@ Algorithmen auf Seiten \pageref{alg:autotesterpopup} und \pageref{alg:autotester
 \begin{algorithm} \SetAlgoLined
 	\KwData{Wurzelkomponente/Fenster $A$, Liste von Problemstrings $StrL$;}
 	\KwResult{Alle an $A$ anhaengigen Komponenten wurden getestet}
-	$A$ auf Komponenten durchsuchen\;
-	\For{Komponente $k \in A$}
+	Komponentenliste $C: \longleftarrow A$ auf Komponenten durchsuchen\;
+	$C$ ein Mal zufaellig durchmischen\;
+	\For{Komponente $k \in C$}
 	{
 		\If{$k \in Eingabeelemente$}
 		{
@@ -210,11 +247,45 @@ Algorithmen auf Seiten \pageref{alg:autotesterpopup} und \pageref{alg:autotester
 	\label{alg:autotestermain}
 \end{algorithm}
 
+\begin{algorithm} \SetAlgoLined
+	\KwData{Laufender Test $T$, vorheriger Test $Ta$, Fenster $F$ wurde vor Beendigung des Tests vom Programm geschlossen}
+	\KwResult{Test $T$ setzt auf neuem, identischen Fenster $Fn$ fort}
+	$Ts \longleftarrow$ laufende Testinstanz $T$ anhalten, sichert Zustand\;
+	$T \longleftarrow Ta$, $T$ in Rückwärtslauf schalten\;
+	\For{vorherige betätigte Komponente $k \in C(T)$}
+	{
+		\If{Auftreten Fenster $Fn$ mit $Fn == F$}
+		{
+			$T$ in Vorwärtslauf schalten\;
+			Testinstanz $T$ wieder anhalten, sichert Zustand\;
+			$T \longleftarrow Ts$, $F$ mit $Fn$ ersetzen, Zustand wiederherstellen\;
+			Diese Suchschleife beenden, $T$ fortfahren lassen\;
+		}
+	}
+	
+	\caption{Verhalten bei Verlust des zu testenden Fensters}
+	\label{alg:autotesterwindowloss}
+\end{algorithm}
+
 
 \section{Problematische String-Eingaben}\label{section:naughtystrings}
 
-Es wird eine gepflegte Liste aus Entwicklerkreisen verwendet, die ``Big List of Naughty Strings'' 
-\cite{website:naughty-strings}. Diese enthält unter Anderem
+Es wird eine online erhältliche, quelloffen gepflegte Liste aus Entwicklerkreisen verwendet, 
+die ``Big List of Naughty Strings'' \cite{website:naughty-strings}. Diese enthält unter viele bekannte
+Vertreter typischer Fehler oder Lücken bei der Verarbeitung von Zeichenketten in Programmen und
+insbesondere auch im Internet. Es finden sich Zeichendarstellungen reservierter Begriffe wie
+``null'' oder ``true'', SQL-Befehle, HTML und Javascript, exotische Unicode-Zeichen wie das
+``zero-width space'' \cite{unicodezerowidth} oder auch diverse DOS- oder Unix-spezifische
+Anweisungen oder Optionen für Kommandozeilen.
+
+Ziel ist es hierbei primär, mögliche durch Lücken in der Zeichenverarbeitung ausgelöste Probleme oder gar
+Abstürze des Programms schnell herbeizuführen, damit diese diagnostiziert und behoben werden können.
+Dies wird auch als ``Input Sanitization'' bzw. Eingabevalidierung bzw. -prüfung bezeichnet. 
+Obwohl dieses Verfahren primär zur Verteidigung gegen Skript-Angriffe auf Webseiten dient
+\cite{website:eingabepruefung}, zählt eine wenig sinnvolle, aber dennoch mögliche Eingabe, 
+die das zu testende Programm in der Ausführung beeinträchtigt oder sogar stoppt, klar zur 
+Softwarequalität und sollte korrekt behandelt werden. Eine Fehlermeldung an den Nutzer zum
+Beispiel ist eine völlig legitime Reaktion, eine unbehandelte Ausnahme dagegen nicht.
 
 
 \section{Zustandserfassung, -sicherung und -verfolgung sowie Kontrollmechanismen}\label{section:statemonitoring}
