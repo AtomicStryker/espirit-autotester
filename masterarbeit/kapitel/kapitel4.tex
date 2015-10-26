@@ -238,7 +238,7 @@ die während des Tests auftreten, zu erkennen.
 			}
 			$k \longleftarrow ``Eintippen'' zufaelliges s \in StrL$\;
 		}
-		\If{$Auftreten neues Fenster/Popup P$}
+		\If{Auftreten neues Fenster/Popup $P$}
 		{
 			Popupbehandlung($P$)\;
 		}
@@ -287,10 +287,123 @@ die das zu testende Programm in der Ausführung beeinträchtigt oder sogar stopp
 Softwarequalität und sollte korrekt behandelt werden. Eine Fehlermeldung an den Nutzer zum
 Beispiel ist eine völlig legitime Reaktion, eine unbehandelte Ausnahme dagegen nicht.
 
+Je nach Betriebssystem führen unterschiedliche Symbole und Begriffe z.B. als Dateinamen
+manchmal zu sonderbaren Effekten und Fehlermeldungen oder sind schlicht verboten.
+Beispiele hierfür wären \textbf{COM} oder auch von geschweiften Klammern \{\} umschlossene
+Begriffe unter Windows, oder \textbf{dev} unter Linux. Programme, die Ihre eigenen
+Dateioperationen mit wählbaren Dateinamen durchführen, sehen häufig nicht eine vollständige
+Behandlung all dieser möglichen Sonderfälle vor, und die Programmiersprache Java erzwingt
+trotz vorgegebenen I\\O Ausnahmebehandlungen nicht, alle Eventualitäten abzudecken.
+
 
 \section{Zustandserfassung, -sicherung und -verfolgung sowie Kontrollmechanismen}\label{section:statemonitoring}
 
-Wieso Graphstruktur
-Knotengleichheit - Probleme Java Blackbox
-Komponenten zu Strings, wie und wieso
-JGraphT, graphml Format
+Um eine Überprüf-, Nachvollzieh- und Reproduzierbarkeit der vom Automatischen Tester
+durchgeführen Eingaben sicherzustellen, müssen diese bei jedem Testdurchlauf erschöpfend
+mitprotokolliert werden. Da die Erstellung eines Modells der zu testenden Anwendung 
+ebenfalls als Ziel definiert wurde, bietet sich ein Graph als Datenstruktur an. Die Analogie
+eines solchen sowohl zum Java-AWT/Java-Swing Datenmodell als auch zu den meisten 
+Automatendarstellungen der Informatik lässt eine einfache und Intuitive Implementation
+erhoffen. Auch lassen sich die von einer Applikation geöffneten Fenster als Knoten und die
+dorthin führenden Eingaben als Knotenübergänge auffassen, und es existieren
+fertige Java-Bibliotheken für normierte Graphdarstellung. Für dieses Projekt genutzt
+werden die Quelloffene Graphbibliothek GraphT \cite{website:jgrapht} sowie die
+ebenfalls offene Visualisierungsplattform Gephi \cite{website:gephi}.
+
+Sobald man die Frage nach dem \textbf{Wie} beantwortet hat, stellt sich als Nächstes
+eine Ähnliche nach dem \textbf{Was}. Unglücklicherweise sind Java-Applikationen der realen
+Welt nicht nach akademischen Maßstäben gläsern und überschaubar. Kurz nach dem
+Start eines konkreten Testdurchlaufs für FirstSpirit durch den Autotester zeigt der
+Java-Debugger bereits 20 verschiedene Threads oder Kontrollfäden an, die Alle auf
+die eine oder andere Weise den Tester oder das Testobjekt beeinflussen können.
+Java ist objektorientiert \cite{java7insel}, was im Gegensatz zu den Alternativen 
+wie imperativen oder funktionellen Programmen in der Theorie erlaubt, jede laufende 
+Instanz eines Programms in einen für Menschen verständlichen Datensatz zu übersetzen.
+
+In der Praxis zeigt sich aber, dass die Masse an Kontrollfäden, Objekten und
+sich gegenseitig beeinflussenden Nebeneffekten eine vollständige Zustandserfassung
+und - verfolgung äusserst impraktikabel, wenn auch nicht völlig unmöglich, macht.
+Das zu testende Programm muss folglich als ``Black Box'' verstanden werden.
+Obwohl wir technisch in der Lage sind, die Inhalte einzusehen, ist die genaue
+Funktion ein Rätsel, und wir können lediglich Rückschlüsse aus beobachtetem
+Verhalten ziehen. Für unsere Zustandserfassung heisst dies, dass wir lediglich
+die Klasse einer dargestellten Oberflächenelements sowie aus globalen
+Schnittstellen erhältliche Informationen nutzen können, um einen beliebigen Zustand
+von einem Anderen zu unterscheiden. 
+
+Diese Methodik hängt bis zu einem gewissen Grad von der jeweiligen Implementation 
+des getesteten Programms ab und ist nicht frei von möglicher Ambivalenz,
+insbesondere bei generellen, häufig benutzten Elementen - aber wenn
+das Verhalten eines Objekts von Instruktionen und nicht von Daten abhängt,
+gibt es für den Tester keine praktikable Möglichkeit, dies festzustellen
+oder ohne Kontext irgendetwas Sinnvolles mit der Information anzufangen.
+
+Ein Beispiel hierfür ist im Rahmen des FirstSpirit-Programms die Klasse
+``SearchDialog''. Sie dient der Auswahl einer Datei oder eines Ordners
+des Betriebssystems. Die Klasse beinhaltet keine Datenfelder, die für
+eine Identifizierung einer konkreten Instanz hilfreich wären. Sie ist
+Unterklasse von SelfDisposingDialog, welches ebenfalls keine Felder
+enthält, und schliesslich JDialog, eine Basisklasse der Java-Swing-API.
+Diese garantiert nun die Präsenz eines Titels für jedwede Instanz
+seiner Klassen, selbst wenn dieser nicht definiert oder leer sein sollte.
+Worin unterscheiden sich nun verschiedene Instanzen von ``SearchDialog''?
+
+Die Antwort ist leider: In den Anweisungen, die an die Schnittstellen
+des jeweiligen Objekts geschrieben wurden. Wir können dazu auf einen
+aussagekräftigen, eindeutigen Titel des Suchfensters hoffen. Die
+Anweisungen lesen und vergleichen zu wollen wäre zwar theoretisch
+Möglich, aber praktisch nutzlos. Die Instanz ist von Ihrem Nutzungskontext
+abhängig, und Kontext ist etwas, dass der Autotester nicht verstehen kann.
+Lediglich die Eingaben, die zu dem Suchfenster geführt haben,
+lassen weitere Rückschlüsse darauf zu, wofür es dienen könnte.
+
+Für den Autotester und eine für Menschen verständliche Protokollierung
+wurde die Lösung einer eigenen \textbf{toString()} Methode gewählt.
+Hierbei nimmt der Tester ein beliebiges darstellbares Objekt aus dem Testprogramm,
+vergleicht es mit einer Reihe von der Java-Swing-API vorgegebenen
+Objekten und Schnittstellen, und wählt eine passende Textdarstellung aus.
+Üblicherweise ist dies der ``simple Classname'', der einfache Klassenname,
+da dieser nach gängigen Java-Konventionen den Nutzen einer Klasse zumindest
+andeutet, kombiniert mit den möglicherweise vorhandenen kritischen Daten
+der spezifischen Typklasse. Im Falle eines Fensters beispielsweise wäre
+dies die Zeichenkette, die in der Titelzeile angezeigt wird. Im Fall
+eines beschrifteten Knopfes die Beschriftung. Im Fall eines Glyph-Knopfes
+ohne jegliche Beschriftung ziehen wir den ``Tooltip'' heran,
+die vom Programmierer vorgesehene helfende Zeichenkette, die angezeigt
+wird, wenn der Nutzer seinen Mauszeiger kurz über das betreffende Symbol hält.
+Wir verlassen uns also auf gängige Programmierpraxis sowie Eigenarten der 
+Java-Datenstrukturen, um ähnliche Instanzen zu identifizieren.
+
+Eine eigene Graphimplementation für das Projekt zu verfassen wäre
+außerhalb des Rahmens, daher wurde nach einem möglichst verbreitetem
+Datenstandard und passenden Bibliotheken gesucht. Die Wahl fiel auf
+die Quelloffenen Projekte der Graphbibliothek GraphT \cite{website:jgrapht} 
+sowie der Visualisierungsplattform Gephi \cite{website:gephi}.
+Das gewählte Datenformat ist \textbf{.graphml} \cite{website:graphml}.
+Es handelt sich hierbei um einfache Textdateien im xml-Format,
+welche auch menschlich noch lesbar und verständlich sind, und notfalls
+auch editiert oder korrigiert werden könnten. 
+
+Innerhalb des Testers erstellt JGraphT während des Testvorgangs 
+ein Datenmodell des Graphen der getesteten Applikation. Nach erfolgreichem
+Abschluss desselben wird das Resultat in besagtem graphml-Format
+in einer eindeutig nach dem Testdatum benannten Datei abgespeichert.
+Diese Datei ist dann zwar vollständig und auch von Menschen lesbar,
+aber noch absolut undurchsichtig. Visualisierung ist notwendig,
+um die Informationen in eine verständliche Form zu bringen.
+Hierzu wird wahlweise Gephi verwendet. Es öffnet graphml-Dateien
+und erlaubt die automatische Neuanordnung eines Graphen auf dem
+Bildschirm, um maximale Ansehnlichkeit zu erzielen.
+
+Nach einigen Probeläufen erwies sich der mitgelieferte 
+Yifan-Hu-Algorithmus \cite{hu2005efficient} als am sinnvollsten,
+um einen komplexen Graph sternförmig auszubreiten. Ein beispielhaftes
+Ergebnis lässt sich auf Seite \pageref{fig:model_firstspirit_notext}
+begutachten. In der Grundeinstellung werden die von GraphT
+abgespeicherten Knotendaten bzw. Programmzustände nicht angezeigt.
+Diese relativ umfangreichen Zeichenketten erfordern für eine minimale
+Lesbarkeit noch manuelles Verschieben und Sortieren der Graphknoten.
+Ist dies aber erfolgt, erhält man aus dem Durchlauf eines blind testenden
+Programms aber tatsächlich eine deckende Abbildung der getesteten
+Applikation bzw. Ihrer möglichen Fensterdarstellungen. Zu sehen
+ist ein solches finales Resultat auf Seite \pageref{fig:model_freespirit_06.10.2015}.
