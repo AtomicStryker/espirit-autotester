@@ -44,6 +44,7 @@ public class ModelWriter {
 		logger.log(Level.INFO, String.format("MW adding transition: %s -> %s -> %s\n", wrappedToString(prevState), transString, wrappedToString(resultState)));
 		graph.addEdge(wrappedToString(prevState), transString);
 		graph.addEdge(transString, wrappedToString(resultState));
+		graph.addEdge(wrappedToString(resultState), wrappedToString(prevState));
 	}
 
 	public void exportToFile() {
