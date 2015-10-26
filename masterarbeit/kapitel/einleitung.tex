@@ -18,7 +18,7 @@
 \url{http://www.freesound.org/}
 
 %Anfuehrungszeichen:
-``Derp''
+\glqq{}Derp\grqq{}
 
 % Bild:
 \begin{figure}
@@ -67,70 +67,75 @@ durch dedizierte (weniger kostspielige) Tester, oder auch die Automatisierung vo
  
 Speziell für den Fall von in der Industrie weit verbreiteten graphischen Nutzeroberflächen
 mittels Java Swing \cite{JavaSwing} gibt es zahlreiche Möglichkeiten variierender
-Komplexität wie z.B. QF-Test \cite{website:qftest}, uispec4j \cite{website:uispec4j},
-FEST \cite{website:fest} oder auch Jemmy \cite{website:jemmy}. Viele bieten selbst interaktive
-GUI zur nutzerfreundlichen Testerstellung, erweiterbare Module und die Möglichkeit eigener Skripte. Auch
-Integration von JUnit \cite{website:junit} oder TestNG \cite{website:testng}
-und Eclipse-Unterstützung \cite{website:eclipse} sind verbreitet. Was diese
+Komplexität wie z.B. \textbf{QF-Test} \footnote{\url{ http://www.qfs.de/en/qftest/index.html }},
+uispec4j \footnote{\url{ https://github.com/UISpec4J/UISpec4J }},
+FEST \footnote{\url{ https://code.google.com/p/fest/ }} oder auch 
+Jemmy \footnote{\url{ https://jemmy.java.net/ }}. Viele bieten selbst interaktive
+GUIs zur nutzerfreundlichen Testerstellung, erweiterbare Module und die Möglichkeit eigener Skripte. Auch
+Integration von JUnit \footnote{\url{ http://junit.org/ }} oder 
+TestNG \footnote{\url{ http://testng.org/doc/index.html }}
+und Eclipse-Unterstützung \footnote{\url{ http://www.eclipse.org/ }} sind verbreitet. Was diese
 Lösungsmöglichkeiten allerdings gemeinsam haben, ist die notwendige VORGABE der
 durchzuführenden Eingaben und der erwarteten, zu überprüfenden Resultate. Dies ist
 insofern ein Problem, dass ein Entwickler, der eine bestimmte, evtl. abwegige Eingabe nicht
 voraussieht, vermutlich auch keinen Test dafür vorsehen wird. Selbst ein Tester wird unter
-Umständen nicht ALLE möglichen Eingabekombinationen probieren, insbesondere auch
-ungültige, schwer mit einer europäischen Tastatur zu erstellende, oder auch unsinnige Varianten. 
+Umständen nicht ALLE, insbesondere auch die ungültigen, möglichen Eingabekombinationen probieren.
+Dann gibt es noch weitere, schwer mit einer europäischen Tastatur zu erstellende, oder auch unsinnige Varianten. 
  
 
 
 \section{Ziel dieser Arbeit}\label{structurelatex}
 
 
-Der hier vorgestellte Vorschlag soll nun in einem neuen Werkzeug resultieren, welches vollautomatisch
-funktionieren soll und das
+Der hier vorgestellte Vorschlag wird nun in einem neuen Werkzeug resultieren, welches vollautomatisch
+funktioniert und das
 sich nicht primär mit dem gewünschten und erwartetem Verhalten der getesteten GUI beschäftigt, sondern
 vielmehr systematisch Vertreter aller technisch möglichen Eingaben (Sonderzeichen, extrem
 lange Eingaben etc.) eingibt. Es wird völlig selbsttätig Knöpfe und Eingabemasken einer zu testenden
-Applikation erkennen und systematisch mögliche Eingabe-Kombinationen durchprobieren, und für eventuelle
+Applikation erkennen, systematisch mögliche Eingabe-Kombinationen durchprobieren, und für eventuelle
 Folgebildschirme oder sich auf Knopfdruck öffnende neue Bildschirmelemente dasselbe tun.
-Wenn ein sinnhaltiger Login o.Ä. nötig ist, um an die
-„Innereien“ eines Programms zu kommen, muss das natürlich dennoch manuell vorgesehen oder
-durchgeführt werden. Ebenso sollten Eingaben eines gewissen Kontexts (z.B. ``Programm beenden'')
+Wenn eine sinnhaltiger Anmeldung o.Ä. nötig ist, um an die
+\glqq{}Interna\grqq{} eines Programms zu kommen, muss das natürlich dennoch manuell vorgesehen oder
+durchgeführt werden. Ebenso sollten Eingaben eines gewissen Kontexts (z.B. \glqq{}Programm beenden\grqq{})
 vermieden werden, welche den Test vorzeitig beenden könnten.
  
 Das Vorgehen des Werkzeugs soll dann in einer Baum- oder Graphartigen
-Struktur mitprotokolliert werden - hierfür wird JGraphT verwendet \cite{website:jgrapht} - 
-um einerseits auch bei sich selbsttätig oder durch Eingaben schliessenden Elementen diese wieder
-zu öffnen zu können, um alle Eingaben ausprobieren zu können, oder auch, um auftretende Zyklen 
-zu erkennen sowie um erzeugte und erkannte Fehler letztendlich reproduzieren zu können.
-Eine ansehnliche Visualisierung btw. Modellierung des getesteten Programm ist ein angenehmer
+Struktur mitprotokolliert werden - hierfür wird JGraphT verwendet \footnote{\url{ http://http://jgrapht.org/ }} --
+um einerseits auch bei sich selbsttätig oder durch Eingaben schließenden Elementen diese wieder
+neu zu öffnen, um alle Eingaben ausprobieren zu können, oder auch, um auftretende Zyklen 
+zu erkennen sowie um erzeugte und erkannte Fehler letztendlich zu reproduzieren.
+Eine ansehnliche Visualisierung btw. Modellierung des getesteten Programms ist ein angenehmer
 Seiteneffekt.
 
 Es ist unrealistisch, z.B. in
 einem Texteingabefeld jeden existierenden String zu probieren, hier muss eine möglichst
-problematische und dennoch endliche Untermenge gefunden werden.
+fehlertreibende und dennoch endliche Untermenge gefunden werden.
 
 Schaltbare Elemente oder Auswahlen stellen ebenso
-eine potentiell unüberschaubare Zustandsmenge der Applikation dar und müssen für eine
+eine potenziell unüberschaubare Zustandsmenge der Applikation dar und müssen für eine
 zufriedenstellende Abdeckung möglicher Anwendungsfälle mithilfe von
 Pseudozufallsmethoden getestet werden. Überlegungen bezüglich eventuell überdauernder Programmeinstellungen
-aus vorherigen Tests sind auch nötig - zufällige Tastendrücke könnten zu irreversiblen Schäden an
+aus vorherigen Tests sind auch nötig -- zufällige Tastendrücke könnten zu irreversiblen Schäden an
 Programmdateninhalten führen, und weitere Tests einschränken oder irrelevant machen. Ein Rücksetzen
 der Applikation auf einen ursprünglichen Gesamtzustand ist also evtl. notwendig, soweit anwendbar.
  
 Weiterhin gibt verschiedene Ansätze, so einen Test durchzuführen: Sollte überhaupt die
-grafische Oberfläche erzeugt, und dann Mausklicks darauf simuliert werden? Oder sollte der
+grafische Oberfläche erzeugt und dann Mausklicks darauf simuliert werden? Oder sollte der
 Tester eher alle möglichen Kontrollflüsse quasi statisch bzw. offline ausführen? Resultierende
 Fehler und Meldungen sollten geeignet von den System- und Errorstreams gelesen und
 protokolliert werden, und man könnte auch eine Schnittstelle für auftretende Exceptions oder
 Runtime-Errors vorsehen oder sie aus der Applikation abfangen oder mitschneiden. 
  
-Die Entwicklung und Implementierung sowie die Anwendung dieses Werkzeugs auf eine Java
-Swing Applikation der e-Spirit AG, FirstSpirit \cite{website:firstspirit}, ist der geplante 
+Die Entwicklung und Implementierung sowie die Anwendung dieses Werkzeugs auf eine Java-Swing-Applikation
+der e-Spirit AG, FirstSpirit 
+\footnote{\url{ http://www.e-spirit.com/de/produkt/arbeiten-mit-firstspirit/usability-fuer-redakteure/ }}, 
+ist der geplante 
 Umfang dieser Abschlussarbeit. Zunächst werden existierende Methoden und Lösungen der automatisierten
 Testverfahren auf graphischen Oberflächen betrachtet und im Kontext zum hier vorgestellten Konzept
 bewertet.
  
 Weitere Überlegungen, die vermutlich nicht mehr im Umfang dieser Master-Arbeit sein
 würden, aber die z.B. als Erweiterungsmöglichkeiten genannt werden könnten, sind die
-Nutzung von Bilderkennung / Computer Vision, um auch über Java Swing hinaus GUI testen zu
+Nutzung von Bilderkennung / Computer Vision, um auch über Java Swing hinaus GUIs testen zu
 können. Hierbei muss natürlich die Beschriftung von Knöpfen wiedererkannt werden können,
 und viele GUI benutzen Glyphen anstelle beschrifteter Schaltflächen. 

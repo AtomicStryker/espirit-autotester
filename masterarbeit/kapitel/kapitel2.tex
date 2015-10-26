@@ -3,39 +3,46 @@
 \chapter{Funktionstests graphischer Oberflächen}\label{chapter:introguitesting}
 
 
-Dieses Kapitel befasst sich mit einigen in der Industrie verbreiteten bzw. ``State of the Art'' Lösungen
-für das Problem automatischer GUI-Tests, einem alten Artikel sowie einer kürzlichen Doktorarbeit. 
-Es werden verschiedene Lösungen (für Java-Swing und Andere) vorgestellt,
-Ihr jeweiliger Implementationsaufwand begutachtet sowie eventuelle Vor- und Nachteile aufgezeigt.
+Dieses Kapitel befasst sich mit einigen in der Industrie verbreiteten bzw. \glqq{}State of the Art\grqq{}-Lösungen
+für das Problem automatischer GUI-Tests, dazu mit in einem Artikel sowie einer Doktorarbeit
+vorgestellten Methoden. 
+Es werden verschiedene Lösungen (für Java-Swing und andere) vorgestellt,
+ihr jeweiliger Implementationsaufwand begutachtet sowie eventuelle Vor- und Nachteile aufgezeigt.
 Auch wenn bereits im Ansatz ein Unterschied zum hier vorgestellten Konzept besteht, kann man dennoch
 Aufwand und Nutzen sowie Vor- und Nachteile vergleichen.
+
+
+\section{Grundlagen: Unterschiede Testverfahren}\label{section:testingapproaches}
 
 
 \section{Automatisierte GUI-Tests}\label{section:automatedguitesting}
 
 
-\textbf{uispec4j \cite{website:uispec4j}} ist ein Java-Programm zum Test von graphischen Nutzeroberflächen
+\textbf{uispec4j} \footnote{\url{ https://github.com/UISpec4J/UISpec4J }} ist ein Java-Programm 
+zum Test von graphischen Nutzeroberflächen
 in Java. Es wird ein Programm implementiert, welches parallel zur zu testenden GUI läuft,
-vorgegebene Eingaben vornimmt, und im Anschluss einen gewünschten Zustand in den Elementen der GUI
-überprüfen kann. Ein Problem ist offensichtlich, dass nur oberflächliche Dinge geprüft werden können,
-wie z.B. die Existenz oder das Fehlen eines Fensters oder Elements. Andererseits muss für jede
+vorgegebene Eingaben vornimmt und im Anschluss einen gewünschten Zustand in den Elementen der GUI
+überprüfen kann. Ein Problem ist dabei, dass nur oberflächliche Dinge geprüft werden können,
+wie z.B. die Existenz oder das Fehlen eines fest definierten Fensters oder Elements. Andererseits muss für jede
 Prüfanfrage ein Entwickler ein entsprechendes Testsegment schreiben. Die Applikation muss also
 zumindest doppelt implementiert werden, was in einem hohen Aufwand resultiert.
 
 \vspace{0.5cm}
 
-\textbf{fest \cite{website:fest}} oder ``Fixtures for Easy Software Testing'' verfolgt denselben Ansatz.
+\textbf{fest} \footnote{\url{ https://code.google.com/p/fest/ }} oder 
+\glqq{}Fixtures for Easy Software Testing\grqq{} verfolgt denselben Ansatz.
 Es agiert als Kontrollprogramm auf einer zu testenden Applikation und kann gewisse Prüfungen
 auf dieser ausführen. Tatsächlich sind die beiden praktisch identisch, bauen sie doch beide
-auf JUnit \cite{website:junit} auf und erweitern dieses.
+auf JUnit \footnote{\url{ http://junit.org/ }} auf und erweitern dieses.
 
 \vspace{0.5cm}
 
-\textbf{QF-Test \cite{website:qftest}} bietet darüber hinaus eine eigene graphische Nutzeroberfläche
-und ein sogenanntes ``Capture / Replay'' System. Hierbei soll es Entwicklern erspart bleiben,
-Tests als Programme zu implementieren, anstattdessen bedient ein Tester durch die QF-Test-Maske
+\textbf{QF-Test} \footnote{\url{ http://www.qfs.de/en/qftest/index.html }} 
+bietet darüber hinaus eine eigene graphische Nutzeroberfläche
+und ein sogenanntes \glqq{}Capture / Replay\grqq{}-System. Hierbei soll es Entwicklern erspart bleiben,
+Tests als Programme zu implementieren, stattdessen bedient ein Tester durch die QF-Test-Maske
 hindurch ein zu prüfendes Programm, während die Eingaben und Ausgaben mitgeschnitten werden.
-Diese Aufnahme des Programmverhaltens gilt dann als ``Sollverhalten'' und wird in Folge
+Diese Aufnahme des Programmverhaltens gilt dann als \glqq{}Sollverhalten\grqq{} und wird in Folge
 durch automatisierte Wiederholung verglichen und geprüft. Dieselbe Serie von Eingaben muss
 bei Testdurchläufen eine identische Ausgabe zu diesem Soll hervorrufen, ansonsten
 wird ein Fehler im Programm vermutet. Dieser Fehler kann auch eine gewünschte Programmveränderung sein.
@@ -46,14 +53,15 @@ nicht die Innereien des Programms verstehen oder verstehen können. Er muss das 
 bedienen können. Ebenso sind keine Programmierkenntnisse notwendig.
 
 
-\subsection{Kontinuierliche Qualitätskontrolle von Webanwendungen auf Basis maschinengelernter Modelle}\label{ssection:windmueller}
+\subsection{Kontinuierliche Qualitätskontrolle von Webanwendungen auf Basis 
+maschinengelernter Modelle}\label{ssection:windmueller}
 
 
-Die ``Dissertation Kontinuierliche Qualitätskontrolle von Webanwendungen auf 
-Basis maschinengelernter Modelle'' \cite{diss:windmueller} stellt ein neuartiges Konzept
-zur Überprüfung des Verhaltens eines Webserver vor. Die Idee ist, mithilfe eines
+Die \glqq{}Dissertation Kontinuierliche Qualitätskontrolle von Webanwendungen auf 
+Basis maschinengelernter Modelle\grqq{} \cite{diss:windmueller} stellt ein neuartiges Konzept
+zur Überprüfung des Verhaltens einer Applikation vor. Die Idee ist, mithilfe eines
 lernenden Algorithmus nach Angluin \cite{angluin} einen Automaten bzw. ein komplettes Modell
-der dem Algorithmus unbekannten, quasi ``Black Box'', Anwendung zu erstellen und zu vergleichen.
+der dem Algorithmus unbekannten, quasi \glqq{}Black Box\grqq{}, Anwendung zu erstellen und zu vergleichen.
 
 Hierzu muss aber erwähnt werden, dass lediglich der das Modell erstellende Algorithmus nicht
 weiss, was das Programm macht - seitens des Testers ist erheblicher Aufwand für die Implementation
@@ -63,7 +71,7 @@ Antworten auf die Eingaben gelesen und für Zustandsabbildung genutzt werden. Di
 sind hochspezifisch für eine Anwendung und müssen sogar für verschiedene Versionen derselben
 Anwendung neu angepasst werden.
 
-Zurück zum Prinzip: Man hat als Resultat nun die erlernten Modelle der Anwendung bzw. spezifischer
+Zurück zum Prinzip: Als Resultat existieren nun die erlernten Modelle der Anwendung bzw. spezifischer
 Versionen der Anwendung. Diese kann man nun mit einem Algorithmus vergleichen und Unterschiede
 herausstellen. Solche entstehen letztendlich nur aus zwei Gründen: Die Anwendung wurde verändert
 und es tritt eine gewünschte Funktionsänderung oder -erweiterung auf, oder ein neuartiger Fehler
@@ -88,8 +96,8 @@ Verglichen mit einem gewöhnlichen Regressionstest erspart dieser Ansatz dem Nut
 bzw. Entwickler die Definition der Zustandsfolgen. Zu beachten ist allerdings wieder:
 Es gibt für den Algorithmus kein richtig oder falsch, nur Unterschiede zwischen Versionen.
 Ein normaler GUI-Test definiert üblicherweise eine erwartete Antwort oder Reaktion auf einen
-bestimmten Knopfdruck. Hier würde so lange kein ``Problem'' auftreten, wie das Verhalten eines
-Programms konsistent ist - selbst wenn dieses Verhalten eigentlich fehlerhaft ist.
+bestimmten Knopfdruck. Hier würde so lange kein \glqq{}Problem\grqq{} auftreten, wie das Verhalten eines
+Programms konsistent ist, selbst wenn dieses Verhalten an sich eigentlich fehlerhaft ist.
 
 Es gibt noch ein weiteres für das hier vorgestellte Konzept interessantes Feature,
 den sogenannten reuse-Filter. Da ein Automat mit einer endlichen Zustandsmenge unterstellt
@@ -102,20 +110,22 @@ Die Idee ist folglich, Zustände des
 zu testenden Programms zu sichern und dann aus dem Speicher wiederherzustellen. Dies setzt
 natürlich voraus, dass dies möglich ist und man es für das Programm implementiert.
 Für den hier vorgestellten Ansatz und allgemeiner eine Java Virtual Machine ist dies nicht
-ohne weiteres möglich. Java-Programme sind Zustandsmässig unüberschaubar und können auch nicht
-grundsätzlich in einem bestimmten Zustand abgespeichert werden.
+ohne weiteres möglich. Java-Programme sind zustandsmäßig unüberschaubar und können auch nicht
+grundsätzlich in einem bestimmten Zustand abgespeichert werden. Die Alternative
+eines kompletten virtuellen Rechners mit einer eingefrorenen JVM darin wäre
+zumindest sehr aufwändig und vermutlich nicht sehr performant.
 
 Weitere mögliche Nebeneffekte, die bei den getesteten Programmen nicht vorkamen, sind
 Zustandsveränderungen auf einer persistenten Datenbank oder einem Speichermedium, die sogar
-über Instanzen des zu testenden Programms selbst überdauern. Hierfür müsste eine externe
+Beendigung des zu testenden Programms selbst überdauern. Hierfür müsste eine externe
 Lösung gefunden werden, zum Beispiel das Sichern eines gesamten Systemzustands in einer
 virtuellen Maschine und das jeweilige Neustarten eines Testablaufs von diesem gesicherten
 Zustand aus.
 
 \vspace{1cm}
 
-Im Vergleich mit Dr. Windmüller's Ansatz wird das hier vorgestellte Konzept erheblich weniger
-Kontextinformationen benötigen. So lange keine Programmspezifischen, mit der Java-Swing-API
+Im Vergleich mit Dr. Windmüllers Ansatz wird das hier vorgestellte Konzept erheblich weniger
+Kontextinformationen benötigen. So lange keine programmspezifischen, mit der Java-Swing-API
 inkompatiblen Implementationen vorliegen, sollte ein Testdurchlauf ohne jede Information abseits
 des Startpunktes möglich sein. Es gibt kein Eingabealphabet, welches erst für ein zu testendes
 Programm definiert werden müsste.
@@ -131,20 +141,20 @@ Fenster und graphischer Programmkomponenten kann beobachtet und verzeichnet werd
 \subsection{An Empirical Study of the Robustness of Windows NT Applications Using Random Testing}\label{ssection:windmueller}
 
 
-Diese etwas ältere Arbeit der Herren Forrester und Miller \cite{winNTforrester} befasst sich 
-mit dem Verhalten einer Auswahl von Anwendungem im Betriebssystem Windows, wenn zufällige 
+Diese etwas ältere Arbeit von Forrester und Miller \cite{winNTforrester} befasst sich 
+mit dem Verhalten einer Auswahl von Anwendungen im Betriebssystem Windows, wenn zufällige 
 Daten als Eingaben verwendet wurden.
 Es wurden sowohl Anwendungen mit und ohne grafischer Nutzeroberfläche getestet. Der Ansatz hierbei
 ist Black-Box; es gibt keinerlei Wissen über Inhalt, Zweck oder Verhalten der zu testenden Software.
 Als zufällige Eingaben dienen sowohl gültige Signale von Tastatur und Maus, wie ein Nutzer sie erzeugen
-könnte, sowie Windows-spezifische, sogenannte ``Win32'' Signale. Diese sind auch im aktuellsten Windows
+könnte, sowie Windows-spezifische, sogenannte \glqq{}Win32\grqq{}-Signale. Diese sind auch im aktuellen Windows 10
 nach wie vor im Einsatz, aufgrund der Abwärtskompatibilität vermutlich sogar in nahezu identischer Form.
 
-Forrester und Miller nennen ihr Vorgehen ``Fuzz Testing''. Vor Windows wandten sie dasselbe Verfahren
-in 2 Vorgänger-Arbeiten auf Linux-Anwendungen an. Bei gängigen Applikationen zeigte sich, dass zwischen
+Forrester und Miller nennen ihr Vorgehen \glqq{}Fuzz Testing\grqq{}. Vor Windows wandten sie dasselbe Verfahren
+in zwei Vorgänger-Arbeiten auf Linux-Anwendungen an. Bei gängigen Applikationen zeigte sich, dass zwischen
 ein Viertel und ein Drittel der geprüften Anwendungen nicht mit den zufälligen Eingabedaten zurecht kam.
-Das einzige Kriterium für den ``Erfolg'' ist die Abnahme der Eingabe sowie ein ordnungsgemässes Beenden
-des Programms - selbst wenn dies lediglich eine sofortige Ausgabe einer Fehlermeldung ist.
+Das einzige Kriterium für den \glqq{}Erfolg\grqq{} ist die Abnahme der Eingabe sowie ein ordnungsgemäßes Beenden
+des Programms -- selbst wenn dies lediglich eine sofortige Ausgabe einer Fehlermeldung ist.
 
 Die Eingabe von zufälligen Maus- und Tastatursignalen ist definitiv einem realen Anwendungsfall zuzuordnen,
 dieser Fall könnte schliesslich genau so auch auftreten. Die zufälligen Win32-Signale testen eher die
@@ -152,25 +162,27 @@ allgemeine Stabilität bzw. Sicherheit, die Fehlererkennung, eines Programms.
 
 Eine Eingabe mittels Maus oder Tastatur löst zunächst eine Prozessor-Unterbrechung aus. Die Unterbrechung
 leitet die Eingabedaten an den jeweiligen Gerätetreiber weiter, welcher den Inhalt der Nachricht ausliest
-(welche Taste wurde gedrückt, wo befindet sich der Mauszeiger etc.). Dies wird dann in ein Win32-Ereignis
-konvertiert. Das Betriebssystem stellt dann fest, welche Applikation das Ziel der Eingabe war, und kopiert
+(welche Taste wurde gedrückt, wo befindet sich der Mauszeiger etc.). Dies löst ein Win32-Ereignis
+aus. Das Betriebssystem stellt dann fest, welche Applikation das Ziel der Eingabe war, und kopiert
 das Ereignis in den Ereignis-Eingang dieser Applikation. Anwendungen haben üblicherweise eine interne
-Endlossschleife, welche diesen Eingang auf neue Nachrichten überprüft, diese dann ausliest und das
+Endlossschleife, welche diesen Eingang regelmäßig auf neue Nachrichten überprüft, diese ausliest und das
 Programm entsprechend reagieren lässt. Obwohl im Normalfall davon ausgegangen werden kann, dass ein System
 nur gültige Win32-Nachrichten verschickt, sollte ein Programmierer nicht davon absehen, dies auch
 zu kontrollieren. Ein Angreifer könnte ansonsten ein Fehlverhalten des Programms bei ungültigen Eingaben
 ausnutzen, es könnten Sicherheitslücken auftreten ö.Ä..
 
-Zu beachten ist allerdings, dass ``Fuzz'' eine gewaltige Anzahl von Eingaben praktisch gleichzeitig tätigt
+Zu beachten ist allerdings, dass \glqq{}Fuzz\grqq{} eine gewaltige Anzahl von Eingaben praktisch gleichzeitig tätigt
 (zehntausende). Man könnte zu Recht argumentieren, dass ein normaler Anwendungsfall eine solche Menge von
 Eingaben in einer kurzen Zeit nicht vorsieht, und damit vorsätzlich interne Puffer zur 
 Verarbeitung von Eingaben überlastet werden
 könnten. Modernere Versionen derselben Applikationen bzw. desselben Betriebssystems könnten diesen Fall 
-unter Umständen besser abfangen. \\
+unter Umständen besser abfangen.
+
+\vspace{0.5cm}
 
 
 Zu den Ergebnissen: \\
-Getestet wurden verschiedene bekannte Applikationen der Firmen Adobe und Microsoft sowie Mozilla - es
+Getestet wurden verschiedene bekannte Applikationen der Firmen Adobe und Microsoft sowie Mozilla -- es
 finden sich der Acrobat Reader, Office, Internet Explorer sowie der Netscape Navigator 
 (Vorläufer von Firefox) in der Liste. Getestet wurde unter Windows NT und Windows 2000.
 
@@ -182,11 +194,11 @@ Im Fall der zufälligen (auch ungültigen) Win32-Signale lag die Fehlerrate bei 
 laut den Autoren, die den Quellcode einiger Applikationen einsehen konnten, damit zu erklären,
 dass Programmierer von der Verlässlichkeit der empfangenen Signale ausgehen (diese Garantie ist offensichtlich
 nicht gegeben). Die Autoren nennen dies eine grobe Schwachstelle der Win32-API, insbesondere bezüglich
-Sicherheit, da schliesslich jedes Programm der Systemebene diese Win32-Signale beliebiger Zusammensetzung
+Sicherheit, da schließlich jedes Programm der Systemebene diese Win32-Signale beliebiger Zusammensetzung
 an andere Programme versenden kann. Dies könnte in neueren Windows-Versionen anders sein, das Betriebssystem
 könnte eine automatische Fehlerkorrektur der Win32-Nachrichten vornehmen.
 
 Für das hier vorgestellte Konzept stellen sich im Bezug auf diese Arbeit einige Fragen:
 Wie schnell sollten Eingaben erfolgen? Müssen Eingaben zwangsläufig funktional korrekt erfolgen?
-Auf welcher Abstraktionsebene erfolgen die Eingaben, und welche Möglichkeiten zur Datenmanipulation
+Auf welcher Abstraktionsebene erfolgen die Eingaben und welche Möglichkeiten zur Datenmanipulation
 gibt es überhaupt? Wird die Nachstellung eines bösartigen Angriffs beabsichtigt?

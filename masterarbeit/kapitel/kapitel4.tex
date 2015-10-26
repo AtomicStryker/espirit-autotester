@@ -3,7 +3,7 @@
 \chapter{Konzept eines Vollautomatischen GUI-Testers}\label{chapter:conceptfullautoguitesting}
 
 
-Das folgende Kapitel setzt sich mit der Idee des ``Vollautomatischen explorativen Crawler-Tests''
+Das folgende Kapitel setzt sich mit der Idee des \glqq{}Vollautomatischen explorativen Crawler-Tests\grqq{}
 auseinander. Bestehende GUI-Tests wurden in den vorherigen Kapiteln betrachtet. Hier wird nun zunächst 
 die Motivation für ein neues Konzept erläutert, sowie der potenzielle Einsatz und Nutzen desselben.
 Im Anschluss werden Entscheidungen während der Entwicklung und Implementation beleuchtet.
@@ -18,7 +18,7 @@ das Verhalten des getesteten Programms widerspiegelt.
 Die erste Frage, die sich bei Konzeption eines Test-Tools stellt, ist, ob ein kompiliertes Programm
 oder lediglich die Quelldateien untersucht werden sollen. Quellcode kann mithilfe von statischen
 Methoden untersucht werden, welche keine Ausführung des Programms erfordern. Dies bezeichnet man
-entsprechend als ``Offline''-Test \cite{offlinetesting}, eine Unterart des Modellbasierten Tests.
+entsprechend als \glqq{}Offline\grqq{}-Test \cite{offlinetesting}, eine Unterart des Modellbasierten Tests.
 Letztendlich wird immer eine Art Pseudo-Programm erstellt bzw. kompiliert, welches die
 Eigenschaften oder das Verhalten aus dem Quellcode übernehmen und danach dessen Einhaltung durch
 das fertig kompilierte und ausgeführte Programm sicherstellen soll. Alternativ wird schon
@@ -43,7 +43,7 @@ Black-Box Zustandsmaschine auf der Grafikkarte bzw. dessen Treiber
 ohne direkte Debug-Anbindung an das betreibende Betriebssystem
 häufig als übermässig Fehleranfällig und unnötig komplex im Entwicklungsprozess kritisiert wird.
 Es existiert abgesehen von gleichzeitiger Überwachung der graphischen Ausgabeoberfläche
-durch einen Prozess der ``Machine Vision'' bzw. des Maschinensehens keine Möglichkeit,
+durch einen Prozess der \glqq{}Machine Vision\grqq{} bzw. des Maschinensehens keine Möglichkeit,
 ohne menschliches Wirken visuelle Fehler zu erkennen. Fehler in der Darstellung oder
 der graphischen Implementation wird dieses Konzept also nicht erkennen können.
 
@@ -66,7 +66,7 @@ Treiber können dadurch umgangen werden, dass eine allgemeingültige API verwend
 muss jeder Nutzer mittels Maus und Tastatur mit der Oberfläche interagieren). Oder vielleicht
 wäre es besser zu sagen, es wird nur ein einziger, allgemeingültiger Treiber implementiert.
 
-Es existiert eine Schnittstelle namens ``Robot'' \cite{java7insel} für die Simulation nativer Eingaben
+Es existiert eine Schnittstelle namens \glqq{}Robot\grqq{} \cite{java7insel} für die Simulation nativer Eingaben
 in einem Java Programm. Hierbei wird der Mauszeiger des Betriebssystems tatsächlich mittels
 absoluten Koordinaten auf dem Bildschirm bewegt, und Mausklicks sowie Tastaturanschläge
 werden an das Betriebssystem durchgegeben. Hier wurde gegen dieses Verfahren entschieden,
@@ -99,7 +99,7 @@ Innerhalb dieser Baumstruktur sind alle sichtbaren graphischen Elemente
 hierarchisch angeordnet, und zusätzlich noch instanzierte, aber nicht sichtbare
 Elemente. Um auf das Beispiel der Dropdown-Elemente zurückzukommen, diese
 wären im Baum, aber nicht sichtbar. Jedes Element, das weitere Elemente enthält,
-ist eine Klasse des Typus ``Container''. Tatsächlich trifft dies auf eine
+ist eine Klasse des Typus \glqq{}Container\grqq{}. Tatsächlich trifft dies auf eine
 einzelne Klasse des FirstSpirit-Programms nicht zu, welches eine spezifische
 Implementation erfordert - aber das ist eine Abweichung von der Java-Swing-API
 und daher ist eine spezifische Lösung für das spezifische Problem zulässig.
@@ -110,7 +110,7 @@ testenden Komponenten der graphischen Oberfläche enthält. Nach erfolgtem
 Durchlauf des Crawlers durch die Baumstruktur enthält die Liste also
 alle Elemente, die betätigt werden können und möglicherweise eine Reaktion
 des Programms hervorrufen. So sind zum Beispiel alle Knöpfe Klassen des
-Typs ``AbstractButton''. Diese Klasse bietet eine einheitliche Schnittstelle,
+Typs \glqq{}AbstractButton\grqq{}. Diese Klasse bietet eine einheitliche Schnittstelle,
 um Events bzw. Ereignisse, die von Eingaben ausgelöst werden würden,
 zu verarbeiten. 
 
@@ -225,18 +225,18 @@ die während des Tests auftreten, zu erkennen.
 	{
 		\If{$k \in Eingabeelemente$}
 		{
-			$k \longleftarrow ``Nutzereingabe''$\;
+			$k \longleftarrow \glqq{}Nutzereingabe\grqq{}$\;
 			kurze Wartezeit (um GUI reagieren zu lassen)
 		}
 		\ElseIf{$k \in Texteingabeelemente$}
 		{
 			\For{String $s \in StrL$}
 			{
-				$k \longleftarrow ``Eintippen'' StrL$\;
-				$k \longleftarrow ``Bestaetigung''$\;
+				$k \longleftarrow \glqq{}Eintippen\grqq{} StrL$\;
+				$k \longleftarrow \glqq{}Bestaetigung\grqq{}$\;
 				sehr kurze Wartezeit (um GUI reagieren zu lassen)
 			}
-			$k \longleftarrow ``Eintippen'' zufaelliges s \in StrL$\;
+			$k \longleftarrow \glqq{}Eintippen\grqq{} zufaelliges s \in StrL$\;
 		}
 		\If{Auftreten neues Fenster/Popup $P$}
 		{
@@ -271,16 +271,16 @@ die während des Tests auftreten, zu erkennen.
 \section{Problematische String-Eingaben}\label{section:naughtystrings}
 
 Es wird eine online erhältliche, quelloffen gepflegte Liste aus Entwicklerkreisen verwendet, 
-die ``Big List of Naughty Strings'' \cite{website:naughty-strings}. Diese enthält unter viele bekannte
+die \glqq{}Big List of Naughty Strings\grqq{} \cite{website:naughty-strings}. Diese enthält unter viele bekannte
 Vertreter typischer Fehler oder Lücken bei der Verarbeitung von Zeichenketten in Programmen und
 insbesondere auch im Internet. Es finden sich Zeichendarstellungen reservierter Begriffe wie
-``null'' oder ``true'', SQL-Befehle, HTML und Javascript, exotische Unicode-Zeichen wie das
-``zero-width space'' \cite{unicodezerowidth} oder auch diverse DOS- oder Unix-spezifische
+\glqq{}null\grqq{} oder \glqq{}true\grqq{}, SQL-Befehle, HTML und Javascript, exotische Unicode-Zeichen wie das
+\glqq{}zero-width space\grqq{} \cite{unicodezerowidth} oder auch diverse DOS- oder Unix-spezifische
 Anweisungen oder Optionen für Kommandozeilen.
 
 Ziel ist es hierbei primär, mögliche durch Lücken in der Zeichenverarbeitung ausgelöste Probleme oder gar
 Abstürze des Programms schnell herbeizuführen, damit diese diagnostiziert und behoben werden können.
-Dies wird auch als ``Input Sanitization'' bzw. Eingabevalidierung bzw. -prüfung bezeichnet. 
+Dies wird auch als \glqq{}Input Sanitization\grqq{} bzw. Eingabevalidierung bzw. -prüfung bezeichnet. 
 Obwohl dieses Verfahren primär zur Verteidigung gegen Skript-Angriffe auf Webseiten dient
 \cite{website:eingabepruefung}, zählt eine wenig sinnvolle, aber dennoch mögliche Eingabe, 
 die das zu testende Programm in der Ausführung beeinträchtigt oder sogar stoppt, klar zur 
@@ -323,7 +323,7 @@ Instanz eines Programms in einen für Menschen verständlichen Datensatz zu übe
 In der Praxis zeigt sich aber, dass die Masse an Kontrollfäden, Objekten und
 sich gegenseitig beeinflussenden Nebeneffekten eine vollständige Zustandserfassung
 und - verfolgung äusserst impraktikabel, wenn auch nicht völlig unmöglich, macht.
-Das zu testende Programm muss folglich als ``Black Box'' verstanden werden.
+Das zu testende Programm muss folglich als \glqq{}Black Box\grqq{} verstanden werden.
 Obwohl wir technisch in der Lage sind, die Inhalte einzusehen, ist die genaue
 Funktion ein Rätsel, und wir können lediglich Rückschlüsse aus beobachtetem
 Verhalten ziehen. Für unsere Zustandserfassung heisst dies, dass wir lediglich
@@ -339,14 +339,14 @@ gibt es für den Tester keine praktikable Möglichkeit, dies festzustellen
 oder ohne Kontext irgendetwas Sinnvolles mit der Information anzufangen.
 
 Ein Beispiel hierfür ist im Rahmen des FirstSpirit-Programms die Klasse
-``SearchDialog''. Sie dient der Auswahl einer Datei oder eines Ordners
+\glqq{}SearchDialog\grqq{}. Sie dient der Auswahl einer Datei oder eines Ordners
 des Betriebssystems. Die Klasse beinhaltet keine Datenfelder, die für
 eine Identifizierung einer konkreten Instanz hilfreich wären. Sie ist
 Unterklasse von SelfDisposingDialog, welches ebenfalls keine Felder
 enthält, und schliesslich JDialog, eine Basisklasse der Java-Swing-API.
 Diese garantiert nun die Präsenz eines Titels für jedwede Instanz
 seiner Klassen, selbst wenn dieser nicht definiert oder leer sein sollte.
-Worin unterscheiden sich nun verschiedene Instanzen von ``SearchDialog''?
+Worin unterscheiden sich nun verschiedene Instanzen von \glqq{}SearchDialog\grqq{}?
 
 Die Antwort ist leider: In den Anweisungen, die an die Schnittstellen
 des jeweiligen Objekts geschrieben wurden. Wir können dazu auf einen
@@ -362,13 +362,13 @@ wurde die Lösung einer eigenen \textbf{toString()} Methode gewählt.
 Hierbei nimmt der Tester ein beliebiges darstellbares Objekt aus dem Testprogramm,
 vergleicht es mit einer Reihe von der Java-Swing-API vorgegebenen
 Objekten und Schnittstellen, und wählt eine passende Textdarstellung aus.
-Üblicherweise ist dies der ``simple Classname'', der einfache Klassenname,
+Üblicherweise ist dies der \glqq{}simple Classname\grqq{}, der einfache Klassenname,
 da dieser nach gängigen Java-Konventionen den Nutzen einer Klasse zumindest
 andeutet, kombiniert mit den möglicherweise vorhandenen kritischen Daten
 der spezifischen Typklasse. Im Falle eines Fensters beispielsweise wäre
 dies die Zeichenkette, die in der Titelzeile angezeigt wird. Im Fall
 eines beschrifteten Knopfes die Beschriftung. Im Fall eines Glyph-Knopfes
-ohne jegliche Beschriftung ziehen wir den ``Tooltip'' heran,
+ohne jegliche Beschriftung ziehen wir den \glqq{}Tooltip\grqq{} heran,
 die vom Programmierer vorgesehene helfende Zeichenkette, die angezeigt
 wird, wenn der Nutzer seinen Mauszeiger kurz über das betreffende Symbol hält.
 Wir verlassen uns also auf gängige Programmierpraxis sowie Eigenarten der 
