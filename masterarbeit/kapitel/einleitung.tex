@@ -66,14 +66,14 @@ Bekannte Ansätze zur Lösung dieses Problems sind z.B. die Durchführung von Te
 durch dedizierte (weniger kostspielige) Tester, oder auch die Automatisierung von Tests. 
  
 Speziell für den Fall von in der Industrie weit verbreiteten graphischen Nutzeroberflächen
-mittels Java Swing \cite{JavaSwing} gibt es zahlreiche Möglichkeiten variierender
+mittels \textbf{Java Swing} \cite{JavaSwing} gibt es zahlreiche Möglichkeiten variierender
 Komplexität wie z.B. \textbf{QF-Test} \footnote{\url{ http://www.qfs.de/en/qftest/index.html }},
-uispec4j \footnote{\url{ https://github.com/UISpec4J/UISpec4J }},
-FEST \footnote{\url{ https://code.google.com/p/fest/ }} oder auch 
-Jemmy \footnote{\url{ https://jemmy.java.net/ }}. Viele bieten selbst interaktive
+\textbf{uispec4j} \footnote{\url{ https://github.com/UISpec4J/UISpec4J }},
+\textbf{FEST} \footnote{\url{ https://code.google.com/p/fest/ }} oder auch 
+\textbf{Jemmy} \footnote{\url{ https://jemmy.java.net/ }}. Viele bieten selbst interaktive
 GUIs zur nutzerfreundlichen Testerstellung, erweiterbare Module und die Möglichkeit eigener Skripte. Auch
-Integration von JUnit \footnote{\url{ http://junit.org/ }} oder 
-TestNG \footnote{\url{ http://testng.org/doc/index.html }}
+Integration von \textbf{JUnit} \footnote{\url{ http://junit.org/ }} oder 
+\textbf{TestNG} \footnote{\url{ http://testng.org/doc/index.html }}
 und Eclipse-Unterstützung \footnote{\url{ http://www.eclipse.org/ }} sind verbreitet. Was diese
 Lösungsmöglichkeiten allerdings gemeinsam haben, ist die notwendige VORGABE der
 durchzuführenden Eingaben und der erwarteten, zu überprüfenden Resultate. Dies ist
@@ -100,12 +100,13 @@ durchgeführt werden. Ebenso sollten Eingaben eines gewissen Kontexts (z.B. \glq
 vermieden werden, welche den Test vorzeitig beenden könnten.
  
 Das Vorgehen des Werkzeugs soll dann in einer Baum- oder Graphartigen
-Struktur mitprotokolliert werden - hierfür wird JGraphT verwendet \footnote{\url{ http://http://jgrapht.org/ }} --
+Struktur mitprotokolliert werden - hierfür wird \textbf{JGraphT} verwendet \footnote{\url{ http://http://jgrapht.org/ }} --
 um einerseits auch bei sich selbsttätig oder durch Eingaben schließenden Elementen diese wieder
 neu zu öffnen, um alle Eingaben ausprobieren zu können, oder auch, um auftretende Zyklen 
 zu erkennen sowie um erzeugte und erkannte Fehler letztendlich zu reproduzieren.
-Eine ansehnliche Visualisierung btw. Modellierung des getesteten Programms ist ein angenehmer
-Seiteneffekt.
+Eine ansehnliche Visualisierung btw. Modellierung des getesteten Programms, die
+im Anschluss durch jedwedes kompatibles Graph-Visualisierungs-Programm
+durchgeführt werden kann, ist ein angenehmer Seiteneffekt.
 
 Es ist unrealistisch, z.B. in
 einem Texteingabefeld jeden existierenden String zu probieren, hier muss eine möglichst
@@ -127,7 +128,7 @@ protokolliert werden, und man könnte auch eine Schnittstelle für auftretende E
 Runtime-Errors vorsehen oder sie aus der Applikation abfangen oder mitschneiden. 
  
 Die Entwicklung und Implementierung sowie die Anwendung dieses Werkzeugs auf eine Java-Swing-Applikation
-der e-Spirit AG, FirstSpirit 
+der \textbf{e-Spirit AG}, \textbf{FirstSpirit} 
 \footnote{\url{ http://www.e-spirit.com/de/produkt/arbeiten-mit-firstspirit/usability-fuer-redakteure/ }}, 
 ist der geplante 
 Umfang dieser Abschlussarbeit. Zunächst werden existierende Methoden und Lösungen der automatisierten
@@ -138,4 +139,4 @@ Weitere Überlegungen, die vermutlich nicht mehr im Umfang dieser Master-Arbeit 
 würden, aber die z.B. als Erweiterungsmöglichkeiten genannt werden könnten, sind die
 Nutzung von Bilderkennung / Computer Vision, um auch über Java Swing hinaus GUIs testen zu
 können. Hierbei muss natürlich die Beschriftung von Knöpfen wiedererkannt werden können,
-und viele GUI benutzen Glyphen anstelle beschrifteter Schaltflächen. 
+und viele GUIs benutzen Glyphen anstelle beschrifteter Schaltflächen. 

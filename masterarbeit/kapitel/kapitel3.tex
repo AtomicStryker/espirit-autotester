@@ -1,25 +1,25 @@
 %%% TeX-master: "../main.tex"
 % kapitel3.tex
-\chapter{Einleitung Vollautomatische GUI-Tests}\label{chapter:introfullautoguitesting}
+\chapter{Einleitung \glqq{}Vollautomatische GUI-Tests\grqq{}}\label{chapter:introfullautoguitesting}
 
 
 In diesem Kapitel werden existierende GUI-Testverfahren betrachtet, welche das Prädikat
-\glqq{}vollautomatisch\grqq{} zumindest teilweise für sich beanspruchen. Dieser Behauptung wird
-dann nachgegangen, eventuelle Fallstricke, Nachteile und Einschränkungen werden aufgezeigt
+\glqq{}vollautomatisch\grqq{} zumindest teilweise für sich beanspruchen. Diese Behauptung wird
+auf Wahrheitsgehalt überprüft, eventuelle Fallstricke, Nachteile und Einschränkungen werden aufgezeigt
 und Schlussfolgerungen für das hier vorgestellte Konzept werden gezogen, soweit möglich.
 
 
 \section{Implementationen vollautomatischer GUI-Tests}\label{section:fullautoguitestsimpl}
 
 
-Existierende Arbeiten Ähnlichem Inhalts sind z.B. \textbf{\glqq{}GUITest: a Java library for fully automated
-GUI robustness testing\grqq{} \cite{GUITestBauersfeld}}: Eine Java-Bibliothek 
+Existierende Arbeiten analogen Inhalts sind z.B. \textbf{\glqq{}GUITest: a Java library for fully automated
+GUI robustness testing\grqq{}} \cite{GUITestBauersfeld}: Eine Java-Bibliothek 
 (allerdings speziell für das Betriebssystem Mac OSX entwickelt), die
 vollautomatisch mögliche Inputs in einer beliebigen (allerdings hier nur an einer getesteten)
 Applikation der \glqq{}Mac OSX Accessibility API\grqq{} aufspürt und durchführt.
 
 Ähnlich wie die bei der Java Swing API existiert hierbei eine objektorientierte Baumstruktur,
-die sogenannte \glqq{}Widget Tree\grqq{}, welche alle Elemente der graphischen Oberfläche enthält
+der sogenannte \glqq{}Widget Tree\grqq{} bzw. Widget-Baum, welcher alle Elemente der graphischen Oberfläche enthält
 und insbesondere genormte Klassen und Schnittstellen zum Beispiel für Schalter
 und Knöpfe enthält. Dies erlaubt eine vollautomatische Verarbeitung:
 Jede tatsächlich implementierte Funktion lässt sich durch ein vorher definiertes
@@ -29,7 +29,7 @@ Ein Unterschied zum
 hier vorgestellten Konzept ist, dass das Tool nicht auf die Applikation beschränkt ist (es wird
 erwähnt, dass die Shutdown- und Reset-Tasten des Host-Betriebssystems ausgenommen werden
 mussten). Das hier implementierte Konzept ist für das wesentlich allgemeingültigere Java Swing
-ausgelegt und kann auf jeder Plattform ausgeführt werden, welche auch eine JVM stützen kann.
+ausgelegt und kann auf jeder Plattform ausgeführt werden, die Unterstützung für eine JVM bietet.
 
 Eine Gemeinsamkeit bzw. logische Konsequenz des vollautomatischen Tests ist, dass nur
 die Robustheit getestet werden kann. Ohne Kontext ist es nicht möglich, dem Verhalten eines
@@ -40,13 +40,13 @@ Die möglichen Eingaben durch die \glqq{}Mac OSX Accessibility API\grqq{} sind s
 Java Swing, wodurch weniger Variation möglich ist. Auch prüft dieses Programm nicht mögliche
 Textfeldeingaben wie das hier vorgestellte Konzept.
 
-\vspace{1cm}
+\vspace{0.5cm}
 
 Ein anderes Beispiel wäre \textbf{\glqq{}A GUI Crawling-Based Technique for Android Mobile Application
-Testing\grqq{} \cite{AGCBTFAMAT}}. Hierbei wird in zwei seperaten Schritten zunächst eine graphische Applikation
+Testing\grqq{}}\cite{AGCBTFAMAT}. Hierbei wird in zwei seperaten Schritten zunächst eine graphische Applikation
 vollautomatisch auf mögliche Eingaben und anzeigbare Bildschirme durchsucht, also ein
 \glqq{}Wegnetz\grqq{} ähnlich dem Vorschlagskonzept durch das Programm gelegt, um dann in einem zweiten
-Schritt mit üblichen (regressiven) Test-Applikationen und –Vorgehensweisen Abläufe zu
+Schritt mit üblichen (regressiven) Test-Applikationen und Vorgehensweisen Abläufe zu
 planen und tatsächlich zu prüfen. Der Unterschied und die Einschränkung hier ist
 hauptsächlich die Android-GUI-API sowie die Testumgebung eines Android-Emulators am
 PC-System. Auch ist der zweite Vorgehensschritt nicht vollautomatisch und erfordert in jedem Fall
@@ -56,6 +56,6 @@ Ein Einsatz des vorgestellten Konzepts auf Android ist zwar theoretisch möglich
 man dort eine spezielle Variante von Swing für die graphischen Oberflächen ein, 
 wodurch eine Anpassung bzw. Erweiterung des Programms sehr wahrscheinlich notwendig wäre. 
 Auch stellt das Android-Betriebssystem seine eigenen Herausforderungen
-bezüglich Nutzbarkeit und insbesondere auch Programminteraktion - das Konzept
+bezüglich Nutzbarkeit und insbesondere auch Programminteraktion -- das Konzept
 einer Android-Applikation als virtueller alleiniger Nutzer seines eigenen Systems
-erschwert offensichtlich jegliche Programmübergreifende Tätigkeiten.
+erschwert offensichtlich jegliche programmübergreifende Tätigkeiten.

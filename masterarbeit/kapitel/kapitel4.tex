@@ -1,11 +1,11 @@
 %%% TeX-master: "../main.tex"
 % kapitel4.tex
-\chapter{Konzept eines Vollautomatischen GUI-Testers}\label{chapter:conceptfullautoguitesting}
+\chapter{Konzept eines vollautomatischen GUI-Testers}\label{chapter:conceptfullautoguitesting}
 
 
 Das folgende Kapitel setzt sich mit der Idee des \glqq{}Vollautomatischen explorativen Crawler-Tests\grqq{}
 auseinander. Bestehende GUI-Tests wurden in den vorherigen Kapiteln betrachtet. Hier wird nun zunächst 
-die Motivation für ein neues Konzept erläutert, sowie der potenzielle Einsatz und Nutzen desselben.
+die Motivation für ein neues Konzept erläutert sowie der potenzielle Einsatz und Nutzen desselben.
 Im Anschluss werden Entscheidungen während der Entwicklung und Implementation beleuchtet.
 Die genutzten Kernalgorithmen werden vorgestellt. Die letzte Sektion befasst sich mit der
 Zustandserfassung und -verfolgung sowie der Modellierung eines Graphen bzw. Automaten, welcher
@@ -24,35 +24,49 @@ Eigenschaften oder das Verhalten aus dem Quellcode übernehmen und danach dessen
 das fertig kompilierte und ausgeführte Programm sicherstellen soll. Alternativ wird schon
 im Quelltext selbst nach bekannten Problemstrukturen gesucht, also statische Analyse betrieben.
 
-Der Vorteil liegt üblicherweise vor allen darin, dass eine solche Analyse unabhängig von der
+Beispiele für insbesondere durch solche Analyse aufgedeckte Fehler sind Dereferenzierung
+von nicht initialisierten Objekten, unerreichbare Instruktionen, zyklische Abhängigkeiten
+oder auch unnötige Anweisungen. Ersteres tritt auf, wenn nicht sichergestellt wurde,
+dass eine Variable nach Deklarierung auch in jedem Fall vor einem Lesenden Zugriff auch
+Definiert bzw. mit einem sinnvollen Wert beschrieben wurde. Wenn die Kontrollanweisungen
+wie \glqq{}If ... then\grqq{} in einem Programm in keinem Fall zulassen, dass bestimmte
+Abschnitte jemals ablaufen können, nennt man diese unerreichbar. Zyklische Abhängigkeiten
+entstehen zumeist aus unsauberer Architektur -- anstelle sich von einem Zentrum oder einer
+Oberklasse ausgehend immer weiter fortzupflanzen und zu spezialisieren, 
+verweist ein Programm in der Implementation
+spezifischer Funktionen wieder auf die globalen Klassen oder Objekte und bringt damit
+unter Umständen den Kompilierer oder Übersetzer in Bedrängnis. Dieser muss dann mehrere 
+aufeinander verweisende unfertige Klassen irgendwie korrekt übersetzen.
+
+Der Vorteil der Offline-Ansätze liegt üblicherweise vor allen darin, dass eine solche Analyse unabhängig von der
 Plattform betrieben werden kann und die Ergebnisse sich auf alle möglichen Endnutzer beziehen.
 Im konkreten Fall soll aber Java Swing getestet werden, also ein Programm, welches vermutlich
-bereits von sich aus sehr Plattformunabhängig ist (Eigenarten der JVM sind nicht üblicherweise
+bereits von sich aus sehr plattformunabhängig ist (Eigenarten der JVM sind üblicherweise nicht
 Bestandteil von Tests).
 
-Ebenso treten eine Vielzahl von Problemen und gerade den Fehlern, die hiermit gesucht werden,
+Ebenso treten eine Vielzahl von Problemen und gerade die Fehler, die hiermit gesucht werden,
 nur im Online-Fall auf. Besonders mögliche Fehler interner Implementationen bei gewissen ungewöhnlichen
 Eingabemustern sind von Interesse. So wird der Tester aufgrund mangelnden Kontexts meist unsinnige
 Eingaben tätigen, welche ein Mensch von sich aus nicht vornehmen würde. Dementsprechend könnten
 diese auch Entwicklern und gewöhnlichen Testern entgangen sein. Ebenso werden grenzwertige
 Zeichenketten bei jeder sich bietenden Möglichkeit verwendet, um Probleme bei der Zeichenverarbeitung
-(eine grosse Fehlerquelle bei Programmen) aufzuzeigen.
+(eine große Fehlerquelle bei Programmen) aufzuzeigen.
 
 Java Swing benutzt \textbf{OpenGL}\label{openglQQ}, welches aufgrund seines Konzepts als gewaltige
 Black-Box Zustandsmaschine auf der Grafikkarte bzw. dessen Treiber
 ohne direkte Debug-Anbindung an das betreibende Betriebssystem
-häufig als übermässig Fehleranfällig und unnötig komplex im Entwicklungsprozess kritisiert wird.
-Es existiert abgesehen von gleichzeitiger Überwachung der graphischen Ausgabeoberfläche
-durch einen Prozess der \glqq{}Machine Vision\grqq{} bzw. des Maschinensehens keine Möglichkeit,
+häufig als übermäßig fehleranfällig und unnötig komplex im Entwicklungsprozess kritisiert wird.
+Es existiert, abgesehen von gleichzeitiger Überwachung der graphischen Ausgabeoberfläche
+durch einen Prozess der \glqq{}Machine Vision\grqq{} bzw. des Maschinensehens, keine Möglichkeit,
 ohne menschliches Wirken visuelle Fehler zu erkennen. Fehler in der Darstellung oder
 der graphischen Implementation wird dieses Konzept also nicht erkennen können.
 
 Schlussendlich sind dynamisch erzeugte Inhalte für Offline-Ansätze im Allgemeinen
-nicht zu erschliessen, da dies über die Möglichkeiten vordefinierter Modellanalyse herausgeht.
-Im zu untersuchenden Fall von Java-GUI sind sogenannte anonyme Klassen aber keine
+nicht zu erschließen, da dies über die Möglichkeiten vordefinierter Modellanalyse herausgeht.
+Im hier behandelten Fall von Java-GUIs sind sogenannte anonyme Klassen aber keine
 Seltenheit und müssten vom Crawler-Anteil der Testanwendung unbedingt miteinbezogen werden.
 
-Es wird ein Online-Ansatz gewählt, die Testanwendung startet eine echte Instanz
+Es wird ein Online-Ansatz gewählt: Die Testanwendung startet eine echte Instanz
 der zu testenden Applikation und führt dann auf dieser (aus Sicht der Anwendung) reale
 Eingaben durch.
 
@@ -61,53 +75,54 @@ Eingaben durch.
 
 
 Existierende GUI-Testlösungen haben verschiedene Einschränkungen. Allen voran die
-Notwendigkeit, Anwendungsspezifische Treiber zu implementieren oder ein Sollverhalten zu definieren.
-Treiber können dadurch umgangen werden, dass eine allgemeingültige API verwendet wird (schliesslich 
+Notwendigkeit, anwendungsspezifische Treiber zu implementieren oder ein Sollverhalten zu definieren.
+Treiber können dadurch umgangen werden, dass eine allgemeingültige API verwendet wird (schließlich 
 muss jeder Nutzer mittels Maus und Tastatur mit der Oberfläche interagieren). Oder vielleicht
 wäre es besser zu sagen, es wird nur ein einziger, allgemeingültiger Treiber implementiert.
 
 Es existiert eine Schnittstelle namens \glqq{}Robot\grqq{} \cite{java7insel} für die Simulation nativer Eingaben
-in einem Java Programm. Hierbei wird der Mauszeiger des Betriebssystems tatsächlich mittels
-absoluten Koordinaten auf dem Bildschirm bewegt, und Mausklicks sowie Tastaturanschläge
+in einem Java-Programm. Hierbei wird der Mauszeiger des Betriebssystems tatsächlich mittels
+absoluten Koordinaten auf dem Bildschirm bewegt und Mausklicks sowie Tastaturanschläge
 werden an das Betriebssystem durchgegeben. Hier wurde gegen dieses Verfahren entschieden,
 da es in der Praxis für den Fall des Konzepts kritische Nachteile hat:
 
-Die hauptsächlich zu testende Anwendung FirstSpirit enthält viele sogenannte Dropdown-Elemente.
+Die hauptsächlich zu testende Anwendung \textbf{FirstSpirit} enthält viele sogenannte Dropdown-Elemente.
 Damit werden Menüs bezeichnet, welche bei Betätigung aus einem Knopf heraus ausklappen und
 weitere Elemente anzeigen, aber nur, so lange der Mauszeiger sich auf dem Umriss des
 ursprünglichen Knopfes sowie des aufgeklappten Menüs befindet. Für eine Testanwendung
 wie vorgeschlagen stellt dies ein schweres Hindernis das. Es müsste tatsächlich ein
-Mauszeiger mit aus dem Kontext zu erschliessenden Informationen bewegt werden,
+Mauszeiger mit aus dem Kontext zu erschließenden Informationen bewegt werden,
 welcher sich innerhalb kontextabhängiger Koordinaten aufhalten muss. Kontext ist
-aber gerade etwas, das vermieden werden soll. Ausserdem schränkt dies die möglichen
+aber gerade etwas, das vermieden werden soll. Außerdem schränkt dies die möglichen
 Eingabereihenfolgen der Testelemente empfindlich ein oder erzwingt zumindest
 Zwischenschritte, um eine Eingabe erreichen zu können.
 
-Da wir aber mit der Java Swing API arbeiten, und das zu testende Programm
-in derselben Java Virtual Machine \cite{website:javaspecs} wie das Testprogramm 
+Da wir aber mit der Java Swing API arbeiten und das zu testende Programm
+in derselben \textbf{Java Virtual Machine (JVM)} 
+\footnote{\url{ http://docs.oracle.com/javase/specs/ }} wie das Testprogramm 
 ablaufen wird, können wir direkt auf die Datenstrukturen und Funktionen
 des zu testenden Programms zugreifen. Insbesondere besteht jede graphische
 Oberfläche, die mittels Java Swing implementiert wurde, aus Untertypen
 bzw. Unterklassen einiger weniger Datentypen einheitlichen Verhaltens.
 Diese sind in einer Baumstruktur von einer Wurzel aus angeordnet, von
 der aus der Test beginnen soll. Die Auffindung und Adressierung dieser
-Wurzel erfordert Kontext - zum Durchführen eines Tests muss der Tester schon
+Wurzel erfordert Kontext -- zum Durchführen eines Tests muss der Tester schon
 erfahren, was er überhaupt testen soll. Damit beginnt der initiale
 Durchlauf der Crawler-Komponente.
 
 Innerhalb dieser Baumstruktur sind alle sichtbaren graphischen Elemente
-hierarchisch angeordnet, und zusätzlich noch instanzierte, aber nicht sichtbare
+hierarchisch angeordnet und zusätzlich noch instanzierte, aber nicht sichtbare
 Elemente. Um auf das Beispiel der Dropdown-Elemente zurückzukommen, diese
-wären im Baum, aber nicht sichtbar. Jedes Element, das weitere Elemente enthält,
+wären Teil des besagten Baums, aber nicht sichtbar. Jedes Element, das weitere Elemente enthält,
 ist eine Klasse des Typus \glqq{}Container\grqq{}. Tatsächlich trifft dies auf eine
 einzelne Klasse des FirstSpirit-Programms nicht zu, welches eine spezifische
-Implementation erfordert - aber das ist eine Abweichung von der Java-Swing-API
+Implementation erfordert -- aber das ist eine Abweichung von der Java-Swing-API
 und daher ist eine spezifische Lösung für das spezifische Problem zulässig.
 
-Jeder Container wird also rekursiv auf weitere Elemente durchsucht.
+Jeder Container wird vom Crawler rekursiv auf weitere Elemente durchsucht.
 Gefundene Elemente werden in eine Liste eingegeben, welche alle noch zu
 testenden Komponenten der graphischen Oberfläche enthält. Nach erfolgtem
-Durchlauf des Crawlers durch die Baumstruktur enthält die Liste also
+Durchlauf des Crawlers durch die Baumstruktur enthält die Liste
 alle Elemente, die betätigt werden können und möglicherweise eine Reaktion
 des Programms hervorrufen. So sind zum Beispiel alle Knöpfe Klassen des
 Typs \glqq{}AbstractButton\grqq{}. Diese Klasse bietet eine einheitliche Schnittstelle,
@@ -120,19 +135,19 @@ Programms einzureichen. So kann ein Mausklick oder ein Tastenanschlag
 auf der Tastatur simuliert werden, ohne dass die tatsächlichen Limitationen
 der Eingabegeräte beachtet werden müssten. Insbesondere lassen sich so
 auch Elemente der graphischen Oberfläche adressieren, welche aktiviert
-aber momentan unsichtbar sind - die Dropdown-Elemente zum Beispiel.
+aber momentan unsichtbar sind -- die Dropdown-Elemente zum Beispiel.
 So können die Schaltflächen, die eigentlich nur durch Betätigen des
 Dropdown erreichbar sind, dennoch problemlos ausgelöst werden.
 
 Die Reaktion auf einen solchen Tastendruck ist natürlich von primärem
-Interesse eines Testers. Leider stellt sich nun eine Herausforderung
+Interesse für einen Tester. Leider stellt sich nun eine Herausforderung
 in mehrfacher Hinsicht. Zunächst einmal sind Schalter in einem 
 Java-Programm keine Konsolen- oder Webapplikationen, insbesondere
-heisst dies, es gibt keine Antwort, die man schlicht ablesen könnte.
+heißt dies, es gibt keine Antwort, die man schlicht ablesen könnte.
 Jegliche Reaktion muss aus dem Verhalten des zu testenden Programms
 bzw. Überwachung seines Zustands geschlossen werden.
 
-Den Zustand eines nicht-trivialen Java-Programms erschliessend
+Den Zustand eines nicht-trivialen Java-Programms erschließend
 zu überwachen, ist ein hoffnungsloses Unterfangen. Es gibt zu
 viele unabhängige Kontrollfäden bzw. Threads und interagierende
 Komponenten, Seiteneffekte und undurchsichtige Datenstrukturen
@@ -146,7 +161,7 @@ festzustellen. Im Grunde kann nur der allgemein vorhandene Titel
 eines Fensters herangezogen werden. Alle anderen Informationen
 sind nicht zwangsläufig vorhanden oder wenig hilfreich.
 
-Ein Weiteres Problem bei der Überwachung von Reaktionen auf
+Ein weiteres Problem bei der Überwachung von Reaktionen auf
 Eingaben ist die Designentscheidung der Java-Swing-API,
 Eingaben in einer globalen Verarbeitungsliste zu lagern
 und sie in einem getrennten Kontrollfaden zu verarbeiten.
@@ -154,15 +169,17 @@ Insbesondere kann daher nicht garantiert werden,
 dass eine getätigte Eingabe auch bis zum Zeitpunkt x
 bereits verarbeitet wurde. Die einzige Abhilfe für dieses
 Problem sind einstellbare Zeitintervalle zwischen
-den Eingabeereignissen, die gross genug gewählt werden,
+den Eingabeereignissen, die groß genug gewählt werden,
 dass das zu testende Programm mit praktisch absoluter
 Zuversicht bereits dazu gekommen ist, eine vorherige
 Eingabe zu verarbeiten, bevor eine neue getätigt wird.
 
 Nach Praxiserfahrung ist hier ein Wert von deutlich über
-einer Sekunde nötig, da ansonsten Probleme auftreten. Da realitätsnahe
-Eingaben simuliert werden sollen, würde es auch wenig Sinn
-machen, Eingaben noch schneller erfolgen zu lassen. Kein Mensch
+einer Sekunde nötig, da ansonsten Probleme auftreten. 
+Antworten und Reaktionen des Programms treten erst auf,
+wenn schon folgende, Eingaben getätigt wurde. Da realitätsnahe
+Eingaben simuliert werden sollen, würe es auch den Vorgaben
+widersprechen, Eingaben noch schneller erfolgen zu lassen. Kein Mensch
 wäre in der Lage, so schnell so viele verschiedene Knöpfe
 zu drücken. Ein mögliches Problem stellt sich allerdings,
 wenn die Verarbeitung einer Eingabe durch das Programm länger dauert,
@@ -178,11 +195,21 @@ der getesteten Applikation nicht mit Sicherheit davon ausgegangen
 werden, dass die zuletzt getätigte Eingabe dafür verantwortlich zeichnet.
 
 Die Herausforderung in diesem Zusammenhang ist der vollständige Test
-aller auftretenden Komponenten, die Eingaben akzeptieren, wobei aber
-die die Komponenten enthaltenen Fenster jederzeit aufgrund einer Eingabe
-schliessen können. Diese Fenster müssen wieder geöffnet werden, und dafür
+aller auftretenden Komponenten, die Eingaben akzeptieren. Hierbei
+können Fenster, welche die jeweiligen Komponenten enthalten, 
+aber jederzeit aufgrund einer Eingabe \glqq{}unerwartet\grqq{} schließen. 
+Tatsächlich gibt es aufgrund der Architektur von Java-Swing
+keine Möglichkeit, die Öffnung oder Schließung eines Fensters
+mit Sicherheit zu Erwarten; die Trennung der Eingabeverarbeitung
+in separate Kontrollflüsse ohne zeitliche Garantien erzwingt dies.
+Diese geschlossenen Fenster müssen wieder geöffnet werden, und dafür
 muss die Frage beantwortet werden können, welche getätigte Eingabe zum
-Öffnen dieses spezifischen Fensters geführt hat.
+Öffnen dieses spezifischen Fensters geführt hat. Für ein einfaches
+Beispiel ziehen wir einen gewöhnlichen Ja/Nein/Abbrechen-Dialog
+heran, wie er in jeder Applikation zu finden ist. Jede dieser drei
+Eingaben wird den Dialog schliessen. Um aber alle drei ausprobieren
+zu können, muss der Knopf, der den Dialog geöffnet hat, mindestens drei Mal
+gedrückt werden.
 
 Da jede Testerinstanz
 eine nach dem Crawldurchlauf und Mischung der Ergebnisse eine von 
@@ -208,7 +235,7 @@ die während des Tests auftreten, zu erkennen.
 
 \begin{algorithm} \SetAlgoLined
 	\KwData{Laufender Test $T$, neues Fenster/Popup $P$}
-	\KwResult{Alle an $P$ anhaengigen Komponenten wurden getestet, Test $T$ setzt fort}
+	\KwResult{Alle an $P$ anhängigen Komponenten wurden getestet, Test $T$ setzt fort}
 	vorherige Testinstanz $T$ anhalten, sichert Zustand\;
 	$Tn \longleftarrow Komponententester(P)$\;
 	vorherige Testinstanz $T$ starten, Zustand wiederherstellen\;
@@ -218,9 +245,9 @@ die während des Tests auftreten, zu erkennen.
 
 \begin{algorithm} \SetAlgoLined
 	\KwData{Wurzelkomponente/Fenster $A$, Liste von Problemstrings $StrL$;}
-	\KwResult{Alle an $A$ anhaengigen Komponenten wurden getestet}
+	\KwResult{Alle an $A$ anhängigen Komponenten wurden getestet}
 	Komponentenliste $C: \longleftarrow A$ auf Komponenten durchsuchen\;
-	$C$ ein Mal zufaellig durchmischen\;
+	$C$ ein Mal zufällig durchmischen\;
 	\For{Komponente $k \in C$}
 	{
 		\If{$k \in Eingabeelemente$}
@@ -236,7 +263,7 @@ die während des Tests auftreten, zu erkennen.
 				$k \longleftarrow \glqq{}Bestaetigung\grqq{}$\;
 				sehr kurze Wartezeit (um GUI reagieren zu lassen)
 			}
-			$k \longleftarrow \glqq{}Eintippen\grqq{} zufaelliges s \in StrL$\;
+			$k \longleftarrow$ \glqq{}Eintippen\grqq{} zufälliges $s \in StrL$\;
 		}
 		\If{Auftreten neues Fenster/Popup $P$}
 		{
@@ -271,7 +298,7 @@ die während des Tests auftreten, zu erkennen.
 \section{Problematische String-Eingaben}\label{section:naughtystrings}
 
 Es wird eine online erhältliche, quelloffen gepflegte Liste aus Entwicklerkreisen verwendet, 
-die \glqq{}Big List of Naughty Strings\grqq{} \cite{website:naughty-strings}. Diese enthält unter viele bekannte
+die \textbf{Big List of Naughty Strings} \footnote{\url{ https://github.com/minimaxir/big-list-of-naughty-strings }}. Diese enthält unter viele bekannte
 Vertreter typischer Fehler oder Lücken bei der Verarbeitung von Zeichenketten in Programmen und
 insbesondere auch im Internet. Es finden sich Zeichendarstellungen reservierter Begriffe wie
 \glqq{}null\grqq{} oder \glqq{}true\grqq{}, SQL-Befehle, HTML und Javascript, exotische Unicode-Zeichen wie das
@@ -282,39 +309,40 @@ Ziel ist es hierbei primär, mögliche durch Lücken in der Zeichenverarbeitung 
 Abstürze des Programms schnell herbeizuführen, damit diese diagnostiziert und behoben werden können.
 Dies wird auch als \glqq{}Input Sanitization\grqq{} bzw. Eingabevalidierung bzw. -prüfung bezeichnet. 
 Obwohl dieses Verfahren primär zur Verteidigung gegen Skript-Angriffe auf Webseiten dient
-\cite{website:eingabepruefung}, zählt eine wenig sinnvolle, aber dennoch mögliche Eingabe, 
+\footnote{\url{ http://www.scip.ch/?labs.20110914 }}, 
+zählt eine wenig sinnvolle, aber dennoch mögliche Eingabe, 
 die das zu testende Programm in der Ausführung beeinträchtigt oder sogar stoppt, klar zur 
 Softwarequalität und sollte korrekt behandelt werden. Eine Fehlermeldung an den Nutzer zum
 Beispiel ist eine völlig legitime Reaktion, eine unbehandelte Ausnahme dagegen nicht.
 
-Je nach Betriebssystem führen unterschiedliche Symbole und Begriffe z.B. als Dateinamen
+Je nach Betriebssystem führen unterschiedliche Symbole und Begriffe z.B. als Datei\-namen
 manchmal zu sonderbaren Effekten und Fehlermeldungen oder sind schlicht verboten.
-Beispiele hierfür wären \textbf{COM} oder auch von geschweiften Klammern \{\} umschlossene
-Begriffe unter Windows, oder \textbf{dev} unter Linux. Programme, die Ihre eigenen
+Beispiele hierfür wären \textbf{COM} oder auch von geschweiften Klammern \glqq{}\{\}\grqq{} umschlossene
+Begriffe unter Windows, oder \textbf{dev} unter Linux. Programme, die ihre eigenen
 Dateioperationen mit wählbaren Dateinamen durchführen, sehen häufig nicht eine vollständige
 Behandlung all dieser möglichen Sonderfälle vor, und die Programmiersprache Java erzwingt
-trotz vorgegebenen I\\O Ausnahmebehandlungen nicht, alle Eventualitäten abzudecken.
+trotz vorgegebenen I/O-Ausnahme\-behandlungen nicht, alle Eventualitäten abzudecken.
 
 
 \section{Zustandserfassung, -sicherung und -verfolgung sowie Kontrollmechanismen}\label{section:statemonitoring}
 
-Um eine Überprüf-, Nachvollzieh- und Reproduzierbarkeit der vom Automatischen Tester
+Um eine Überprüf-, Nachvollzieh- und Reproduzierbarkeit der vom automatischen Tester
 durchgeführen Eingaben sicherzustellen, müssen diese bei jedem Testdurchlauf erschöpfend
 mitprotokolliert werden. Da die Erstellung eines Modells der zu testenden Anwendung 
 ebenfalls als Ziel definiert wurde, bietet sich ein Graph als Datenstruktur an. Die Analogie
-eines solchen sowohl zum Java-AWT/Java-Swing Datenmodell als auch zu den meisten 
-Automatendarstellungen der Informatik lässt eine einfache und Intuitive Implementation
+eines solchen sowohl zum Java-AWT/Java-Swing-Datenmodell als auch zu den meisten 
+Automatendarstellungen der Informatik lässt eine einfache und intuitive Implementation
 erhoffen. Auch lassen sich die von einer Applikation geöffneten Fenster als Knoten und die
 dorthin führenden Eingaben als Knotenübergänge auffassen, und es existieren
 fertige Java-Bibliotheken für normierte Graphdarstellung. Für dieses Projekt genutzt
-werden die Quelloffene Graphbibliothek GraphT \cite{website:jgrapht} sowie die
-ebenfalls offene Visualisierungsplattform Gephi \cite{website:gephi}.
+werden die quelloffene Graphbibliothek \textbf{JGraphT} \footnote{\url{ http://http://jgrapht.org/ }} sowie die
+ebenfalls offene Visualisierungsplattform \textbf{Gephi} \footnote{\url{ http://gephi.github.io/ }}.
 
 Sobald man die Frage nach dem \textbf{Wie} beantwortet hat, stellt sich als Nächstes
-eine Ähnliche nach dem \textbf{Was}. Unglücklicherweise sind Java-Applikationen der realen
+eine ähnliche nach dem \textbf{Was}. Unglücklicherweise sind Java-Applikationen der realen
 Welt nicht nach akademischen Maßstäben gläsern und überschaubar. Kurz nach dem
-Start eines konkreten Testdurchlaufs für FirstSpirit durch den Autotester zeigt der
-Java-Debugger bereits 20 verschiedene Threads oder Kontrollfäden an, die Alle auf
+Start eines konkreten Testdurchlaufs für \textbf{FirstSpirit} durch den Autotester zeigt der
+Java-Debugger bereits 20 verschiedene Threads oder Kontrollfäden an, die alle auf
 die eine oder andere Weise den Tester oder das Testobjekt beeinflussen können.
 Java ist objektorientiert \cite{java7insel}, was im Gegensatz zu den Alternativen 
 wie imperativen oder funktionellen Programmen in der Theorie erlaubt, jede laufende 
@@ -322,28 +350,28 @@ Instanz eines Programms in einen für Menschen verständlichen Datensatz zu übe
 
 In der Praxis zeigt sich aber, dass die Masse an Kontrollfäden, Objekten und
 sich gegenseitig beeinflussenden Nebeneffekten eine vollständige Zustandserfassung
-und - verfolgung äusserst impraktikabel, wenn auch nicht völlig unmöglich, macht.
+und -verfolgung äußerst impraktikabel, wenn auch nicht völlig unmöglich, macht.
 Das zu testende Programm muss folglich als \glqq{}Black Box\grqq{} verstanden werden.
 Obwohl wir technisch in der Lage sind, die Inhalte einzusehen, ist die genaue
 Funktion ein Rätsel, und wir können lediglich Rückschlüsse aus beobachtetem
-Verhalten ziehen. Für unsere Zustandserfassung heisst dies, dass wir lediglich
+Verhalten ziehen. Für unsere Zustandserfassung heißt dies, dass wir lediglich
 die Klasse einer dargestellten Oberflächenelements sowie aus globalen
 Schnittstellen erhältliche Informationen nutzen können, um einen beliebigen Zustand
-von einem Anderen zu unterscheiden. 
+von einem anderen zu unterscheiden. 
 
 Diese Methodik hängt bis zu einem gewissen Grad von der jeweiligen Implementation 
 des getesteten Programms ab und ist nicht frei von möglicher Ambivalenz,
-insbesondere bei generellen, häufig benutzten Elementen - aber wenn
+insbesondere bei generellen, häufig benutzten Elementen -- wenn aber
 das Verhalten eines Objekts von Instruktionen und nicht von Daten abhängt,
 gibt es für den Tester keine praktikable Möglichkeit, dies festzustellen
-oder ohne Kontext irgendetwas Sinnvolles mit der Information anzufangen.
+oder ohne Kontext irgendetwas sinnvolles mit der Information anzufangen.
 
 Ein Beispiel hierfür ist im Rahmen des FirstSpirit-Programms die Klasse
-\glqq{}SearchDialog\grqq{}. Sie dient der Auswahl einer Datei oder eines Ordners
+\glqq{}SearchDialog\grqq{}. Sie dient der Auswahl einer Datei oder eines Verzeichnisses
 des Betriebssystems. Die Klasse beinhaltet keine Datenfelder, die für
 eine Identifizierung einer konkreten Instanz hilfreich wären. Sie ist
 Unterklasse von SelfDisposingDialog, welches ebenfalls keine Felder
-enthält, und schliesslich JDialog, eine Basisklasse der Java-Swing-API.
+enthält, und schließlich JDialog, eine Basisklasse der Java-Swing-API.
 Diese garantiert nun die Präsenz eines Titels für jedwede Instanz
 seiner Klassen, selbst wenn dieser nicht definiert oder leer sein sollte.
 Worin unterscheiden sich nun verschiedene Instanzen von \glqq{}SearchDialog\grqq{}?
@@ -352,7 +380,7 @@ Die Antwort ist leider: In den Anweisungen, die an die Schnittstellen
 des jeweiligen Objekts geschrieben wurden. Wir können dazu auf einen
 aussagekräftigen, eindeutigen Titel des Suchfensters hoffen. Die
 Anweisungen lesen und vergleichen zu wollen wäre zwar theoretisch
-Möglich, aber praktisch nutzlos. Die Instanz ist von Ihrem Nutzungskontext
+möglich, aber praktisch nutzlos. Die Instanz ist von Ihrem Nutzungskontext
 abhängig, und Kontext ist etwas, dass der Autotester nicht verstehen kann.
 Lediglich die Eingaben, die zu dem Suchfenster geführt haben,
 lassen weitere Rückschlüsse darauf zu, wofür es dienen könnte.
@@ -367,8 +395,9 @@ da dieser nach gängigen Java-Konventionen den Nutzen einer Klasse zumindest
 andeutet, kombiniert mit den möglicherweise vorhandenen kritischen Daten
 der spezifischen Typklasse. Im Falle eines Fensters beispielsweise wäre
 dies die Zeichenkette, die in der Titelzeile angezeigt wird. Im Fall
-eines beschrifteten Knopfes die Beschriftung. Im Fall eines Glyph-Knopfes
-ohne jegliche Beschriftung ziehen wir den \glqq{}Tooltip\grqq{} heran,
+eines beschrifteten Knopfes die Beschriftung. Im Fall eines Knopfs
+nur mit Glyphe oder Icon, ohne jegliche Beschriftung, 
+ziehen wir den \glqq{}Tooltip\grqq{} bzw. Nutzungshinweis heran,
 die vom Programmierer vorgesehene helfende Zeichenkette, die angezeigt
 wird, wenn der Nutzer seinen Mauszeiger kurz über das betreffende Symbol hält.
 Wir verlassen uns also auf gängige Programmierpraxis sowie Eigenarten der 
@@ -377,10 +406,10 @@ Java-Datenstrukturen, um ähnliche Instanzen zu identifizieren.
 Eine eigene Graphimplementation für das Projekt zu verfassen wäre
 außerhalb des Rahmens, daher wurde nach einem möglichst verbreitetem
 Datenstandard und passenden Bibliotheken gesucht. Die Wahl fiel auf
-die Quelloffenen Projekte der Graphbibliothek GraphT \cite{website:jgrapht} 
-sowie der Visualisierungsplattform Gephi \cite{website:gephi}.
-Das gewählte Datenformat ist \textbf{.graphml} \cite{website:graphml}.
-Es handelt sich hierbei um einfache Textdateien im xml-Format,
+die quelloffenen Projekte der Graphbibliothek \textbf{JGraphT} \footnote{\url{ http://http://jgrapht.org/ }} 
+sowie der Visualisierungsplattform \textbf{Gephi} \footnote{\url{ http://gephi.github.io/ }}.
+Das gewählte Datenformat ist \textbf{.graphml} \footnote{\url{ http://graphml.graphdrawing.org/specification.html }}.
+Es handelt sich hierbei um einfache Textdateien im \textbf{xml}-Format,
 welche auch menschlich noch lesbar und verständlich sind, und notfalls
 auch editiert oder korrigiert werden könnten. 
 
@@ -396,7 +425,7 @@ und erlaubt die automatische Neuanordnung eines Graphen auf dem
 Bildschirm, um maximale Ansehnlichkeit zu erzielen.
 
 Nach einigen Probeläufen erwies sich der mitgelieferte 
-Yifan-Hu-Algorithmus \cite{hu2005efficient} als am sinnvollsten,
+Yifan-Hu-Algorithmus \cite{hu2005efficient} als gut geeignet,
 um einen komplexen Graph sternförmig auszubreiten. Ein beispielhaftes
 Ergebnis lässt sich auf Seite \pageref{fig:model_firstspirit_notext}
 begutachten. In der Grundeinstellung werden die von GraphT
