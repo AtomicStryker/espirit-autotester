@@ -15,6 +15,166 @@ Aufwand und Nutzen sowie Vor- und Nachteile vergleichen.
 \section{Grundlagen: Unterschiede Testverfahren}\label{section:testingapproaches}
 
 
+Grundsätzlich haben Tests von graphischen Oberflächen das Ziel, sowohl die
+Funktion als auch die Korrektheit zu überprüfen. Zum Bereich Funktion zählt,
+dass alle vom Programm bereitgestellten Features oder Möglichkeiten mittels
+Schaltflächen oder sonstigen komfortablen Möglichkeiten der Eingabe
+intuitiv erreichbar und interaktiv sind. Dazu zählen z.B. die Nachfrage
+der Applikation nach Parametern bzw. Argumenten für einen Funktionsaufruf,
+die Bereitstellung wahrscheinlicher Standardeingabewerte, oder auch die
+Überprüfung von Eingaben auf Zulässigkeit.
+
+Weiterhin sollten alle Schaltflächen, die eine Oberfläche bereitstellt,
+bei Betätigung eine Rückmeldung geben -- selbst dann und insbesonders, wenn die verlangte
+Funktion im Moment aus irgendeinem Grund nicht ausführbar ist.
+Wenn ein Knopf momentan nicht funktioniert, muss dies entweder sichtbar gemacht werden,
+oder eine Nachricht muss dem Nutzer erläutern, wieso der Knopfdruck nichts bewirkt.
+\glqq{}Blinde\grqq{} Schaltflächen ohne jegliche Reaktion sind ein Funktionsdefizit.
+
+Die Korrektheit einer Oberfläche bezeichnet z.B. das Öffnen eines erwarteten
+Unterfensters oder die Ausführung der gewählten Funktion als Reaktion auf eine
+Nutzereingabe. Es wird nicht einfach nur verlangt, dass etwas passiert, es soll
+auch etwas sein, dass vom jeweiligen Schalter und dem Nutzungskontext abhängig ist.
+Wenn dieser Effekt ausserhalb der graphischen Oberfläche zu finden ist, z.B.
+als Änderung einer Datei im Betriebssystem, muss der Test ebenfalls die Grenzen
+der getesteten Oberfläche verlassen und die gewünschte Änderung validieren.
+
+Da für solche Überprüfung die Mitwirkung des jeweiligen Betriebssystems notwendig
+ist, welches je nach lokaler Ausführung unterschiedliche Eigenschaften für neue
+Anwendungsfenster oder Dateisysteme aufweisen kann, zählt dies zu den am schwersten
+zu validierenden Eigenschaften. Eine auf mehreren Betriebssystemen oder gar je
+nach Version desselben Betriebssystems unterschiedlich agierende Applikation muss auch
+in jeder denkbaren Konfiguration getestet werden. Hier gilt allerdings der
+Grundsatz des Testens: Die Abwesenheit von Fehlern kann nicht bewiesen werden.
+
+Der naive Ansatz eines Testverfahrens ist simpel. Ein menschlicher Tester startet
+das Programm und arbeitet eine Liste von Funktionen bzw. Tätigkeiten ab, die das
+Programm unterstützen muss. Er nutzt die graphische Oberfläche, um Eingaben zu tätigen,
+und stellt sicher, dass Schaltflächen die vom Nutzer erwarteten oder zumindest
+dokumentierte Verhaltensmuster aufweisen. Selbst wenn eine Oberfläche Probleme aufweist,
+werden diese häufig als akzeptabel eingestuft, wenn eine gewünschte Funktion
+bei Korrekter Bedienung ausführbar ist. Ein Beispiel für ein solches häufig nicht als kritisch 
+eingestuftes Problem ist das temporäre Nichtantworten einer Programmoberfläche
+aufgrund einer rechenintensiven internen Tätigkeit. Idealerweise ist eine
+graphische Oberfläche tatsächlich nur eine Oberfläche und gibt Instruktionen als
+verkapselte Signale an das unterliegende Programm weiter. Wenn also eine
+in irgendeiner Form rechenintensive Anweisung erfolgt, sollte die Oberfläche
+antwortfähig bleiben und lediglich vermerken, dass das unterliegende Programm
+momentan beschäftigt ist und weitere Eingaben warten müssen.
+
+Eine Erweiterung bzw. ein Komplement zu Funktionstests sind destruktive Ansätze.
+Hierbei versucht ein Tester nicht, irgendwelche Funktionen korrekt durchzuführen,
+sondern hat als einziges Ziel, die graphische Oberfläche in einen Fehlerzustand
+zu überführen. Hierfür können z.B. schnelle, ziellose Eingaben dienen -- wildes Herumgeklicke
+auf dem Bildschirm -- oder auch die gezielte Auswahl von falschen und ungültigen
+Parametern und Eingaben, wo auch immer es geht. Die korrekt agierende
+graphische Oberfläche muss dies alles verarbeiten können, ohne in einen nicht
+mehr verlassbaren Fehlerzustand zu geraten. Dazu zählen z.B. Deadlocks,
+Abstürze oder das Nichtakzeptieren folgender Eingaben.
+
+Menschliche Arbeitszeit ist allerdings teuer, diese Prüfverfahren sind üblicherweise
+mit starker Wiederholung verbunden, und die Überprüfung selbst häufig trivial einfach.
+Es bietet sich also an, dies zu automatisieren. Hierfür gibt es viele verfügbare Ansätze
+und entsprechende Anwendungen. Es gibt sowohl quelloffene und kostenlose als auch proprietäre
+und kommerzielle Lösungen. Grundsätzlich sind automatisierte Tests in zwei Kategorien einzuordnen:
+Offline- oder Online-Tests. Hierzu mehr in Kapitel \ref{section:offoronlinetesting} auf Seite
+\pageref{section:offoronlinetesting}. Menschliches Offline-Testen existiert natürlich auch,
+es nennt sich beispielsweise \glqq{}Pair Programming\grqq{} oder \glqq{}Commit Review\grqq{}
+und bedeutet im Grunde lediglich, dass ein oder mehrere andere Entwickler den geschriebenen Quellcode
+lesen und nach Fehlern suchen.
+
+Weitere Unterteilung automatisierter Tests erfolgt hauptsächlich durch Unterschiede
+in der Bedienung und des jeweiligen Nutzers. Sogenannte \glqq{}Unit Tests\grqq{} werden
+von den Entwicklern selbst verfasst und bezeichnen zusätzlichen Programmcode parallel
+zum zu testenden Programm. Dieser zusätzliche Code soll lediglich die Funktion und Korrektheit
+eines kleinen Bestandteils des Programms sicherstellen, insbesondere, wenn die Implementation
+des Bestandteils geändert wird. Hierfür wird üblicherweise eine kleine Menge an Testeingabewerten
+vorgesehen, für die erwartete bzw. korrekte Antworten definiert sind. Diese Testeingaben
+werden dann beim Unit Test durchgeführt und die Antworten mit dem Soll verglichen.
+
+Als konkretes Beispiel diene hier ein Programmiererwitz: Ein Tester betritt eine Kneipe.
+Er bestellt ein Bier. Er bestellt -1 Biere. Er bestellt zehn Trilliarden Biere. Er bestellt n Biere.
+Er verlässt die Kneipe. Er bestellt 2 Biere. Er betritt die Kneipe. Er bestellt ein Pferd. Er bestellt \glqq{}ioubiuzb\grqq{}.
+Dieser Witz soll verdeutlichen, dass für gute Tests häufig unsinnige Eingaben notwendig sind,
+die vom Programm dennoch auf korrekte Art und Weise behandelt werden müssen. So wäre es in diesem
+Fall fehlerhaft, zehn Trilliarden Biere vorzubereiten, obwohl die Eingabe technisch gesehen zulässig erscheint.
+Ebenso erfolgen Bestellungen, obwohl die Kneipe verlassen wurde. Ein korrekt agierendes
+Programm sollte auf solche Widersprüche mit einer Fehlermeldung reagieren, aber nicht mit
+fehlerhaftem Verhalten.
+
+Entsprechende Tests gibt es auch für graphische Oberflächen, bei denen Code nicht zwangsläufig
+einen Antwortwert zurückliefert. So kann z.B. ein Test darin bestehen, eine Schaltfläche zu betätigen,
+und anschliessend zu prüfen, ob ein erwartetes Fenster geöffnet wurde. Hier wird die Problematik
+komplexer, da bei einem korrekt verkapselten Programm das Öffnen eines neuen Fensters asynchron
+und damit technisch gesehen zu einem nicht vorhersehbaren Zeitpunkt erfolgt. Für praktische Zwecke
+kann allerdings vorgegeben werden, dass für eine korrekte Eingabeverarbeitung die Öffnung dieses 
+Fensters innerhalb eines gewissen Zeitraums erfolgen muss.
+
+Solche Tests müssen ebenfalls von Entwicklern implementiert werden, was einen erheblichen und
+teuren Zeitaufwand bedeutet. Um dies zu optimieren, wurde ein neuer Ansatz erdacht: Anstatt
+in Codeform vorgeben zu müssen, was das erwartete Verhalten einer graphischen Oberfläche ist,
+wird ein naiver Testablauf durch einen Menschen bzw. Tester vom Computer aufgenommen. Diese Aufnahme der
+vorgenommenen Eingaben kann dann beliebig oft wieder abgespielt werden. Die Ausgaben bzw.
+Antworten des Programms wurden ebenso aufgenommen und können mit den Ausgaben eines späteren
+Durchlaufs mit identischen Eingaben verglichen werden. Dies sind sogenannte 
+\glqq{}Regressionstests\grqq{} \cite{regression}. Damit lässt sich vor allem sicherstellen,
+dass bestehende Funktionalität einer Oberfläche durch spätere Änderungen nicht zerstört wird.
+
+Die Vorteile sind offensichtlich: Es ist kein teurer Entwickler beteiligt, lediglich ein
+erheblich günstigerer Tester, und ein einmal aufgenommener Testablauf kann ohne weitere
+menschliche Beteiligung beliebig oft vorgenommen werden. Ein Nachteil ist allerdings, dass
+nur die vom Tester aufgenommenen Aktionen getestet werden können, insbesondere können
+meist die Parameter oder die Testreihenfolge nachträglich nicht verändert werden. Auch
+muss bei einer Erweiterung oder Veränderung der bestehenden Oberfläche ein komplett neuer Test
+erstellt werden, da der alte nicht mehr zutrifft bzw. Funktionen auslässt. Je nach genutztem
+Test erhält ein Nutzer lediglich ein lapidares \glqq{}Test nicht bestanden\grqq{} oder
+eine genaue Aufschlüsselung, welche Eingabe zu welchem Zeitpunkt zu einer fehlenden 
+oder unerwarteten Reaktion geführt hat.
+
+Alle bisherigen Verfahren bezogen sich in irgendeiner Form auf menschliche Nutzung der
+Oberflächen. Es gibt auch vollautomatische Ansätze, die nicht erfordern, dass ein Mensch
+die korrekte Nutzung vorgibt. Diese nutzen meist Programmierschnittstellen aus,
+auf denen graphische Oberflächen aufbauen. Diese Schnittstellen bieten Gemeinsamkeiten
+über alle Programme hinweg, die zum vollautomatischen Testen verwendet werden können.
+Dazu zählen insbesondere normierte Schaltflächen und sonstige Eingabemöglichkeiten
+sowie die Erkennung sich öffnender Fenster. Ein vollautomatischer Test ist also zumindest
+in der Lage, Schalter zu betätigen und neue Fenster zu beobachten.
+
+Das Problem vollautomatischer Tests ist, dass Maschinen keine Intelligenz aufweisen,
+um irgendeinen Kontext zu erkennen oder herstellen zu können. Ein Programm hat
+keine Möglichkeit, festzustellen, ob ein sich öffnendes Fenster in einer Oberfläche
+auch das gewünschte Fenster ist, ob es sich zum richtigen Zeitpunkt öffnet, oder
+ob es überhaupt die korrekten Inhalte umfasst. Ebenso kann ohne Kontext nicht festgestellt
+werden, dass ein bestimmter Schalter nur dann funktioniert, wenn vorher Parameter
+in andere Eingabefelder eingegeben wurden, oder dass diese Parameter innerhalb bestimmter
+Grenzen liegen müssen.
+
+Für vollautomatische Tests bietet sich daher der bereits erwähnte destruktive Ansatz an.
+Es gibt keine sinnvolle Möglichkeit, Funktion oder Korrektheit ohne Kontext zu testen,
+aber um mögliche Fehler und Ausnahmen herbeizuführen, ist das auch unnötig.
+Der Test versucht nun also, mit vielen, falschen, ungültigen oder auch unsinnigen
+Eingaben das zu testende Programm zu überwältigen. Das Ziel ist es, nicht korrekt
+behandelte Situationen zu finden, Kontrollflüsse also, in denen von falschen
+Annahmen bezüglich des Programmzustands und der Eingaben ausgegangen wird.
+
+Und obwohl solch ein vollautomatischer Test idealerweise keinerlei Angaben
+über das zu testende Programm benötigt, sind in der Praxis doch Anpassungen
+naheliegend. So macht es wenig Sinn, wieder und wieder einen Knopf zu testen,
+der das Programm beendet und damit auch den Test. Eine völlig zufällige
+Testanordnung würde zwar dennoch zwangsläufig irgendwann alle Möglichkeiten
+ausgeschöpft haben, aber dieses simple Eingeständnis verringert die
+Anzahl nötiger Testläufe erheblich.
+
+Weiterhin kann jede Anwendung Bedienelemente enthalten, dessen Betätigung
+den weiteren Test sinnlos macht -- als ein Beispiel sei eine Login-Maske genannt,
+in der falsche Eingaben schlicht zur Beendigung des Programms führen.
+Ein anderes Beispiel wären z.B. Schaltflächen wie
+\glqq{}Projekt schließen\grqq{}, \glqq{}Alles löschen\grqq{} oder auch 
+\glqq{}globaler thermonuklearer Krieg\grqq{}.
+
+
+
+
 \section{Automatisierte GUI-Tests}\label{section:automatedguitesting}
 
 
