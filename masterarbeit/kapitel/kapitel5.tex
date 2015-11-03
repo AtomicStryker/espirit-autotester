@@ -14,6 +14,28 @@ dem normalen Nutzer unzugängliche Schaltflächen und Funktionen.
 
 \section{Resultate}\label{section:testresults}
 
+
+Wie in den Graphdarstellungen zu sehen ist, enthält diese Version von
+FirstSpirit etwa 34 einzigartige Fenster bzw. Zustände. Sie gehen alle vom
+Hauptfenster des Programms bzw. dem Zustand nach dem Programmstart aus,
+einige wenige sind dahingegen tiefer abzweigend. Die Zahl einer im
+Laufe eines vollen Durchgangs betätigter Eingabeelemente liegt bei
+über 800. Dies legt nahe, dass umfangreiche interne Zustandsänderungen
+möglich sind, die nicht direkt in von außen sichtbaren geänderten
+Programmzuständen resultieren.
+
+Bedenkt man die Natur von FirstSpirit, ist dies keine große Überraschung.
+FirstSpirit ist ein Content Management System bzw. CMS, im Grunde also
+ein Client bzw. Editor für Webinhalte. Da der Autotester lediglich den Editor testet,
+ohne Rücksicht auf die Inhalte nehmen zu wollen oder auch zu können,
+hat die Mehrzahl der getätigten Eingaben keinen für das Konzept erkennbaren
+Effekt. Änderungen am editierten Projekt haben aber für den Editor durchaus
+-- wie auch immer geartete -- langfristige Konsequenzen, und es ist für
+einen produktiven Einsatz des Autotesters anzuraten, solche von Seiteneffekten
+beeinflussten Daten vor jedem Testdurchlauf wieder auf einen ursprünglichen
+Zustand zurückzusetzen.
+
+
 \begin{sidewaysfigure}
 	\centering
 	\includegraphics[width=0.85\textwidth]{bilder/screenshot_freespirit.png}
@@ -54,3 +76,27 @@ Textinformation, um mit einer Legende o.Ä. auszukommen.
 
 \section{Vergleich mit klassischen Tests}\label{section:testcomparisonclassic}
 
+Ein Vergleich mit halbautomatischen Methoden oder gewöhnlichen Unit-Tests
+ist erst einmal schwierig, da diese auf anderen Prinzipien aufbauen.
+Üblicherweise ist das Ziel die Überprüfung der Korrektheit des Programms.
+Um eine Aussage über Korrektheit treffen zu können, sind kontextuelle
+Informationen über ein Programm bzw. das gewünschte Verhalten notwendig.
+Einem vollautomatischen Ansatz stehen diese Informationen schlicht nicht
+zur Verfügung. Das hier vorgestellte Konzept ist auch nicht als Ersatz 
+klassischer Tests gedacht oder in irgendeiner Form äquivalent.
+
+Getreu dem Zitat von Dijkstra \footnote{ACM Turing Lecture 1972},
+nach dem die Abwesenheit von Fehlern nicht bewiesen werden kann,
+zielt der Autotester in eine andere Richtung. Es wird versucht, so viele
+unerwartete Situationen und resultierende Fehler zu erzeugen, wie
+irgendwie möglich. Man kann ihn also als ein Komplement bzw. eine Addition
+zu klassischen Tests verstehen bzw. Einsetzen.
+
+Ein Durchlauf des Autotesters ist verglichen mit Unit Tests und den
+meisten Regressionstests sehr langsam. Ein vollständiger Durchlauf
+über FirstSpirit dauert ungefähr 20 Minuten. Leider gibt es für die
+Emulation menschlicher Eingaben und der Wartezeit für die Verarbeitung
+dieser Eingaben durch das Programm keine guten Alternativen.
+Man bedenke allerdings: Derselbe Test durch einen Menschen würde
+noch erheblich länger dauern und die üblichen menschlichen Fehlerquellen
+beinhalten, die das Ergebnis zusätzlich beeinflussen.

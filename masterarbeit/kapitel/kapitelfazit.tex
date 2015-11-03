@@ -2,4 +2,62 @@
 % kapitelfazit.tex
 \chapter{Fazit und Ausblick}\label{chapter:expansion}
 
+Im Laufe dieser Arbeit wurde ein neuartiges Konzept zum vollautomatischen
+Test graphischer Oberflächen vorgestellt, eine Implementation wurde
+vorgestellt, und konkrete Tests durch den nach dem Konzeptprinzip
+funktionierenden Tester demonstriert. In diesem Kapitel werden
+die gewonnenen Erkenntnisse und Ergebnisse noch einmal zusammengefasst 
+und Ansätze für eine weitere Entwicklung des Konzept werden aufgezeigt.
 
+
+\section{Konzeptumsetzung}\label{section:conceptimplement}
+
+Es ist gelungen, eine nahezu vollständige Automation des destruktiven
+Testprozesses umzusetzen. Mit nur einigen wenigen unbedingt nötigen Angaben
+zur zu testenden Oberfläche erledigt der Autotester völlig selbsttätig
+alle weiteren Schritte, die viele klassische bzw. gewöhnliche Tests aufwändig
+in der Implementation oder auch der Wartung machen. Es ist nicht notwendig,
+dem Tester eine Liste der zu prüfenden Elemente vorzugeben. Er nutzt
+Eigenschaften der Java-Swing-API aus, um selbst alle zu Eingabeverarbeitung
+fähigen Komponenten einer graphischen Oberfläche zu finden. Alle diese
+Elemente werden dann systematisch geprüft. Um möglichst viele
+mögliche Fehlerzustände zu finden, wird diese Reihenfolge von Durchlauf
+zu Durchlauf zufällig variiert.
+
+Eingabekomponenten die Zeichenketten akzeptieren werden mit einer
+Vielzahl bekanntermaßen problemträchtiger Strings bombardiert,
+die übliche übersehene Validationen oder Verifikationen von
+Eingaben aufdecken. Sich öffnende Zusatzelemente der Oberfläche
+oder auch komplett neue Fenster werden automatisch erkannt, mit
+der Eingabe, die vermutlich zu ihrem Erscheinen geführt hat, verknüpft,
+und ebenfalls systematisch auf Komponenten durchsucht und getestet.
+
+Es bestehen sowohl Möglichkeiten der manuellen Vorgabe von
+Ausnahmen im Testablauf als auch vollautomatische Routinen,
+die vorzeitige Beendigung des Tests verhindern und die
+Effizienz des Testablaufs erhöhen. Nach nur einigen wenigen iterativen
+Durchläufen mit menschlicher Beobachtung sollte es möglich sein, 
+jede beliebige Java-Swing-Applikation mit dem Autotester vollständig 
+prüfen zu lassen. Bei einem vorzeitigen Beenden muss lediglich die
+Logdatei auf die zuletzt getätigten Eingaben geprüft werden,
+um dann eine simple Ausnahmeregel in die Konfigurationsdatei zu schreiben.
+
+Nach jedem erfolgreichem Durchlauf erstellt der Tester
+eine Textdatei im graphML-Format, welche mit den meisten
+verfügbaren Applikationen zur Graphvisualisierung in ein
+ansprechendes Format gebracht werden kann. So ist es möglich,
+ein Abbild der getesteten Oberfläche und aller ihrer Zustände 
+zu schaffen, welches gewissermaßen von einem blinden Maler stammt.
+Bei Betrachtung dieses Graphen kann ein Mensch häufig
+ohne jegliche Kenntnis des Programms Annahmen über seinen Zweck
+und den Bedienungsablauf treffen.
+
+Der Autotester schafft es regelmäßig, ohne irgendeine Kenntnis des zu
+testenden Programms oder seiner Funktion alle Möglichkeiten
+der Eingabe auszuprobieren, und manchmal dabei Fehler durch unerwartete
+Eingaben im getesteten Programm auszulösen.
+Indem diese gefundenen Fehler dann behoben werden, erhöht sich die
+Softwarequalität des getesteten Programms. Das Ziel des Konzepts
+war es nicht, Korrektheit zu beweisen oder zu testen. Dafür
+sind kontextuelle Informationen notwenig, die bis zur Existenz
+künstlicher Intelligenz schlicht von Menschen vorgegeben werden müssen.

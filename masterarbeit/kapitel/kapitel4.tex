@@ -370,8 +370,8 @@ Ein Beispiel hierfür ist im Rahmen des FirstSpirit-Programms die Klasse
 \glqq{}SearchDialog\grqq{}. Sie dient der Auswahl einer Datei oder eines Verzeichnisses
 des Betriebssystems. Die Klasse beinhaltet keine Datenfelder, die für
 eine Identifizierung einer konkreten Instanz hilfreich wären. Sie ist
-Unterklasse von SelfDisposingDialog, welches ebenfalls keine Felder
-enthält, und schließlich JDialog, eine Basisklasse der Java-Swing-API.
+Unterklasse von \glqq{}SelfDisposingDialog\grqq{}, welches ebenfalls keine Felder
+enthält, und schließlich \glqq{}JDialog\grqq{}, eine Basisklasse der Java-Swing-API.
 Diese garantiert nun die Präsenz eines Titels für jedwede Instanz
 seiner Klassen, selbst wenn dieser nicht definiert oder leer sein sollte.
 Worin unterscheiden sich nun verschiedene Instanzen von \glqq{}SearchDialog\grqq{}?
@@ -402,6 +402,42 @@ die vom Programmierer vorgesehene helfende Zeichenkette, die angezeigt
 wird, wenn der Nutzer seinen Mauszeiger kurz über das betreffende Symbol hält.
 Wir verlassen uns also auf gängige Programmierpraxis sowie Eigenarten der 
 Java-Datenstrukturen, um ähnliche Instanzen zu identifizieren.
+
+Zur Verfolgung des Programmzustands kann entsprechend nur die Liste
+bzw. das Protokoll vergangener Eingaben an Elemente der Oberfläche
+herangezogen werden. Um einen bestimmten Zustand zu reproduzieren,
+ist die einzig sichere Lösung, alle dahin führenden Schritte nachzuahmen.
+Es ist zwar häufig möglich, auch auf einem direkteren Weg zu einer
+vermuteten Fehlerstelle zu gelangen, aber es muss immer damit gerechnet
+werden, dass ein bestimmter Fehler nur bei perfekter Reproduktion
+einer gewissen Eingabekette auftritt. 
+
+Die Schwierigkeit beim
+Verfolgen des Zustands der Java Virtual Machine verhindert
+gleichzeitig auch das Einfrieren oder Abspeichern eines bestimmten Zustandes
+zwecks späterer Wiederherstellung. Java sieht überhaupt nicht vor,
+den gesamten Systemzustand sichern und laden zu können. Eine dennoch
+denkbare Möglichkeit ist die Verkapselung des Testsystems in einer
+virtuellen Umgebung, die beliebig pausiert, gespeichert und geladen
+werden kann. Dies ist aber enorm aufwändig und würde zumindest eine
+Kommunikation zwischen virtuellem System (bzw. einer Kontrolleinheit
+ausserhalb desselben) und des darin laufenden Tests erfordern.
+Auch ist der Speicher- und Ladevorgang selbst nicht unaufwändig,
+da ein komplettes modernes Betriebssystem als Speicherabbild zumindest einige hundert
+Megabyte an Informationen umfasst.
+
+Virtualisierung ist dennoch ein guter Ansatz, um die Tests
+durchzuführen. Da der Ablauf selbst nichtdeterministisch ist,
+spricht nichts dagegen, eine Vielzahl von Testinstanzen parallel ablaufen zu
+lassen. Man muss nur beachten, dass zu viele parallele Instanzen den VM-Host
+so stark belasten können, dass die vom Tester eingelegten Pausen
+zwischen Eingaben nicht mehr ausreichen könnten, um die jeweilige graphische
+Oberfläche reagieren zu lassen. Dies würde eine korrekte Verfolgung
+der aus Eingaben erfolgten Reaktionen zumindest sehr schwierig,
+wahrscheinlich sogar unmöglich machen.
+
+
+\subsection{Repräsentation der Programmzustände als Graph}
 
 Eine eigene Graphimplementation für das Projekt zu verfassen wäre
 außerhalb des Rahmens, daher wurde nach einem möglichst verbreitetem
@@ -436,3 +472,87 @@ Ist dies aber erfolgt, erhält man aus dem Durchlauf eines blind testenden
 Programms aber tatsächlich eine deckende Abbildung der getesteten
 Applikation bzw. Ihrer möglichen Fensterdarstellungen. Zu sehen
 ist ein solches finales Resultat auf Seite \pageref{fig:model_freespirit_06.10.2015}.
+
+Einige Anmerkungen zu diesen Bildern: Der Knotensortieralgorithmus
+nimmt auf die in diesem Fall ungewöhnlich langen Beschriftungen der einzelnen
+Knoten keine Rücksicht. Für eine irgendwie lesbare Darstellung müssen die
+Graphen nach der automatischen Sortierung noch per Hand verschoben werden,
+bis keine Texte mehr überlappen. Ein weiteres Zugeständnis an Lesbarkeit
+ist die Darstellung von Eingaben bzw. betätigter Schaltflächen als
+Knoten. Eigentlich sollten Knoten nur Zustände darstellen, Eingaben
+sind die Kanten bzw. Übergänge zwischen Zuständen. Dies führt aber dazu,
+dass die langen Texte der Eingabedarstellungen an den Kanten dargestellt
+werden, die nicht beliebig verschoben werden können. Sie liegen immer
+zwischen zwei Knoten. Eine vernünftige Darstellung in dieser Form
+erwies sich als unmöglich. Wenn die Eingaben ebenfalls als Knoten
+dargestellt werden, können sie in der Darstellung beliebig verschoben
+werden, sodass auch ihre Texte nicht überlappen und tatsächlich
+gelesen werden können.
+
+
+\section{Minimale Nichtautomatische Angaben}
+
+Das Ziel eines vollautomatischen Tests kann leider nur annähernd erreicht werden,
+wenn gleichzeitig andere Anforderungen wie \glqq{}Die Testzeit ist nicht unendlich lang\grqq{}
+in Betracht gezogen werden müssen. Um auch die gewünschte graphische Oberfläche zu
+testen und einige Fallstricke zu vermeiden, bietet der Autotester eine Konfigurationsdatei
+nach dem Java \glqq{}Properties\grqq{} Standard, in der einige Angaben gemacht werden können bzw. müssen:
+
+\begin{itemize}
+  \item \textsc{targetGUISimpleClassName} der Klassenname der zu testenden Oberfläche
+  \item \textsc{testStartDelayInSeconds} eine kurze Pause nach dem Start der Oberfläche, um Ladezeiten zuzulassen
+  \item \textsc{blackListedAbstractButtons} nach dem Benennungs-Prinzip des Autotesters definierte unantastbare Standard-Schaltflächen
+  \item \textsc{blackListedWindowKeywords} nach dem Benennungs-Prinzip des Autotesters definierte ignorierte Fenster
+  \item \textsc{blackListedComponentsSimpleClassNames} nach dem Benennungs-Prinzip des Autotesters definierte unantastbare Eingabeelement-Klassen
+  \item \textsc{sleepTimeMillisTextfieldEntries} Dauer der Wartezeit zwischen Texteingaben
+  \item \textsc{sleepTimeMillisBetweenFakeMouseClicks} Dauer der Wartezeit zwischen Mauseingaben
+  \item \textsc{modelOutputFolder} Absoluter Ordnerpfad im Dateisystem, in dem die Resultate gespeichert werden sollen
+\end{itemize}
+
+Diese Angaben genügen, um für das sehr komplexe FirstSpirit-Programm einen regelmäßig annähernd
+vollständigen Testdurchlauf über alle existierenden Schaltflächen zu ermöglichen.
+Die gewählte Zeit vor dem Testbeginn sind zehn Sekunden. FirstSpirit ist eine sehr umfangreiche,
+vernetzte Applikation. Als unantastbare Schaltflächen definiert wurden der globale Knopf
+zum Beenden von FirstSpirit, ein Knopf, der zum Start eines externen Internetbrowsers führt
+(nicht Bestandteil des Tests), der Knopf, der in Standard-Dateiauswahlfenstern das Erstellen eines neuen
+Ordners ermöglicht (wäre als Standard-Ausnahme vermutlich sogar sinnvoller), sowie drei
+Debug-Schaltflächen, die die Logdatei des Testablaufs mit den Ausgaben des Programms selbst
+überschwemmen können.
+
+Als einziges ignoriertes Fenster wurde die \glqq{}FirstSpirit Zwischenablage\grqq{} definiert. Durch eine
+Eigenart in der Implementation sind die resultierenden Fenster technisch gesehen immer neuartige
+Instanzen, was zu einem unendlichen Test führt, da der Tester alle Fenster testen will.
+Eine unendliche Anzahl von Fenstern führt leider auch zu einer unendlichen Anzahl an Tests.
+Aus Effizienzgründen wurden als nächstes zwei häufig auftretende Klassen von Tests ausgeschlossen,
+welche zwar technisch gesehen Eingaben erlauben, aber im FirstSpirit-Programm lediglich
+darstellende Funktion haben. Dabei handelt es sich um \glqq{}GlowLabel\grqq{} und \glqq{}SynthScrollBarUI\grqq{}.
+Für die eingestellten Pausen zwischen Text- und Mauseingaben haben sich zehn und 2000 Millisekunden
+als geeignet herausgestellt. Dies hängt aber stark vom System ab, auf dem der Test durchgeführt wird,
+und insbesondere der Auslastung des Systems. Wenn von einer virtualisierten Umgebung ausgegangen
+wird, von der viele Instanzen parallel ablaufen, wäre es vermutlich sehr sinnvoll, diese
+Pausen erheblich länger andauern zu lassen.
+
+Zusätzlich zu diesen wenigen Angaben muss natürlich das Testprogramm auch in der Lage sein,
+die zu testende Oberfläche als Unterprozess zu starten. Nur so kann der notwendige Zugriff
+auf die Daten der laufenden Applikation erfolgen. Würde man zunächst das zu testende
+Programm starten, und dann den Tester, wären beide in verschiedenen JVM-Instanzen
+verkapselt, die jeweils keinen Zugriff aufeinander zulassen. Für einen solchen
+Start als Unterprozess ist die Startklasse der zu testenden Applikation notwendig,
+diese kann aus den Metainformationen einer lauffähigen Java \glqq{}JAR\grqq{}
+ausgelesen werden. Zusätzlich bieten sich verschiedene Parameter bzw. Argumente
+für die JVM an, die z.B. zusätzliche Speicherallokation oder einen anderen
+Algorithmus für den Garbage Collector erlauben. Auch ist es bei gewissen Anwendungen,
+darunter FirstSpirit, möglich, direkt im Programmstart Parameter wie Login-Daten
+oder Programmports zu spezifizieren, um eine Testblockierende Login-Maske
+zu überspringen.
+
+Alternativ hätte ein System vorgesehen werden können, welches gewisse Eingaben
+bei einem definierten Eingabefeld vorschreibt. Dies wäre für maximale Kompatibilität
+hilfreich, wenn ein Programm solche Kommandozeilen-Parameter nicht zulässt.
+In diesem Fall hat es sich aber als unnötig erwiesen. Es sei auch die
+Annahme in den Raum gestellt, dass nur Entwickler diese Testapplikation
+verwenden werden, also in jedem Fall Zugriff auf Quellcode besteht,
+und ein entsprechendes Feature relativ schnell und einfach an bestehende
+Applikationen angefügt werden kann. Wenn nicht -- der Autotester selbst
+wird vermutlich quelloffen verfügbar sein, und eine Implementation
+dieser Idee kann von interessierten Parteien umgesetzt werden.
