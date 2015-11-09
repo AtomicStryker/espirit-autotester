@@ -5,11 +5,110 @@
 
 Dieses Kapitel befasst sich mit einigen in der Industrie verbreiteten bzw. \glqq{}State of the Art\grqq{}-Lösungen
 für das Problem automatischer GUI-Tests, dazu mit in einem Artikel sowie einer Doktorarbeit
-vorgestellten Methoden. 
-Es werden verschiedene Lösungen (für Java-Swing und andere) vorgestellt,
+vorgestellten Methoden. Zunächst werden noch die Grundlagen graphischer Oberflächen und
+der verschiedenen Methodiken erläutert, um diese zu testen.
+Anschließend werden verschiedene Lösungen (für Java-Swing und andere) vorgestellt,
 ihr jeweiliger Implementationsaufwand begutachtet sowie eventuelle Vor- und Nachteile aufgezeigt.
 Auch wenn bereits im Ansatz ein Unterschied zum hier vorgestellten Konzept besteht, kann man dennoch
 Aufwand und Nutzen sowie Vor- und Nachteile vergleichen.
+
+
+
+\section{Grundlagen: Asynchrone graphische Oberflächen}
+
+
+Programme mit einer graphischen Oberfläche stellen einen Sonderfall für
+die Philosophie einer Implementation dar. Ein gewöhnliches Programm wird
+gestartet, läuft und erledigt eine Aufgabe, und beendet sich nach
+Durchführung dieser Aufgabe. Üblicherweise ist dies eine Datenverarbeitung
+irgendeiner Art, und vielleicht gibt der Nutzer noch weitere Parameter
+oder Argumente mit dem Startbefehl durch. Eine erste Erweiterung dieses
+Konzepts ist, dass eine Anwendung anhalten kann, um den Nutzer nach einer
+Eingabe zu fragen. Dies stellt allerdings noch keine besonderen Anforderungen
+an die Anwendung -- schließlich muss nichts getan werden, während auf
+die Nutzereingabe gewartet wird.
+
+Eine Anwendung mit einer graphischen Oberfläche dahingegen steht vor
+einem Dilemma: Es kann mit Sicherheit nur davon ausgegangen werden, dass ein
+einziger Prozessor bzw. Kontrollfluss vorliegt. Es gibt aber im üblichen Fall
+eine Vielzahl von Prozessen, die bearbeitet werden müssen. Hier eine exemplarische
+Auflistung, in absteigender Wichtigkeit bzw. Priorität für den Prozessor
+sortiert:
+
+\begin{itemize}
+  \item \textsc{Eingaben} getroffene Eingaben müssen aus entsprechenden Puffern ausgelesen werden
+  \item \textsc{Oberfläche} die Darstellung der graphischen Oberfläche selbst
+  \item \textsc{Reaktion} Eingaben verlangen häufig irgendeine Tätigkeit oder Reaktion
+  \item \textsc{Aufgabe} Die Applikation hat nach wie vor eine Aufgabe zu erfüllen
+\end{itemize}
+
+Im Gegensatz zum klassichen Fall eines Programms müssen alle diese Tätigkeiten
+mehr oder weniger gleichzeitig bearbeitet werden. Es wird gemeinhin als inakzeptabel
+eingestuft, wenn eine graphische Oberfläche während einer Tätigkeit oder aufgrund
+einer Eingabe nicht länger reagiert, bis diese beendet sind. Das Einzige, was
+noch wichtiger ist als die Darstellung der aktuellen Oberfläche, ist die Entleerung
+der Eingabepuffer. Wenn diese überlaufen, weil der Computer anderweitig beschäftigt
+war, gehen Eingaben des Nutzers verloren. Dieser müsste daraufhin seine Eingabe
+unterbrechen, auf eine Reaktion des Programms warten, herausfinden, ab wann seine
+Eingabe verloren ging, und sie ab dann neu vornehmen. Dies ist sehr störend
+und wenn überhaupt möglich zu vermeiden. Selbst eine Nichtreaktion der Nutzeroberfläche
+ist als Preis akzeptabel, wenn es gleichzeitig dazu führt, dass alle getätigten
+Eingaben auch vom Programm verarbeitet werden.
+
+Als nächstgeringere Priorität folgen dann gewünschte Reaktionen auf diese Nutzereingaben.
+Diese nehmen entweder nur Einfluss auf die Darstellung oder haben sonstigen
+geringen Einfluss auf den Ablauf des Programms als solches -- als Beispiel genannt
+sei das Eintippen einer Zeichenkette. Das Programm muss auf jeden Tastenanschlag
+zeitnah reagieren und die entsprechenden Zeichen in der Oberfläche darstellen,
+aber die einzelnen Eingaben führen nicht zu einer schwerwiegenden Zustandsänderung
+oder einer Menge von Berechnungen im Programm. Eine solche Änderung tritt vermutlich 
+erst ein, wenn eine Reihe solcher Eingaben getätigt und Einstellungen angepasst wurden, 
+bevor schlussendlich ein \glqq{}schwerwiegender\grqq{} Prozess angestoßen wird,
+der eigentliche Zweck des Programms.
+
+Paradoxerweise ist nun die eigentliche Aufgabe des Programms von geringster Priorität. 
+Sie erhält normalerweise Prozessorzeit, wenn keine der anderen Tätigkeiten dringend 
+danach verlangt. Dies würde dazu führen, dass entweder die graphische Oberfläche
+nicht mit den aktuellen Zustandsinformationen befüllt wird, keine Eingaben entgegen
+nimmt oder auf diese nicht reagiert. Dies ist insbesondere dann ein Problem, wenn der
+Nutzer beispielsweise beabsichtigte, den Hauptprozess zu unterbrechen oder zu pausieren.
+Viele Applikationen befolgen diese Philosophie nicht, dementsprechend ist es nicht
+möglich, einen einmal gestarteten Prozess vor vollständiger Beendigung zu stoppen,
+ohne das ganze Programm vom Betriebssystem beenden zu lassen.
+
+Das Betriebssystem ist für die Zuteilung der Prozessorzeit an Kontrollflüsse
+zuständig, es existieren hierfür diverse Ansätze \cite{ArpaciDusseau14-Book}, 
+und alle Betriebssysteme implementieren sogenannte \glqq{}Scheduler\grqq{}.
+Dem obigen Prinzip folgend, haben die graphischen Nutzeroberflächen normalerweise
+kritische Priorität bzw. \glqq{}Echtzeit\grqq{}-Anforderungen, das heisst, sie
+werden anderen Prozessen vorgezogen. Moderne Betriebssysteme 
+\cite{Stallings:2004:OS:993867} haben dennoch
+Fortschrittsgarantien für alle lauffähigen Prozesse, die mittels verschiedener
+Methodiken eingehalten werden. Unter Windows beispielsweise erhöht sich die
+Priorität eines Prozesses, wenn Nutzereingaben darauf ausgeführt werden.
+Gleichzeitig erhalten Prozesse, die am Ende der Warteschlange logieren,
+alle paar Millisekunden (eine Ewigkeit in Computermaßstäben) Prozessorzeit,
+die ihnen eigentlich nicht zustünde. So wird sichergestellt, dass alle Prozesse
+auch vorankommen, obwohl einige wichtiger sind als andere.
+
+Im Kontext des Testens von Software stellt dies eine Herausforderung dar,
+weil gewöhnliches \glqq{}Debugging\grqq{} die Verfolgung von Kontrollflüssen
+mithilfe von Breakpoints\footnote{url{https://en.wikipedia.org/wiki/Breakpoint}}
+beinhaltet. Dieses Konzept fällt bei Abwesenheit eines monolithischen Programmflusses
+aber auseinander. Es besteht nur noch die Möglichkeit, innerhalb des gewünschten
+Unterprozesses auf hoffentlich korrekt empfangene Eingabesignale bzw. weitergeleitete
+Befehle seitens der anderen Prozesse zu hoffen. Ein vollautomatischer Tester
+muss also das Problem überwinden, dass eine über eine Anzahl von Kontrollflüssen
+verteilte Applikation mit graphischer Oberfläche keine Informationen darüber
+haben wird, welche Eingabe genau welche Reaktion hervorgerufen hat, da
+die Prozesse entkoppelt miteinander kommunizieren.
+
+Konkret heißt dies z.B., dass eine Eingabe, von der wir wissen, dass sie in der 
+Öffnung eines neuen Fensters resultiert, keinerlei Zusicherungen seitens des 
+Betriebssystems oder Computers genießt, innerhalb eines bestimmten Zeitrahmens 
+gelesen und/oder verarbeitet zu werden. Wenn nun eine Eingabe mit unbekannter Wirkung 
+getätigt wird, muss irgendwie erkannt werden können, dass eine Antwort zu einem 
+beliebigen späteren Zeitpunkt kausal damit zusammenhängt.
 
 
 \section{Grundlagen: Unterschiede Testverfahren}\label{section:testingapproaches}
@@ -185,8 +284,6 @@ in der falsche Eingaben schlicht zur Beendigung des Programms führen.
 Ein anderes Beispiel wären z.B. Schaltflächen wie
 \glqq{}Projekt schließen\grqq{}, \glqq{}Alles löschen\grqq{} oder auch 
 \glqq{}globaler thermonuklearer Krieg\grqq{}.
-
-
 
 
 \section{Automatisierte GUI-Tests}\label{section:automatedguitesting}
