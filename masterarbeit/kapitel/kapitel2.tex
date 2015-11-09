@@ -22,7 +22,11 @@ Schaltflächen oder sonstigen komfortablen Möglichkeiten der Eingabe
 intuitiv erreichbar und interaktiv sind. Dazu zählen z.B. die Nachfrage
 der Applikation nach Parametern bzw. Argumenten für einen Funktionsaufruf,
 die Bereitstellung wahrscheinlicher Standardeingabewerte, oder auch die
-Überprüfung von Eingaben auf Zulässigkeit.
+Überprüfung von Eingaben auf Zulässigkeit. So ist zum Beispiel die
+Eingabe einer gewünschten Menge häufig nur für Werte größer als Null
+und nur bis zu einer gewissen Höhe sinnvoll, aber ob ein Programmierer
+auch entsprechende Tests bezüglich der Eingabe vorgesehen hat, ist
+eine andere Frage.
 
 Weiterhin sollten alle Schaltflächen, die eine Oberfläche bereitstellt,
 bei Betätigung eine Rückmeldung geben -- selbst dann und insbesonders, wenn die verlangte
@@ -30,6 +34,11 @@ Funktion im Moment aus irgendeinem Grund nicht ausführbar ist.
 Wenn ein Knopf momentan nicht funktioniert, muss dies entweder sichtbar gemacht werden,
 oder eine Nachricht muss dem Nutzer erläutern, wieso der Knopfdruck nichts bewirkt.
 \glqq{}Blinde\grqq{} Schaltflächen ohne jegliche Reaktion sind ein Funktionsdefizit.
+Ein Nutzer kann schließlich üblicherweise nicht erkennen, ob und wieso eine Funktion
+zu einem bestimmten Zeitpunkt bzw. unter gewissen Umständen nicht durchführbar ist
+und wieso. Die Nutzeroberfläche muss diese Umstände zumindest wiedergeben
+und idealerweise auch gleich erläutern, um den Nutzer zur korrekteren oder gewünschten
+Bedienungsweise zu leiten.
 
 Die Korrektheit einer Oberfläche bezeichnet z.B. das Öffnen eines erwarteten
 Unterfensters oder die Ausführung der gewählten Funktion als Reaktion auf eine
@@ -37,7 +46,7 @@ Nutzereingabe. Es wird nicht einfach nur verlangt, dass etwas passiert, es soll
 auch etwas sein, dass vom jeweiligen Schalter und dem Nutzungskontext abhängig ist.
 Wenn dieser Effekt ausserhalb der graphischen Oberfläche zu finden ist, z.B.
 als Änderung einer Datei im Betriebssystem, muss der Test ebenfalls die Grenzen
-der getesteten Oberfläche verlassen und die gewünschte Änderung validieren.
+der getesteten Oberfläche verlassen und die gewünschte Änderung nachprüfen.
 
 Da für solche Überprüfung die Mitwirkung des jeweiligen Betriebssystems notwendig
 ist, welches je nach lokaler Ausführung unterschiedliche Eigenschaften für neue
@@ -45,7 +54,8 @@ Anwendungsfenster oder Dateisysteme aufweisen kann, zählt dies zu den am schwer
 zu validierenden Eigenschaften. Eine auf mehreren Betriebssystemen oder gar je
 nach Version desselben Betriebssystems unterschiedlich agierende Applikation muss auch
 in jeder denkbaren Konfiguration getestet werden. Hier gilt allerdings der
-Grundsatz des Testens: Die Abwesenheit von Fehlern kann nicht bewiesen werden.
+Grundsatz des Testens: \glqq{}Die Abwesenheit von Fehlern kann nicht bewiesen werden.\grqq{}
+\footnote{E. Dijkstra, The Humble Programmer, ACM Turing Lecture 1972}
 
 Der naive Ansatz eines Testverfahrens ist simpel. Ein menschlicher Tester startet
 das Programm und arbeitet eine Liste von Funktionen bzw. Tätigkeiten ab, die das
@@ -187,9 +197,12 @@ zum Test von graphischen Nutzeroberflächen
 in Java. Es wird ein Programm implementiert, welches parallel zur zu testenden GUI läuft,
 vorgegebene Eingaben vornimmt und im Anschluss einen gewünschten Zustand in den Elementen der GUI
 überprüfen kann. Ein Problem ist dabei, dass nur oberflächliche Dinge geprüft werden können,
-wie z.B. die Existenz oder das Fehlen eines fest definierten Fensters oder Elements. Andererseits muss für jede
+wie z.B. die Existenz oder das Fehlen eines fest definierten Fensters oder Elements. Weiterhin muss für jede
 Prüfanfrage ein Entwickler ein entsprechendes Testsegment schreiben. Die Applikation muss also
-zumindest doppelt implementiert werden, was in einem hohen Aufwand resultiert.
+zumindest doppelt implementiert werden, was in einem hohen Aufwand resultiert. Auch muss bei jeder
+Refaktorisierung oder Änderung des Programms auch jeder anhängige Test angepasst werden.
+Dies kann bei modernen Entwicklungsverfahren mit kurzen Iterations-Intervallen zu Problemen führen,
+oder zumindest den Prozess verlangsamen.
 
 \vspace{0.5cm}
 
@@ -198,6 +211,14 @@ zumindest doppelt implementiert werden, was in einem hohen Aufwand resultiert.
 Es agiert als Kontrollprogramm auf einer zu testenden Applikation und kann gewisse Prüfungen
 auf dieser ausführen. Tatsächlich sind die beiden praktisch identisch, bauen sie doch beide
 auf \textbf{JUnit} \footnote{\url{ http://junit.org/ }} auf und erweitern dieses.
+uispec4j wird allerdings nicht mehr aktiv weiterentwickelt und bietet
+beispielsweise keine Unterstützung für das Java Runtime Environment Version \glqq{}1.7\grqq{}
+oder höher. Beide greifen auf die Java-Bibliothek \glqq{}Robot\grqq{} zurück,
+die zur Durchführung von Tests einen menschlichen Nutzer simuliert. Dieser 
+bewegt die Maus, klickt an vorprogrammierten Koordinaten mit dem Mauszeiger
+(dies wird teilweise durch automatische Positionserkennung von definierten Elementen
+der getesteten Oberflächen verbessert) und führt vordefinierte Tastatureingaben durch.
+
 
 \vspace{0.5cm}
 
@@ -214,7 +235,22 @@ wird ein Fehler im Programm vermutet. Dieser Fehler kann auch eine gewünschte P
 Da allerdings hier ein Tester und nicht ein Entwickler die Tests erstellt und pflegt, ist dieses
 Verfahren arbeitszeittechnisch wesentlich effizienter als vorherige Methoden. Ein Tester muss
 nicht die Innereien des Programms verstehen oder verstehen können. Er muss das Programm lediglich
-bedienen können. Ebenso sind keine Programmierkenntnisse notwendig.
+bedienen können. Ebenso sind keine Programmierkenntnisse notwendig. Der Tester folgt sogenannten
+\glqq{}On-Screen\grqq{} Anweisungen, die Schritt für Schritt durch die korrekte Aufnahme einer
+Nutzungsabfolge für spätere automatische Wiedergabe leiten. Das Resultat ist ein typischer
+Regressionstest. Spätere Iterationen desselben Programms werden mit denselben Eingaben
+bedient, und es wird unterstellt, dass auch dieselben (korrekten) Ausgaben erfolgen.
+Stimmen gefundene Ausgaben in der Zukunft nicht mit der ursprünglichen Aufnahme überein, resultiert
+dies in einer Fehlermeldung seitens des Testers. Dies tritt z.B. ein, wenn eine Refaktorisierung,
+also eine Änderung bestehender Quellcode-Strukturen, in mehr als den erwarteten Änderungen
+resultiert und bestehende Funktionalität zerstört oder beeinträchtigt. Dies tritt bei
+gemeinsam genutzten Funktionen im Code schnell auf, insbesonders dann, wenn eine Implementation 
+auf nicht dokumentierten Eigenarten bestimmter Anweisungen setzt, um ihr Ziel zu erreichen.
+
+Undokumentierte Nebeneffekte überleben selten eine Refaktorisierung oder Reimplementierung
+in derselben Form. Eine Lösung ist, das gewünschte Verhalten möglichst vollständig zu dokumentieren
+und darüber hinaus mit Regressionstests zu überprüfen.
+
 
 
 \subsection{Kontinuierliche Qualitätskontrolle von Webanwendungen auf Basis 

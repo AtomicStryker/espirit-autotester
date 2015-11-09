@@ -295,6 +295,72 @@ die während des Tests auftreten, zu erkennen.
 \end{algorithm}
 
 
+\subsection{Herausforderungen bei der Implementation}
+
+Die Implementation des als Konzept vorliegenden Testers erfolgte iterativ
+-- es war zu Beginn nicht sichergestellt, dass das Konzept als solches
+überhaupt realistisch umsetzbar ist -- und passte sich während des
+Entwicklungsprozesses laufend an neue Erkenntnisse und Erfahrungen
+mit der Java-Swing-API und ihrem Verhalten an. Insbesondere
+die asynchrone Eingabeverarbeitung und die resultierenden Probleme
+bei der Verfolgung ihrer Auswirkungen waren eine technische Herausforderung.
+
+Es traten häufig Situationen auf, in denen Ursache und Wirkung nicht
+in Zusammenhang gebracht werden konnten. Der Prototyp beendete
+Testabläufe vorzeitig oder geriet selbst in einen Fehlerzustand
+oder fror ein. Unendliche Schleifen traten beim Testdurchlauf unregelmäßig auf.
+Das ursprüngliche strikt deterministische Konzept wurde durch Zufallsdaten
+erweitert, da es keine praktikable Alternative gibt, eine praktisch
+unbegrenzte Zahl möglicher Schaltzustände zu testen -- gemeint
+sind Eingabeelemente, die z.B. über einen AN/AUS Zustand verfügen,
+oder eine einzelne Wahl zwischen mehreren Alternativen erfordern.
+Fehler des Testers wurden durch die Fehlerabhandung des getesteten
+Programms maskiert (und umgekehrt). Es musste ein Format gefunden
+werden, durch das unbekannte beliebige Objekte bzw. Elemente aus den Daten
+der graphischen Oberfläche für einen Menschen verständlich und prägnant
+als Debug-Informationen in einer Konsole dargestellt werden können.
+
+Dieses Format musste dann jeweils beim Auftreten neuer Elementarten
+um den kleinsten gemeinsamen Nenner der zugrunde liegenden Klassen
+erweitert werden. Für den Tester und damit eventuelle Nutzer von
+Interesse sind nämlich nur die Daten, die ein graphisches Element
+von seiner Funktion bzw. Bestimmung her von anderen unterscheidet.
+Die übliche Implementation der Repräsentation als Zeichenkette
+beinhaltet aber eine Anzahl überflüssiger oder irreführender
+Informationen, wie z.B. die lokalen Koordinaten auf dem Bildschirm,
+die absoluten und relativen Größenangaben der Fenster und ihrer
+enthaltenen Elemente, oder nur für die kosmetische Darstellung
+relevante Datenfelder.
+
+Die laufende Änderung der sichtbaren graphischen Elemente als Reaktion
+auf Eingaben war eine weitere Problematik, die es zu lösen galt.
+Da nun ein Verfahren vorlag, um graphische Elemente miteinander
+vergleichen zu können, konnte der gesamte an ein Element anhängige Baum
+graphischer Elemente vor und nach Durchführung einer Eingabe ausgelesen
+und die Ergebnisse miteinander verglichen werden. Es stellte sich heraus,
+dass sowohl neue Elemente hinzukommen als auch bestehende Elemente im
+Betrieb entfernt werden können. Dies muss vom Tester überwacht und
+im Testablauf berücksichtigt werden. Neue zu Eingaben fähige Elemente werden 
+an die Liste noch zu prüfender Eingabemöglichkeiten gehängt und
+nicht mehr existierende Komponenten aus dieser Liste entfernt. Dies war
+auch einer der Gründe für ein nichtdeterministisches Vorgehen:
+
+Da Elemente nachträglich verschwinden können, also bei einem strikt
+deterministischen Vorgehen nie getestet werden würden, kann nur ein
+Verfahren mit Zufallselementen diese jemals erreichen. Die zufällige
+Anordnung der Testreihenfolge stellt sicher, dass jedes durch Nutzung 
+bzw. Eingaben in irgendeiner Reihenfolge erreichbares Element
+irgendwann auch getestet wird. Dies unterstellt zwar eine unendliche
+Anzahl an Testdurchläufen, aber für eine für alle praktischen Zwecke
+unendliche Anzahl an möglichen Eingabekombinationen gibt es schlicht
+keine Alternative. Auch sie hier erwähnt, dass ein menschlicher Tester
+entschieden größere Schwierigkeiten damit hätte, wirklich zufällige
+Eingabemuster umzusetzen -- Gewohnheiten beim Umgang mit Computern
+und Eingabemasken verzerren das Testbild in Richtung eines eher
+wahrscheinlichen Vorgangs, aber das Ziel des Konzepts ist ja gerade,
+abseits dieser üblichen Pfade zu agieren.
+
+
 \section{Problematische String-Eingaben}\label{section:naughtystrings}
 
 Es wird eine online erhältliche, quelloffen gepflegte Liste aus Entwicklerkreisen verwendet, 

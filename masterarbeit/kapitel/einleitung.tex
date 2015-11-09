@@ -134,9 +134,18 @@ ist der geplante
 Umfang dieser Abschlussarbeit. Zunächst werden existierende Methoden und Lösungen der automatisierten
 Testverfahren auf graphischen Oberflächen betrachtet und im Kontext zum hier vorgestellten Konzept
 bewertet.
+
+Einige sich anbietende Erweiterungen dieses Prinzips wären die Unterstützung anderer graphischen Bibliotheken
+der Java-Infrastruktur. Als Beispiele genannt seien SWT, das u.A. von eclipse genutzt wird,
+oder auch die speziellen Bibliotheken, die für Android-Applikationen genutzt werden.
+Diese sind swing sehr ähnlich, basieren aber auf einem xml-Format zur Definition der
+Oberflächenstruktur, um eine Entkopplung der Darstellung von der Funktionalität zu erreichen.
+Unglücklicherweise würde dies vermutlich dazu führen, dass verschiedene Versionen des
+Android-Betriebssystems unterschiedliche Implementationen seitens eines vollautomatischen
+Testers nötig machen.
  
 Weitere Überlegungen, die vermutlich nicht mehr im Umfang dieser Master-Arbeit sein
 würden, aber die z.B. als Erweiterungsmöglichkeiten genannt werden könnten, sind die
-Nutzung von Bilderkennung / Computer Vision, um auch über Java Swing hinaus GUIs testen zu
+Nutzung von Bilderkennung / Computer Vision, um auch über Java hinaus GUIs testen zu
 können. Hierbei muss natürlich die Beschriftung von Knöpfen wiedererkannt werden können,
 und viele GUIs benutzen Glyphen anstelle beschrifteter Schaltflächen. 
