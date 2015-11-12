@@ -24,7 +24,7 @@ Elemente werden dann systematisch geprüft. Um möglichst viele
 mögliche Fehlerzustände zu finden, wird diese Reihenfolge von Durchlauf
 zu Durchlauf zufällig variiert.
 
-Eingabekomponenten die Zeichenketten akzeptieren werden mit einer
+Zeichenketten akzeptierende Eingabekomponenten werden mit einer
 Vielzahl bekanntermaßen problemträchtiger Strings bombardiert,
 die übliche übersehene Validationen oder Verifikationen von
 Eingaben aufdecken. Sich öffnende Zusatzelemente der Oberfläche
@@ -54,10 +54,57 @@ und den Bedienungsablauf treffen.
 
 Der Autotester schafft es regelmäßig, ohne irgendeine Kenntnis des zu
 testenden Programms oder seiner Funktion alle Möglichkeiten
-der Eingabe auszuprobieren, und manchmal dabei Fehler durch unerwartete
+der Eingabe auszuprobieren, und dabei manchmal Fehler durch unerwartete
 Eingaben im getesteten Programm auszulösen.
 Indem diese gefundenen Fehler dann behoben werden, erhöht sich die
 Softwarequalität des getesteten Programms. Das Ziel des Konzepts
 war es nicht, Korrektheit zu beweisen oder zu testen. Dafür
 sind kontextuelle Informationen notwenig, die bis zur Existenz
 künstlicher Intelligenz schlicht von Menschen vorgegeben werden müssen.
+
+
+\subsection{mögliche Erweiterungen}
+
+Die größte Einschränkung, wenn man sie denn als solche bezeichnen
+kann, ist die auf Java-Anwendungen, die die Swing-API verwenden.
+Ein Java-Entwickler ist natürlich nicht gezwungen, diese zu verwenden,
+und es gibt beispielsweise mit SWT
+\footnote{ \url{ https://www.eclipse.org/swt/ }} zumindest eine 
+verbreitete Alternative. Auch ist die Swing-API auf Android
+nicht oder nur in abgewandelter Form vertreten. Man könnte
+den Tester also dahingehend erweitern bzw. neu implementieren,
+dass auch Java-SWT oder Android-View
+\footnote{ \url{ https://developer.android.com/reference/android/view/package-summary.html }} 
+automatisch getestet werden könnten. Für Android müsste aber
+vermutlich das gesamte Verhalten des Testers geändert werden,
+um den Eigenschaften des Android-Betriebssystems entgegenzukommen,
+und Unterstützung für den Android-Emulator
+\footnote{ \url{ https://developer.android.com/tools/help/emulator.html }} 
+sowie die Debug-Verbindung adb
+\footnote{ \url{ https://developer.android.com/tools/help/adb.html }} 
+bieten sich ebenfalls als nützlich und naheliegend an.
+Im Fall von SWT müssten lediglich die spezifischen Schnittstellen
+des SWT (verglichen mit Swing) analog behandelt werden, und 
+das Ereignis eines sich öffnenden Fensters ist vermutlich auch
+anders implementiert. Aber im Gegensatz zu Android verhält
+sich eine SWT-Applikation identisch zu einer Swing-Applikation,
+weshalb der Tester selbst unverändert übernommen werden könnte.
+
+Möchte man größere Ziele erreichen, sind auch weitreichende
+Erweiterungen vorstellbar. So könnte man Computersehen bzw.
+Computer Vision verwenden, um auf einem beliebigen Bildschirm
+alle Schaltflächen und Eingabefelder zu erkennen. Diese sind
+für den Menschen recht einfach zu erkennen, für einen
+Computer wäre dies schon eher eine Herausforderung. Aus den
+Kontrasten eines Bildes würde dieser auf Formen schliessen
+und so versuchen, die üblichen Rechtecke und seltener Kreise
+zu erkennen, die Schaltflächen signalisieren. Dann müsste
+tatsächlich der Mauszeiger zu diesen Koordinaten bewegt
+und betätigt werden (dies könnte durch Nebeneffekte seitens
+der Anwendung verhindert werden). Ebenso müsste der Computer
+versuchen, aus der Änderung eines Großteils des Bildes
+in Quadratischer Form auf das Auftreten eines Popups zu 
+schließen und entsprechend zu reagieren, und dies möglichst,
+ohne ein Popup mit der Anzeige eines gewünschten Bildes
+oder einer sonstigen Information innerhalb desselben
+Fensters zu verwechseln.

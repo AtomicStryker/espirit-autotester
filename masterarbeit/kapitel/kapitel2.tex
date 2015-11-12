@@ -3,7 +3,13 @@
 \chapter{Funktionstests graphischer Oberflächen}\label{chapter:introguitesting}
 
 
-Dieses Kapitel befasst sich mit einigen in der Industrie verbreiteten bzw. \glqq{}State of the Art\grqq{}-Lösungen
+Dieses Kapitel stellt zunächst einige für graphische Nutzeroberflächen wichtige 
+Grundlagen und Konzepte vor, speziell bezüglich der für Tests bzw. deren Umsetzung
+relevanten Asynchronität und der daraus folgenden Herausforderungen.
+Im folgenden Abschnitt werden die verschiedenen Ansätze für Tests von GUI
+und ihre jeweiligen Einsatzgebiete und Limitationen vorgestellt und verglichen.
+Schließlich befasst sich das Kapitel mit einigen in der Industrie 
+verbreiteten bzw. \glqq{}State of the Art\grqq{}-Lösungen
 für das Problem automatischer GUI-Tests, dazu mit in einem Artikel sowie einer Doktorarbeit
 vorgestellten Methoden. Zunächst werden noch die Grundlagen graphischer Oberflächen und
 der verschiedenen Methodiken erläutert, um diese zu testen.
@@ -14,14 +20,15 @@ Aufwand und Nutzen sowie Vor- und Nachteile vergleichen.
 
 
 
-\section{Grundlagen: Asynchrone graphische Oberflächen}
+\section{Grundlagen: Asynchronität graphischer Oberflächen}
 
 
 Programme mit einer graphischen Oberfläche stellen einen Sonderfall für
-die Philosophie einer Implementation dar. Ein gewöhnliches Programm wird
+die Philosophie einer normalen Implementation dar. Ein gewöhnliches Programm wird
 gestartet, läuft und erledigt eine Aufgabe, und beendet sich nach
-Durchführung dieser Aufgabe. Üblicherweise ist dies eine Datenverarbeitung
-irgendeiner Art, und vielleicht gibt der Nutzer noch weitere Parameter
+Durchführung dieser Aufgabe selbst. Üblicherweise ist dies eine Datenverarbeitung
+irgendeiner Art, die Daten liegen in irgendeiner Form vor oder werden 
+als Datenstrom eingeholt, und vielleicht gibt der Nutzer noch weitere Parameter
 oder Argumente mit dem Startbefehl durch. Eine erste Erweiterung dieses
 Konzepts ist, dass eine Anwendung anhalten kann, um den Nutzer nach einer
 Eingabe zu fragen. Dies stellt allerdings noch keine besonderen Anforderungen

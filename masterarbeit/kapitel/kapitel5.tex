@@ -5,23 +5,26 @@
 
 Dieses Kapitel stellt nun einige Ergebnisse, die mittels des nach dem Konzepts tatsächlich
 implementierten vollautomatischen GUI-Crawler und -Tester erzeugt wurden.
-Als getestetes Programm dient hierbei eine Enwicklerversion der von der
+Als erstes getestetes Programm dient hierbei eine Enwicklerversion der von der
 \textbf{e-Spirit AG} entwickelten Software \textbf{FirstSpirit} 
 \footnote{\url{ http://www.e-spirit.com/de/produkt/arbeiten-mit-firstspirit/usability-fuer-redakteure/ }},
 Version 5.2 DEV 201. Entwicklerversionen dieser Software enthalten zusätzliche,
 dem normalen Nutzer unzugängliche Schaltflächen und Funktionen.
 
 
-\section{Resultate}\label{section:testresults}
+\section{Resultate FirstSpirit}\label{section:testresults}
 
-Wie in den Graphdarstellungen zu sehen ist, enthält diese Version von
-FirstSpirit etwa 34 einzigartige Fenster bzw. Zustände. Sie gehen alle vom
-Hauptfenster des Programms bzw. dem Zustand nach dem Programmstart aus,
-einige wenige sind dahingegen tiefer abzweigend. Die Zahl einer im
-Laufe eines vollen Durchgangs betätigter Eingabeelemente liegt bei
+Wie in den Graphdarstellungen auf Seiten \pageref{fig:model_firstspirit_notext} und 
+\pageref{fig:model_freespirit_06.10.2015} zu sehen ist, enthält diese Version von
+FirstSpirit etwa 34 einzigartige Fenster bzw. Zustände. Sie gehen fast alle vom
+Hauptfenster des Programms bzw. dem Zustand zu Beginn des Tests aus,
+nur einige wenige sind dahingegen tiefer abzweigend. Die Zahl einer im
+Laufe eines vollen Durchgangs betätigter Eingabeelemente liegt im Vergleich bei
 über 800. Dies legt nahe, dass umfangreiche interne Zustandsänderungen
 möglich sind, die nicht direkt in von außen sichtbaren geänderten
-Programmzuständen resultieren.
+Programmzuständen resultieren. Oder auch, dass eine Menge Eingabeelemente
+existieren oder als solche erkannt wurden, deren Betätigung kein messbares
+Resultat hatte.
 
 Bedenkt man die Natur von FirstSpirit, ist dies keine große Überraschung.
 FirstSpirit ist ein Content Management System bzw. CMS, im Grunde also
@@ -43,6 +46,32 @@ dies natürlich Auswirkungen auf das Testverfahren hat, zeigt sich doch,
 dass dennoch in etwa dieselbe Anzahl von Eingabeelementen getestet wird,
 die graphische Oberfläche also nicht zwangsläufig auf ein korrekt funktionierendes
 geladenes Projekt angewiesen ist, um alle möglichen Eingaben auszuprobieren.
+
+In einer Produktivumgebung würde der Autotester folgendermaßen integriert:
+Im Gegensatz zu Unit-Tests mit JUnit können keine festen Maßstäbe angelegt
+werden, nach denen eine Version des Quellcodes zulässig ist oder auch nicht.
+Korrektheit ist nicht das erklärte oder auch nur erreichbare Ziel.
+Der Autotester wäre dementsprechend nicht im regulären automatischen
+Build-Prozess enthalten (und diesen irgendwie anhalten oder behindern),
+sondern wäre parallel angeordnet und kontinuierlich oder nach Wunsch
+Tests durchführen. Man könnte sich z.B. vorstellen, dass eine neue
+Programmversion jeweils fünfhundert (die Zahl ist völlig arbiträr) Durchläufe
+des Autotesters auslöst und erfahren soll. Jede Instanz des Testprogramms wird
+in einem virtualisiertem System gestartet, in das man vorher die
+zentral gelagerte Konfigurationsdatei sowie die nötigen Voraussetzungen
+kopiert hat -- in diesem Fall wäre dies das FirstSpirit-Programm sowie
+die Dateien des Mithras-Projekts.
+
+Die Logdateien und Ergebnis-Graphen jeder Instanz würden dann wieder zentral
+gesammelt und könnten dann auf Gemeinsamkeiten und Abweichungen untersucht
+werden. Instanzen, die nicht korrekt beendeten, sind natürlich von besonderem
+Interesse. FirstSpirit hat eine eigene Schnittstelle, um Fehlerberichte von
+aufgetretenen Ausnahmen weiterzureichen. Diese Berichte sowie in den Logdateien
+erwähnte Fehlermeldungen könnten dann von Entwicklern genutzt werden, um
+Schwachstellen im Code auszumerzen, wenn diese denn tatsächlich vorliegen.
+Idealerweise ist es dem Autotester irgendwann unmöglich, Fehlermeldungen
+oder Ausnahmen herbeizuführen, da die Entwickler jede ursprünglich 
+unvorhergesehene Eingabe oder -sequenz abfangen oder korrekt behandeln.
 
 
 \begin{sidewaysfigure}
