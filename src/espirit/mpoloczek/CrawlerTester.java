@@ -200,7 +200,7 @@ public class CrawlerTester {
 		// wait a wee bit, events may be still underway
 
 		logger.log(Level.INFO, "Cooldown ended. Exporting graphml file...\n");
-		modelWriter.exportToFile();
+		modelWriter.exportToFile(config.modelOutputFolder);
 		logger.log(Level.INFO, "Cleaning up the mess...\n");
 		masherframe.dispose();
 		timerThread.interrupt();

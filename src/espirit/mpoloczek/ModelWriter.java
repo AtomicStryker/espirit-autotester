@@ -47,14 +47,14 @@ public class ModelWriter {
 		graph.addEdge(wrappedToString(resultState), wrappedToString(prevState));
 	}
 
-	public void exportToFile() {
+	public void exportToFile(final String modelOutputFolder) {
 		@SuppressWarnings("unchecked")
 		final GraphMLExporter<String, DefaultEdge> gml =
 				new GraphMLExporter<>(new IntegerNameProvider(), new StringNameProvider<String>(), new IntegerEdgeNameProvider(), new StringEdgeNameProvider());
 		try {
 			final SimpleDateFormat fmt = new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss");
 			final String filename = "model_"+fmt.format(new Date())+".graphml";
-			final FileWriter fw = new FileWriter(Config.modelOutputFolder + '/' + filename);
+			final FileWriter fw = new FileWriter(modelOutputFolder + '/' + filename);
 			gml.export(fw, graph);
 		} catch (final Exception e) {
 			logger.log(Level.SEVERE, "ModelWriter exportToFile problem", e);

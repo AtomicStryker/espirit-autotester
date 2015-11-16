@@ -22,7 +22,7 @@ public class Config {
 	public ArrayList<String> blackListedWindowKeywords = new ArrayList<String>();
 	public long sleepTimeMillisTextfieldEntries;
 	public long sleepTimeMillisBetweenFakeMouseClicks;
-	public static String modelOutputFolder;
+	public String modelOutputFolder;
 	private final Logger logger = Util.getLogger("Config");
 
 	public boolean loadConfigFile(final String filePath) {
