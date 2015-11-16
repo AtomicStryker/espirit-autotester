@@ -11,6 +11,10 @@ Als erstes getestetes Programm dient hierbei eine Enwicklerversion der von der
 Version 5.2 DEV 201. Entwicklerversionen dieser Software enthalten zusätzliche,
 dem normalen Nutzer unzugängliche Schaltflächen und Funktionen.
 
+Als zweite Applikation wurde der beliebte Texteditor \textbf{jEdit}
+\footnote{\url{ http://www.jedit.org/ }} gewählt.
+
+
 
 \section{Resultate FirstSpirit}\label{section:testresults}
 
@@ -98,7 +102,7 @@ unvorhergesehene Eingabe oder -sequenz abfangen oder korrekt behandeln.
 	\caption{mit Gephi und dem Yifan Hu Algorithmus \cite{hu2005efficient}
     sowie noch für Lesbarkeit maneull angepasste visualierte Graphausgabe 
 	des Autotesters über FirstSpirit bei einem der ergiebigeren Durchläufe.
-	Beschriftungen der Knoten sind deaktiviert.}
+	Beschriftungen der Knoten sind aktiviert.}
 	\label{fig:model_freespirit_06.10.2015}
 \end{sidewaysfigure}
 
@@ -110,6 +114,114 @@ Dies ist schlicht eine Frage der Lesbarkeit -- anstelle der mittleren Knoten fü
 eigentlich einfach beschriftete Kanten benutzt werden, aber dies schränkt die Möglichkeiten,
 den anhängigen Text in eine lesbare Form zu bringen, zu stark ein. Es ist schlicht zu viel
 Textinformation, um mit einer Legende o.Ä. auszukommen.
+
+
+\section{Resultate jEdit}\label{section:testresultsjedit}
+
+Die Wahl für einen zweiten Test fiel auf jEdit, 
+da der \glqq{}Texteditor für Programmierer\grqq{}
+ebenfalls über die benötigte Swing-GUI verfügt und 
+durch langjährige Entwicklung bedingt im klassischen
+Sinne vermutlich relativ fehlerfrei ist. Eine wenig getestete und daher fehlerträchtige
+Applikation ließe keinen vernünftigen Autotest zu, da der Entwickler (oder in diesem Fall
+Testentwickler) laufend Probleme bzw. Abstürze im Programm beheben müsste, bis ein vollständiger
+Durchlauf und eine Modellbildung möglich wird. Tatsächlich erwies sich jEdit als
+dem Testdurchlauf gewachsen -- es wurden zwar nicht abgefangene Ausnahmen produziert,
+aber das Programm selbst blieb bei Ausnahmebehandlung durch den Tester lauffähig
+und geriet auch in keine Endlosschleifen o.Ä..
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/jedit_beispiel.png}
+	\caption{Screenshot der Java-Applikation jEdit}
+	\label{fig:screenshot_jedit}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/model_jedit_notext.png}
+	\caption{mit Gephi und dem Yifan Hu Algorithmus\cite{hu2005efficient}
+    sowie noch für Lesbarkeit maneull angepasste visualierte Graphausgabe 
+	des Autotesters über jEdit, hoher Zoomfaktor, keine Beschriftungen.
+	Die Pfeile des gerichteten Graphen sind so sichtbar.}
+	\label{fig:model_jedit_notext}
+\end{figure}
+
+\begin{sidewaysfigure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/model_jedit.png}
+	\caption{mit Gephi und dem Fruchterman Reingold Algorithmus\cite{SPE:SPE4380211102}
+    sowie noch für Lesbarkeit maneull angepasste visualierte Graphausgabe 
+	des Autotesters über jEdit. Beschriftungen der Knoten sind aktiviert.}
+	\label{fig:model_jedit}
+\end{sidewaysfigure}
+
+
+Beim Testen von jEdit fielen gewisse Überanpassungen des Autotesters an e-Spirit auf,
+welche für eine Entwicklung entlang dieses Programms nicht sonderlich unerwartet
+waren. So sah die Konfigurationsdatei beispielsweise nicht vor, Einträge der 
+ignorierten Komponenten komplett frei zu lassen. Dies wurde implementiert.
+Ebenso fiel auf, dass zwar Zustandsänderungen in Form von sich öffnenden Fenstern
+korrekt behandelt wurden, jEdit aber den Zustand des Hauptfensters selbst
+ändern kann -- dies würde in FirstSpirit auch passieren, wenn der Tester in der
+Lage wäre, das Projekt zu wechseln. (Bei einer unendlich langen Testreihe
+wird er dies irgendwann hinbekommen, aber so viel Zeit haben wir nicht)
+Der Tester wurde mit Hinblick auf mögliche interne Zustandsänderungen
+des aktuell getesteten Fensters erweitert und nimmt dies nun korrekt in
+das Modell auf.
+
+Zu sehen ist dies z.B. im Modell von jEdit[\ref{fig:model_jedit}]
+auf Seite \pageref{fig:model_jedit} oder im textfreien Fall
+[\ref{fig:model_jedit_notext}] auf Seite \pageref{fig:model_jedit_notext}.
+Man beachte den sichtbaren Unterschied zu den Modellen von FirstSpirit:
+Es existieren gewissermaßen zwei zentrale Zustände anstatt nur einem.
+Der zweite Zustand entsteht, weil ein Text in das Editorfeld eingegeben
+wurde, wodurch das aktuell geöffnete Dokument in den
+\glqq{}[geändert]\grqq{}-Zustand wechselt. Da dieser Zustand
+für das Programm selbst vermutlich praktisch überhaupt keine
+interne Änderung darstellt, könnte man sie auch als Einen 
+gemeinsamen Fall ansehen,
+wodurch jEdit eine FirstSpirit stark ähnelnde sternförmige Struktur
+aufweisen würde. Dies ist aber aufgrund der baumförmigen
+Architektur von Java-Swing und objektorientierter Programmierung
+im Allgemeinen, und graphischen Nutzeroberflächen im Besonderen
+auch nicht anders zu erwarten. Bei dieser Gelegenheit wurde
+der stärkegewichtete 
+Fruchterman Reingold Algorithmus\cite{SPE:SPE4380211102}
+als Alternative zum bisher verwendeten Yifan Hu\cite{hu2005efficient}
+entdeckt. Im Vergleich produziert dieser weniger saubere Trennung
+der Knoten, dafür aber eine eckigere Anordnung, die den 
+Platzbedürnissen für lesbare Knotenbeschriftungen entgegen kommt.
+
+Weitere neue Herausforderungen stellten sich, als es dem
+Autotester gelang, durch zufällige Tasteneingaben ein neues 
+Dokument zu erstellen und dies als Druckauftrag 
+an den Plotter des Büros zu verschicken. In Folge dieses Vorfalls
+hatte der Entwickler reichlich Notizpapier und der Druckerdienst
+des betreffenden Arbeitsplatzes wurde vorsorglich deaktiviert.
+Ein Auschluss der betreffenden Schaltflächen lässt sich
+nur durch nachträgliches Lesen der Logdatei bewerkstelligen.
+Dies ist natürlich auch geschehen, aber eine Deaktivierung
+der ansonsten ungenutzen Druckfähigkeiten des Rechners
+erschien dennoch eine sinnvolle Vorsichtsmaßnahme.
+
+Grundsätzlich gelang dem Autotester auch für jEdit ein
+vollständiger Test aller erreichbaren Eingabeelemente
+sowie eine Modellierung der zugänglichen Fenster als
+Zustände. Es spricht für die Swing-API, dass keine
+zusätzliche Erweiterung oder Anpassung der erkundenden
+oder Eingaben vornehmenden Algorithmen notwendig wurde.
+Eine Ausnahme wurde für die verschiedenen Farbeinstellfelder
+des Texteditors gesetzt - jeden einzelnen Knopf in der Farbpallette
+auszuprobieren verlängerte den Test erheblich (200 Knöpfe),
+und aufgrund der Menüanordnung wurden mehrere Farbpalletten
+als separate Zustände aufgefasst. Zwar ist jEdit im Vergleich
+zu FirstSpirit wesentlich reaktionsfreudiger -- so kann eine
+Pause zwischen Eingaben von 500ms, gerade ein Drittel
+des Wertes für den Test von FirstSpirit, gesetzt werden --
+überflüssige, da vermutlich stark duplizierende Tests
+sind dennoch zu vermeiden.
 
 
 \section{Vergleich mit klassischen Tests}\label{section:testcomparisonclassic}
@@ -137,4 +249,7 @@ Emulation menschlicher Eingaben und der Wartezeit für die Verarbeitung
 dieser Eingaben durch das Programm keine guten Alternativen.
 Man bedenke allerdings: Derselbe Test durch einen Menschen würde
 noch erheblich länger dauern und die üblichen menschlichen Fehlerquellen
-beinhalten, die das Ergebnis zusätzlich beeinflussen.
+beinhalten, die das Ergebnis zusätzlich beeinflussen. Auch handelt es
+sich bei der Entwicklerversion von FirstSpirit um ein massives
+Konstrukt mit Serverbedingt behäbigen Reaktionszeiten und gewaltigem
+Funktionsumfang, also vielen (beinahe eintausend) zu testenden Elementen.
