@@ -418,10 +418,18 @@ public class CrawlerTester {
 		if (component == null) {
 			return;
 		}
-		if (!component.isVisible() || component instanceof JFrame || component instanceof JPanel || component instanceof JRootPane || component instanceof JLayeredPane || component instanceof JMenuBar || component instanceof JToolBar || component instanceof JPopupMenu.Separator || component instanceof javax.swing.JSeparator || component instanceof Box.Filler || component instanceof JScrollPane || component instanceof JViewport || component instanceof JList || config.isComponentBlacklisted(component.getClass())) {
+		if (!component.isVisible()) {
+
+			logger.log(logLevel, String.format("Ignoring invisible %s\n", compdesc));
+
+		} else if (config.isComponentBlacklisted(component.getClass())) {
+
+			logger.log(logLevel, String.format("Ignoring blacklisted component class %s\n", compdesc));
+
+		} else if (component instanceof JFrame || component instanceof JPanel || component instanceof JRootPane || component instanceof JLayeredPane || component instanceof JMenuBar || component instanceof JToolBar || component instanceof JPopupMenu.Separator || component instanceof javax.swing.JSeparator || component instanceof Box.Filler || component instanceof JScrollPane || component instanceof JViewport || component instanceof JList) {
 
 			// not targets
-			logger.log(logLevel, String.format("Ignoring %s\n", compdesc));
+			logger.log(logLevel, String.format("Ignoring general uninteresting class %s\n", compdesc));
 
 		} else if ("JXLayer".equals(component.getClass().getSimpleName())) {
 
@@ -536,6 +544,8 @@ public class CrawlerTester {
 		public void run() {
 
 			if (componentTarget.isVisible()) {
+
+				final String rootStatePre = Util.componentToString(componentRoot);
 
 				for (final ActionListener el : listeners) {
 					try {
