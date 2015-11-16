@@ -47,7 +47,7 @@ public class Config {
 				loadFileContent();
 				return true;
 
-			} catch (final IOException e2) {
+			} catch (final Exception e2) {
 				logger.log(Level.SEVERE, "Config read FAIL", e1);
 				logger.log(Level.SEVERE, "Config read FAIL", e2);
 				return false;
