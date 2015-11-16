@@ -21,6 +21,7 @@ public class Launcher {
 		boolean launch = false;
 		final Logger logger = Util.getLogger("Launcher");
 
+		logger.log(Level.INFO, MessageFormat.format("AutoTester running, detected arg count {0}", args.length));
 		if(args.length == 0) {
 			logger.log(Level.INFO, HELP);
 			return;
@@ -45,6 +46,7 @@ public class Launcher {
 
 		// launching application
 		try {
+			logger.log(Level.INFO, MessageFormat.format("Now invoking main method of class [{0}] with args [{1}]", args[0], args.length > 1 ? args[1] : ""));
 			mainMethod.invoke(mainClass, new Object[] {newArgs});
 		} catch(final Exception ex) {
 			logger.log(Level.SEVERE, MessageFormat.format("ERROR: cannot invoke main method in the class {0}.", args[0]), ex);
