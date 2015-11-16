@@ -69,22 +69,33 @@ public class Config {
 			blackListedAbstractButtons[i].command = keyValue[0];
 			if (keyValue.length > 1) {
 				blackListedAbstractButtons[i].title = keyValue[1];
+				if (keyValue.length > 2) {
+					blackListedAbstractButtons[i].name = keyValue[2];
+				} else {
+					blackListedAbstractButtons[i].name = "";
+				}
 			} else {
 				blackListedAbstractButtons[i].title = "";
+				blackListedAbstractButtons[i].name = "";
 			}
-			logger.log(Level.INFO, "Blacklisted Abstract Button: [" + blackListedAbstractButtons[i].command + '|' + blackListedAbstractButtons[i].title + ']');
+			logger.log(Level.INFO, "Blacklisted Abstract Button: [" + blackListedAbstractButtons[i].command
+					+ '|' + blackListedAbstractButtons[i].title+ '|' + blackListedAbstractButtons[i].name + ']');
 		}
 
 		final String blcstr = properties.getProperty("blackListedComponentsSimpleClassNames");
 		for (final String e : blcstr.split(",")) {
-			blackListedComponentsSimpleClassNames.add(e);
-			logger.log(Level.INFO, "Blacklisted Component classname: " + e);
+			if (!e.isEmpty()) {
+				blackListedComponentsSimpleClassNames.add(e);
+				logger.log(Level.INFO, "Blacklisted Component classname: " + e);
+			}
 		}
 
 		final String blcstrwdw = properties.getProperty("blackListedWindowKeywords");
 		for (final String s : blcstrwdw.split(",")) {
-			blackListedWindowKeywords.add(s);
-			logger.log(Level.INFO, "Blacklisted Window Keyword: " + s);
+			if (!s.isEmpty()) {
+				blackListedWindowKeywords.add(s);
+				logger.log(Level.INFO, "Blacklisted Window Keyword: " + s);
+			}
 		}
 	}
 
@@ -92,7 +103,7 @@ public class Config {
 
 		final String name = componentClass.getName();
 		for (final String s : blackListedComponentsSimpleClassNames) {
-			if (name.contains(s)) {
+			if (!s.isEmpty() && name.contains(s)) {
 				return true;
 			}
 		}
@@ -103,6 +114,7 @@ public class Config {
 	public static class BlackListedAbstractButton {
 		String title;
 		String command;
+		String name;
 	}
 
 }

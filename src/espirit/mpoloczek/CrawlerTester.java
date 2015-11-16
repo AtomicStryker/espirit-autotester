@@ -376,9 +376,14 @@ public class CrawlerTester {
 
 	private boolean isBlackListedButton(final AbstractButton fsb, @Nullable final Object w) {
 		for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
-			if ((bab.command.isEmpty() || bab.command.equals(fsb.getActionCommand())) && (bab.title.isEmpty() || (w != null && bab.title.equals(getTitle(w))))) {
-				logger.log(Level.INFO, String.format("Nope-ing away from hardcoded blacklisted button [%s|%s]\n", bab.command, bab.title));
-				return true;
+			if (bab != null) {
+
+				if ((bab.command.isEmpty() || (fsb.getActionCommand() != null && fsb.getActionCommand().contains(bab.command)))
+				&& (bab.title.isEmpty()	|| (w != null && getTitle(w) != null && getTitle(w).contains(bab.title)))
+				&& (bab.name.isEmpty() || (fsb.getName() != null && fsb.getName().contains(bab.name)))) {
+					logger.log(Level.INFO, String.format("Nope-ing away from hardcoded blacklisted button [%s|%s|%s]\n", bab.command, bab.title, bab.name));
+					return true;
+				}
 			}
 		}
 		return false;
