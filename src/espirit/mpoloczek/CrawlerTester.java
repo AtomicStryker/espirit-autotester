@@ -555,6 +555,14 @@ public class CrawlerTester {
 					}
 				}
 
+				final String rootStatePost = Util.componentToString(componentRoot);
+				if (!rootStatePost.equals(rootStatePre)) {
+
+					logger.log(Level.FINER, String.format("last buttonpress changed root component state! [%s] -> [%s]\n", rootStatePre, rootStatePost));
+					modelWriter.logState(componentRoot);
+					modelWriter.logTransitionString(rootStatePre, Util.componentToString(componentTarget), rootStatePost);
+				}
+
 				if (componentRoot != null && componentList != null) {
 					final ArrayList<Component> oldComponentList = new ArrayList<>(componentList);
 					final ArrayList<Component> newComponentList = new ArrayList<>(componentList.size());

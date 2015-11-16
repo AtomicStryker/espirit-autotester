@@ -39,12 +39,16 @@ public class ModelWriter {
 
 	public void logTransition(final Component prevState, final Component transitioner, final Component resultState) {
 
-		final String transString = wrappedToString(transitioner);
+		logTransitionString( wrappedToString(prevState), wrappedToString(transitioner), wrappedToString(resultState));
+	}
+
+	public void logTransitionString(final String prevState, final String transString, final String resultState) {
+
 		wrappedAddVertex(transString);
-		logger.log(Level.INFO, String.format("MW adding transition: %s -> %s -> %s\n", wrappedToString(prevState), transString, wrappedToString(resultState)));
-		graph.addEdge(wrappedToString(prevState), transString);
-		graph.addEdge(transString, wrappedToString(resultState));
-		graph.addEdge(wrappedToString(resultState), wrappedToString(prevState));
+		logger.log(Level.INFO, String.format("MW adding transition: %s -> %s -> %s\n", prevState, transString, resultState));
+		graph.addEdge(prevState, transString);
+		graph.addEdge(transString, resultState);
+		graph.addEdge(resultState, prevState);
 	}
 
 	public void exportToFile(final String modelOutputFolder) {
