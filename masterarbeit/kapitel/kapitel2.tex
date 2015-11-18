@@ -308,6 +308,7 @@ Refaktorisierung oder Änderung des Programms auch jeder anhängige Test angepas
 Dies kann bei modernen Entwicklungsverfahren mit kurzen Iterations-Intervallen zu Problemen führen,
 oder zumindest den Prozess verlangsamen.
 
+
 \vspace{0.5cm}
 
 \textbf{fest} \footnote{\url{ https://code.google.com/p/fest/ }} oder 
@@ -356,6 +357,65 @@ in derselben Form. Eine Lösung ist, das gewünschte Verhalten möglichst vollst
 und darüber hinaus mit Regressionstests zu überprüfen.
 
 
+\vspace{0.5cm}
+
+\textbf{Maveryx} \footnote{\url{ http://www.maveryx.com/en/products/what-is-maveryx.html }} 
+ist ein weiteres Programm für die automatische Durchführung von Tests auf Nutzeroberflächen.
+Eine Besonderheit, mit der hier geworben wird, ist die Unnötigkeit der Aufnahme
+eines Testdurchlaufs bzw. einer Struktur der GUI für die Durchführung anschliessender
+Tests. Prinzipiell funktioniert Maveryx in drei Segmenten: Es gibt den sogenannten
+\glqq{}Finder\grqq{}, welcher eine GUI während der Laufzeit mithilfe der
+\glqq{}Java Accessibility Layer\grqq{} (hiermit sind vermutlich AWT, Swing, SWT etc. gemeint)
+in seine Elemente aufschlüsselt und diese in einem XML-Baumformat abspeichert.
+Das nächste Segment, der \glqq{}Viewer\grqq{} sowie das letzte, der \glqq{}Robot\grqq{}
+arbeiten zusammen, um zunächst mithilfe von Textsuche ein zu testendes Element in
+dem vom Finder erstellten XML-Baum zu finden, im Viewer darzustellen und mithilfe
+des Robots pseudo-menschliche Nutzereingaben zu tätigen.
+
+Anstelle die zu prüfenden Elemente also durch Nutzung und Aufnahme der Eingaben
+oder auch direkt programmatisch und hochspezifisch vorzugeben, würde ein Tester bei
+Maveryx den Finder über das zu testende Programm laufen lassen. Die resultierende
+XML-Datei würde dann begutachtet, um sich Testfälle anhand der Elementnamen bzw. sonstiger
+textueller Informationen, die über ein Element gewonnen werden können, zu überlegen.
+Etwas umgangssprachlicher: Anstelle der Vorgabe \glqq{}das Passwortfeld P, welches
+durch Betätigung der Knöpfe A und B im Fenster X sichtbar wird\grqq{} als Ziel
+eines Tests würde man das Passwortfeld P in der vom Maveryx-Finder erstellten
+XML-Datei suchen, es hätte vielleicht eine Bezeichnung \glqq{}PPasswort\grqq{},
+und lediglich diese für zukünftige Tests in einem Maveryx-Testskript speichern.
+Das Testprogramm wäre dann selbsttätig in der Lage, ein Passwortfeld P,
+welches dieselbe Bezeichnung aufweist, in zukünftigen veränderten Versionen
+der zu testenden Applikation zu finden, ungeachtet beliebiger Änderungen bzw.
+Weiterentwicklungen der graphischen Nutzeroberfläche.
+
+Es sei allerdings zu bedenken, dass dieses Konzept nur dann aufgeht, wenn
+die Elemente der zu testenden Nutzeroberfläche vom verantwortlichen Programmierer
+für den Tester sinnvoll erscheinend benannt wurden. Wenn z.B. die Elemente
+einfach nummeriert wurden, oder von chinesischen oder indischen Subkontraktoren
+in ihren jeweiligen Sprachen sinnvoll benannt, könnte es schwierig werden,
+in der erstellten XML die zu testenden Elemente zu finden. Maveryx scheint
+eine Vorgabe der zu prüfenden Objekte zur Laufzeit durch Anklicken oder
+Auswahl nicht anzubieten. Auch stellt sich die Frage, ob ein Tester ohne weiteres
+in der Lage ist, die von Maveryx verlangte Skriptsprache zur Testdefinition
+zu erlernen -- es handelt sich schließlich quasi um eine Programmiersprache.
+Wenn man einen Entwickler zur Bedienung benötigt, ist der Hauptvorteil
+automatisierter Tests fraglich.
+
+Es wird weiterhin damit geworben, dass kein Bildschirm und keine Bildverarbeitung
+notwendig ist, um die Tests durchzuführen. Maveryx setze auf ein 
+Konzept der \glqq{}Computer Vision\grqq{} zur robusten Umsetzung der
+Tests. Dies erscheint angesichts der doch händisch anmutenden Methodik
+der Testvorgabe per XML-Datei als eine hoch gegriffene Behauptung. Auch stellt
+sich die Frage, ob ohne einen zumindest simulierten Bildschirm ein vollständiger
+Test einer graphischen Oberfläche machbar oder sinnvoll ist. Zur Computer
+Vision gibt es aber keine weiteren Informationen, und die Demonstrationsvideos
+zeigen auch nur manuell angestoßene Testreihen auf einem nutzergesteuerten Rechner.
+Auch scheint das Konzept einzelne Fenster spezifisch für einen Test zu instanzieren,
+was dem Test einer vollständigen laufenden Applikation widersprechen würde. Dieses
+Verfahren ähnelt eher einem Unit-Test, wo eine einzelne Komponente abgeschnitten
+vom Rest des Programms gestartet und getestet wird.
+
+
+\vspace{0.5cm}
 
 \subsection{Kontinuierliche Qualitätskontrolle von Webanwendungen auf Basis 
 maschinengelernter Modelle}\label{ssection:windmueller}
@@ -425,6 +485,7 @@ Beendigung des zu testenden Programms selbst überdauern. Hierfür müsste eine 
 Lösung gefunden werden, zum Beispiel das Sichern eines gesamten Systemzustands in einer
 virtuellen Maschine und das jeweilige Neustarten eines Testablaufs von diesem gesicherten
 Zustand aus.
+
 
 \vspace{0.5cm}
 

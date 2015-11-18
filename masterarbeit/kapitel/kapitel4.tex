@@ -71,7 +71,7 @@ der zu testenden Applikation und führt dann auf dieser (aus Sicht der Anwendung
 Eingaben durch.
 
 
-\section{Implementation eines vollautomatischen GUI-Testers für Java Swing}\label{section:myfullautoguitest}
+\section{Implementation eines vollautomatischen GUI-Testers}\label{section:myfullautoguitest}
 
 
 Existierende GUI-Testlösungen haben verschiedene Einschränkungen. Allen voran die
@@ -230,8 +230,16 @@ ebenfalls eine graphische Oberfläche, dies ist allerdings in erster Linie
 ein Platzhalter für eventuelle Tests mit menschlicher Beteiligung und enthält
 lediglich eine Schaltfläche zum Abbruch des laufenden Tests sowie eine
 kontinuierliche Zeitanzeige, um eventuelle Deadlocks bzw. Verklemmungen \cite{deadlocks},
-die während des Tests auftreten, zu erkennen.
+die während des Tests auftreten, zu erkennen. Eine schematische Darstellung
+des Ablaufs und der Kontrollflüsse findet sich in Abbildung 
+\ref{fig:autotesterschematic} auf Seite \pageref{fig:autotesterschematic}.
 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/autotester.png}
+	\caption{Schematischer Ablauf des Autotesters}
+	\label{fig:autotesterschematic}
+\end{figure}
 
 \begin{algorithm} \SetAlgoLined
 	\KwData{Laufender Test $T$, neues Fenster/Popup $P$}
