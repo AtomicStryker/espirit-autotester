@@ -430,9 +430,9 @@ public class CrawlerTester {
 
 			logger.log(logLevel, String.format("Ignoring invisible %s\n", compdesc));
 
-		} else if (config.isComponentBlacklisted(component.getClass())) {
+		} else if (config.isComponentBlacklisted(component)) {
 
-			logger.log(logLevel, String.format("Ignoring blacklisted component class %s\n", compdesc));
+			logger.log(logLevel, String.format("Ignoring blacklisted component %s\n", compdesc));
 
 		} else if (component instanceof JFrame || component instanceof JPanel || component instanceof JRootPane || component instanceof JLayeredPane || component instanceof JMenuBar || component instanceof JToolBar || component instanceof JPopupMenu.Separator || component instanceof javax.swing.JSeparator || component instanceof Box.Filler || component instanceof JScrollPane || component instanceof JViewport || component instanceof JList) {
 

@@ -19,6 +19,7 @@ public class Config {
 	public Properties properties;
 	public BlackListedAbstractButton[] blackListedAbstractButtons;
 	public ArrayList<String> blackListedComponentsSimpleClassNames = new ArrayList<String>();
+	public ArrayList<String> blackListedComponentsByUtilString = new ArrayList<String>();
 	public ArrayList<String> blackListedWindowKeywords = new ArrayList<String>();
 	public long sleepTimeMillisTextfieldEntries;
 	public long sleepTimeMillisBetweenFakeMouseClicks;
@@ -90,6 +91,14 @@ public class Config {
 			}
 		}
 
+		final String blcus = properties.getProperty("blackListedComponentsByUtilString");
+		for (final String e : blcus.split(",")) {
+			if (!e.isEmpty()) {
+				blackListedComponentsByUtilString.add(e);
+				logger.log(Level.INFO, "Blacklisted Component by Util name: " + e);
+			}
+		}
+
 		final String blcstrwdw = properties.getProperty("blackListedWindowKeywords");
 		for (final String s : blcstrwdw.split(",")) {
 			if (!s.isEmpty()) {
@@ -99,10 +108,17 @@ public class Config {
 		}
 	}
 
-	public boolean isComponentBlacklisted(final Class<? extends Component> componentClass) {
+	public boolean isComponentBlacklisted(final Component component) {
 
-		final String name = componentClass.getName();
+		String name = component.getClass().getName();
 		for (final String s : blackListedComponentsSimpleClassNames) {
+			if (!s.isEmpty() && name.contains(s)) {
+				return true;
+			}
+		}
+
+		name = Util.componentToString(component);
+		for (final String s : blackListedComponentsByUtilString) {
 			if (!s.isEmpty() && name.contains(s)) {
 				return true;
 			}
