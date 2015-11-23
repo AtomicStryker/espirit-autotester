@@ -630,3 +630,46 @@ und ein entsprechendes Feature relativ schnell und einfach an bestehende
 Applikationen angefügt werden kann. Wenn nicht -- der Autotester selbst
 wird vermutlich quelloffen verfügbar sein, und eine Implementation
 dieser Idee kann von interessierten Parteien umgesetzt werden.
+
+
+\subsection{\glqq{}minimale\grqq{} Angaben in der Praxis}
+
+In der weitergehenden Nutzung des Autotesters mit verschiedenen
+Programmen wurde klar, dass eine gewisse Anpassungs- oder
+Lernzeit des Programms mit dem Testsubjekt zwingend notwendig ist.
+Über die Definition des Anwendungsfensters hinaus müssen für
+effiziente Durchläufe in jedem Fall die Schaltflächen, die Beendigung
+des jeweiligen Programms resultieren, auf die Blacklists gesetzt
+werden. Darüber hinaus hat jedes getestete Programm eine oder
+mehrere Eingaben oder Fenster, die in einem unendlichen oder
+sonst unbrauchbaren Durchlauf resultierten -- es wäre vermutlich
+eine gute Idee, den Tester um eine maximale Laufzeit oder
+eine maximale Prüftiefe oder etwas Ähnliches zu erweitern.
+
+Auch müssen eventuelle Abstürze des getesteten Programms
+abgefangen oder verhindert werden. Unerwartetes Beenden
+der Abwendung macht die gewonnenen Erkenntnisse abseits
+der Konsole unbrauchbar, da eigentlich auf einen
+vollständigen Graphen sowie eine Logdateie hin gearbeitet wurde.
+Eine Methodik, die auch Logdateien von unerwartet beendeten
+Durchläufen sichert, wäre sinnvoll. In der Praxis läuft
+die Nutzung der Autotesters nun so ab, dass ein Entwickler
+zunächst die Startklassen und Umgebungsvariablen einrichtet
+sowie das Anwendungsfenster der zu testenden Applikation
+angibt. Der Autotester leistet hierbei Unterstützung, er
+gibt die für ihn sichtbaren Anwendungsfenster an. Anschließend
+lässt der Entwickler den Autotester laufen, bis sich die Anwendung
+selbst beendet oder unerwartet beendet wird, liest die Logdatei
+um den Grund bzw. die ausschlaggebende Eingabe zu ermitteln,
+und setzt evtl. ein Fenster oder eine Komponente auf die
+Blacklist in der Konfigurationsdatei. Er passt gleichzeitig
+die Wartezeiten zwischen den Eingaben an die allgemeine
+Verarbeitungsgeschwindigkeit der Anwendung auf dem jeweiligen
+Computer an. Je nach Anwendung sind hier nun viele oder
+sehr wenige Angaben nötig, um konsistent volle Durchläufe
+zu ermöglichen. FirstSpirit hat neun Einträge
+in seiner Konfigurationsdatei, jEdit und yEd haben beide
+acht. Tendenziell sind allerdings bei yEd die meisten Eingaben
+und Fenster vom Test ausgeschlossen, da zwischenzeitlich
+partielle Angaben für den Ausschluß implementiert und auch
+direkt genutzt wurden.

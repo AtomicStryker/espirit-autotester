@@ -12,7 +12,9 @@ Version 5.2 DEV 201. Entwicklerversionen dieser Software enthalten zusätzliche,
 dem normalen Nutzer unzugängliche Schaltflächen und Funktionen.
 
 Als zweite Applikation wurde der beliebte Texteditor \textbf{jEdit}
-\footnote{\url{ http://www.jedit.org/ }} gewählt.
+\footnote{\url{ http://www.jedit.org/ }} gewählt. Die dritte ist
+die Java-Graphvisualisierungssuite \textbf{yEd}
+\footnote{\url{ http://www.yworks.com/products/yed }}.
 
 
 
@@ -118,7 +120,8 @@ Textinformation, um mit einer Legende o.Ä. auszukommen.
 
 \section{Resultate jEdit}\label{section:testresultsjedit}
 
-Die Wahl für einen zweiten Test fiel auf jEdit, 
+Die Wahl für einen zweiten Test fiel auf jEdit
+in der neuesten erhältlichen Version 5.3.0,
 da der \glqq{}Texteditor für Programmierer\grqq{}
 ebenfalls über die benötigte Swing-GUI verfügt und 
 durch langjährige Entwicklung bedingt im klassischen
@@ -222,6 +225,144 @@ Pause zwischen Eingaben von 500ms, gerade ein Drittel
 des Wertes für den Test von FirstSpirit, gesetzt werden --
 überflüssige, da vermutlich stark duplizierende Tests
 sind dennoch zu vermeiden.
+
+
+\section{Resultate yEd}\label{section:testresultsyed}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/model_yed_notext_yh.png}
+	\caption{mit Gephi und dem Yifan Hu Algorithmus\cite{hu2005efficient}
+    visualierte Graphausgabe des Autotesters über yEd, hoher Zoomfaktor, keine Beschriftungen.}
+	\label{fig:screenshot_yed_yh}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/model_yed_notext_rf.png}
+	\caption{mit Gephi und dem Fruchterman Reingold Algorithmus\cite{SPE:SPE4380211102}
+    visualierte Graphausgabe des Autotesters über yEd, hoher Zoomfaktor, keine Beschriftungen.}
+	\label{fig:screenshot_yed_rf}
+\end{figure}
+
+Als dritte Applikation zum Testen wurde der yEd Graph Editor 
+in der aktuellen Version 3.14.4 gewählt,
+eine eigenständige Desktopapplikation vergleichbar mit Gephi.
+Besonderheiten bezüglich dieses Tests sind z.B., dass yEd Verschleierung
+einsetzt, im Englischen Obfuscation genannt. Da die Java-Programmiersprache
+Just-In-Time kompiliert wird, enthalten die \glqq{}binären\grqq{}
+Dateien noch fast alle Informationen des Quellcodes, und es lässt sich ohne
+großen Aufwand äquivalenter Quellcode daraus gewinnen. Dies ist für
+Kopierschutz natürlich ein gewaltiges Problem. Im Vergleich dazu lassen
+sich auf CPU-Instruktionen kompilierte Programme (sagen wir von C oder C++ aus)
+nicht einfach oder eindeutig wieder in Quellcode umwandeln, und der Kompilierer
+hat auch die Wahl, sämtliche nutzbaren Meta-Informationen wie Funktionsnamen
+zu entfernen.
+
+Eine Lösung dieses Problems für Java ist Obfuscation oder
+Verschleierung. Hierbei wird ein Programm zunächst normal kompiliert. 
+Danach aber wird vor der Veröffentlichung eine vollautomatische 
+Refaktorisierung aller Klassen und Methoden vorgenommen.
+Diese hat lediglich zum Ziel, die Bezeichnungen zu ändern. So wird
+zum Beispiel aus \glqq{}HauptMenueKlasse\grqq{} schlicht \glqq{}A\grqq{}.
+Aus \glqq{}WichtigeFunktion(EingabeKlasse sinnvollerParameterName)\grqq{}
+wird \glqq{}a(B a)\grqq{}. Das Resultat ist funktional identisch mit dem
+Original, verhält sich also genau gleich, aber eine Begutachtung des
+Codes mithilfe eines Dekompilierers ist schwierig bis unmöglich.
+Eine kleine Verbesserung der Anwendungsleistung ist ein Nebeneffekt:
+Die kürzeren Bezeichnungen sorgen für leicht schnellere Aufrufe, da
+kürzere Zeichenketten verglichen werden müssen.
+
+Für den Autotester hat Verschleierung keinerlei Bedeutung, da Aufrufe
+an die Swing-API (oder Systemaufrufe oder Aufrufe an nicht verschleierte 
+Bibliotheken) nicht versteckt werden können. Oder: So lange ein Programm
+lauffähig ist, ist es maschinell auch lesbar. Die zur Identifikation von Komponenten
+benutzten Informationen wie Fenstertitel lassen sich ebenfalls nicht verschleiern,
+ohne den Nutzen der Anwendung zu zerstören. Was dem Autotester eher
+zu schaffen macht, ist die erhebliche Komplexität des Programms und
+insbesondere auch die vielen Beispielprojekte, die über Schaltflächen
+zugänglich sind. Seiner Natur entsprechend, probiert der Tester diese
+natürlich alle aus, was in Änderungen des Hauptfensters resultiert, was
+weitere Tests nach sich zieht etc. Betrachtet man die visualisierten
+Ausgaben des Zustandsgraphen \ref{fig:screenshot_yed_yh} und 
+\ref{fig:screenshot_yed_rf}  auf Seiten \pageref{fig:screenshot_yed_yh} 
+und \pageref{fig:screenshot_yed_rf}, sieht man den Unterschied zu vorherigen
+Anwendungen sofort. Der Graph erscheint verteilt, ohne klares Zentrum
+oder Ursprungspunkt. Dies liegt an den Beispielprojekten, die praktisch
+eigene Mini-Ursprungspunkte darstellen. Daraus folgen fast 1700
+Eingabeelemente und 74 Fenster, die vom Autotester durchsucht
+bzw. ausprobiert werden mussten. Erschwerend kam noch hinzu,
+dass eine Sprachumschaltung enthalten ist, welche die Metainformationen
+verändert, auf denen die Graphbildung aufbaut. Fenstertitel
+unterscheiden sich im deutschen und englischen Modus voneinander.
+
+
+\subsection{Beispiele für gefundene Probleme yEd}
+
+Nachdem durch iterative Erweiterung der Bannlisten/Blacklists
+ein vollständiger Durchlauf des Autotesters über yEd erreicht wurde,
+konnte damit begonnen werden, die Logdateien auf Fehler zu
+durchsuchen. yEd verfügt über eine integrierte Ausnahmebehandlung,
+die jeden Absturz zu verhindern sucht. Anstattdessen öffnet yEd eine
+Fehlermeldung, was sehr löblich ist, aber im Vergleich zu FirstSpirit
+nicht ideal. Dieses meldet Ausnahmen nur im Hintergrund und leitet
+diese automatisch an den Online-Bugtracker von e-Spirit weiter,
+sodass die Entwickler sich darum kümmern können und auch gleich
+Statistiken darüber bekommen, welche Fehler wie häufig auftraten.
+Es gelingt dem Autotester auch hier, unvollständige Fallabdeckung
+und sogar zumindest ein kritisches Problem aufzudecken.
+
+Als erstes Beispiel diene der schlichte Fall unerwarteter Zeichenketten:
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme bei Eingabe einer Nicht-Zahl}]
+java.lang.NumberFormatException: For input string: "<a"
+at java.lang.NumberFormatException.forInputString[...]
+at java.lang.Integer.parseInt(Integer.java:580)
+at java.lang.Integer.parseInt(Integer.java:615)
+at y.E.R.?(Unknown Source)
+at y.E.R.?(Unknown Source)
+at y.E.uA$A.setText(Unknown Source)
+at espirit.mpoloczek.CrawlerTester$EDTCompliantTextSetter.run[...]
+\end{lstlisting}
+
+Die Applikation erzeugt eine unbehandelte Ausnahme, wenn in einem
+Textfeld etwas eingegeben wird, das keine Zahl ist. Die korrekte Behandlung
+einer solchen Situation wäre das Abschalten des entsprechenden Eingabeelements,
+bis eine korrekte Eingabe erfolgt. Dies ist eine der häufigsten Fehlerquellen,
+die vom Autotester aufgedeckt werden. Aufgrund der Verschleierung von
+yEd ist es nur dem Entwickler selbst (hoffentlich) möglich, zu sagen,
+was genau \glqq{}y.E.uA\$A\grqq{} ist und wie dieser Fehler im Quellcode
+zu beheben wäre.
+
+Als zweiter Fund dient die Schaltfläche \glqq{}Knotenüberlappungen auflösen\grqq{}.
+Zum Zeitpunkt dieser Eingabe war eines der Beispiel-Graph-Projekte geöffnet.
+Aus dem folgenden Abschnitt der Logdatei geht hervor, dass nach Betätigung
+dieser Schaltfläche mindestens zehn Sekunden lang gar nichts mehr geschah,
+der Autotester also darauf wartete, den Kontrollfluss von der Implementation der
+Schaltfläche wieder zurückzuerhalten, während yEd irgendetwas tat. Der
+folgende Fehler \glqq{}OutOfMemoryError: Java heap space\grqq{}
+deutet auf einen Programmierfehler in yEd hin, der zu einer Endlossschleife
+bis hin zum Absturz der Java Virtual Machine führt. Die Applikation \glqq{}hängt\grqq{}, bis
+dieser Absturz erfolgt. Leider verfügt die Logdatei des Autotesters nicht über einen
+detaillierten Kontext (woher auch), aber dies stellt einen schweren Fehler in yEd
+dar und sollte baldmöglichst behoben werden.
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme yEd durch Schaltfläche \glqq{}Knotenüberlappungen auflösen\grqq{}}]
+espirit.mpoloczek.CrawlerTester pseudoClickButton
+about to pseudo click component JMenuItem: [Knotenueberlappungen ...]
+espirit.mpoloczek.CrawlerTester$TimerRunner run
+No actions were taken for 10 seconds, deadlock situation??
+---> BEGIN ERROR
+java.lang.OutOfMemoryError: Java heap space
+at com.sun.java.help.search.Query.makePenaltiesTable[...]
+at com.sun.java.help.search.Query.<init>(Query.java:43)
+at com.sun.java.help.search.Search.<init>(Search.java:51)
+at com.sun.java.help.search.QueryEngine.processQuery[...]
+at com.sun.java.help.search.DefaultSearchQuery.run[...]
+at java.lang.Thread.run(Thread.java:745)
+---> END ERROR
+\end{lstlisting}
+
 
 
 \section{Vergleich mit klassischen Tests}\label{section:testcomparisonclassic}
