@@ -117,6 +117,50 @@ eigentlich einfach beschriftete Kanten benutzt werden, aber dies schränkt die M
 den anhängigen Text in eine lesbare Form zu bringen, zu stark ein. Es ist schlicht zu viel
 Textinformation, um mit einer Legende o.Ä. auszukommen.
 
+\subsection{Beispiel Fehler FirstSpirit}
+
+FirstSpirit hat eine eigene, robuste Ausnahmebehandlung, die alle Fälle abzudecken
+versucht und abgefangene Fehlermeldungen an eine Bugtracker-Schnittstelle bei e-Spirit
+weiterleitet. Dennoch gibt es verschiedene Situationen, in denen Ausnahmen erzeugt
+und Funktionen unterbrochen werden, die vermutlich besser behandelt werden könnten.
+Ein solches Beispiel lautet wie folgt:
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme bei Eingabe in Suchfeld}]
+CreateStoreElementDialog: [Bitte waehlen Sie eine Vorlage aus]
+espirit.mpoloczek.CrawlerTester pseudoClickButton
+about to pseudo click component FsTextField: []
+
+(de.espirit.firstspirit.client.AbstractGuiHost):
+ExceptionHandler.uncaughtException()
+java.util.regex.PatternSyntaxException: 
+Unclosed character class near index 11
+,./;'[]\\-=.*
+           ^
+at java.util.regex.Pattern.error(Pattern.java:1955)
+\end{lstlisting}
+
+Jede Eingabe eines Textes in das Suchfeld hat eine Regex-Muster-Kompilation
+zur Folge, unabhängig davon, ob die Eingabe im Sinne von Regex zulässig ist
+oder nicht. Es wäre sinnvoller, eine Eingabe zunächst auf Gültigkeit zu prüfen,
+anstatt jede zuzulassen bzw. eine Kompilation mit jeder Eingabe zu versuchen.
+
+Ein weiteres Beispiel, diesmal bei einem Datei-Auswahldialog:
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme bei ungültiger Dateiangabe}]
+espirit.mpoloczek.CrawlerTester pseudoClickButton
+about to pseudo click component JButton:
+[Oeffnen|JFileChooser.ApproveButton|Ausgewaehlte Datei oeffnen]
+
+firstspirit.client.gui.navigation.ppool.sync.FileSystemSyncHandler:
+Error accessing directory - java.io.FileNotFoundException:
+C:\Users\poloczek\Desktop\<img src or\" '"=alt=javascript:alert(1)\">
+\end{lstlisting}
+
+Offensichtlich probierte der Autotester hier einen html-Codeblock als Eingabe eines Dateinamens
+aus. Anstatt diese Datei vorher auf Existenz zu überprüfen, versucht FreeSpirit direkt,
+die Datei zu öffnen, versagt, und erzeugt diese Ausnahme. Es wäre besser, eine
+Eingabe zunächst auf Existenz zu prüfen.
+
 
 \section{Resultate jEdit}\label{section:testresultsjedit}
 
