@@ -103,7 +103,10 @@ public class ModelWriter {
 		*/
 
 		if (!graph.containsVertex(asString)) {
+			logger.log(Level.INFO, String.format("MW adding vertex: %s\n", asString));
 			graph.addVertex(asString);
+		} else {
+			logger.log(Level.INFO, String.format("MW ignoring duplicate vertex: %s\n", asString));
 		}
 	}
 
