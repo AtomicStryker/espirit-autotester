@@ -278,9 +278,13 @@ public class CrawlerTester {
 				if (!testerThreadStack.empty()) {
 					final TesterThread peek = testerThreadStack.peek();
 					peek.isThreadPaused = true;
-					logger.log(Level.FINE, String.format("paused thread %s for popup handling\n", testerThreadStack.peek()));
-					modelWriter.logState(popup);
-					modelWriter.logTransition(peek.rootWindow, peek.componentListToTest.get(Math.min(peek.indexCurrentComponentTested, peek.componentListToTest.size())), popup);
+					logger.log(Level.FINE, String.format("paused thread %s for popup handling\n", peek));
+					if (!peek.componentListToTest.isEmpty()) {
+						modelWriter.logState(popup);
+						modelWriter.logTransition(peek.rootWindow, peek.componentListToTest.get(Math.min(peek.indexCurrentComponentTested, peek.componentListToTest.size())), popup);
+					} else {
+						logger.log(Level.WARNING, String.format("paused thread %s for popup handling, but did not have any components in there! immaculate transition?!\n", peek));
+					}
 				}
 
 				final ArrayList<Component> popupContent = new ArrayList<Component>();
@@ -553,13 +557,11 @@ public class CrawlerTester {
 
 			if (componentTarget.isVisible()) {
 
-				final String rootStatePre = Util.componentToString(componentRoot);
-
 				for (final ActionListener el : listeners) {
 					try {
 						el.actionPerformed(event);
 					} catch (final Exception | Error e) {
-						logger.log(Level.WARNING, "ActionListener threw something", e);
+						logger.log(Level.WARNING, "ActionListener threw something some error, ignoring...\n");
 					}
 				}
 
