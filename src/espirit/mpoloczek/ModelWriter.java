@@ -42,10 +42,25 @@ public class ModelWriter {
 		logTransitionString( wrappedToString(prevState), wrappedToString(transitioner), wrappedToString(resultState));
 	}
 
-	public void logTransitionString(final String prevState, final String transString, final String resultState) {
+	public void logTransitionString(String prevState, final String transString, final String resultState) {
 
 		wrappedAddVertex(transString);
 		logger.log(Level.INFO, String.format("MW adding transition: %s -> %s -> %s\n", prevState, transString, resultState));
+		if (!graph.containsVertex(prevState)) {
+			boolean found = false;
+			for (final String v : graph.vertexSet()) {
+				if (prevState.contains(v)) {
+					logger.log(Level.WARNING, String.format("MW did not have vertex [%s], amended prevState to [%s]\n", prevState, v));
+					prevState = v;
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				logger.log(Level.WARNING, String.format("MW did not have vertex [%s], no partial matches either, aborting\n", prevState));
+				return;
+			}
+		}
 		graph.addEdge(prevState, transString);
 		graph.addEdge(transString, resultState);
 		graph.addEdge(resultState, prevState);

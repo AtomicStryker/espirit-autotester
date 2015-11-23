@@ -81,6 +81,8 @@ public class CrawlerTester {
 	private Method methodFsMultiPaneGetSlotCount;
 	private Method methodFsMultiPaneGetComponentsAtSlotID;
 
+	private static String previousRootComponent;
+
 
 	public CrawlerTester(final String configPath) {
 
@@ -167,6 +169,7 @@ public class CrawlerTester {
 				componentIndexDebugPrint = 0;
 
 				targetGUI = curWindow;
+				previousRootComponent = Util.componentToString(targetGUI);
 				break;
 			}
 		}
@@ -560,12 +563,15 @@ public class CrawlerTester {
 					}
 				}
 
-				final String rootStatePost = Util.componentToString(componentRoot);
-				if (!rootStatePost.equals(rootStatePre)) {
+				if (componentRoot != null) {
+					final String rootStatePost = Util.componentToString(componentRoot);
+					if (!rootStatePost.equals(previousRootComponent)) {
 
-					logger.log(Level.FINER, String.format("last buttonpress changed root component state! [%s] -> [%s]\n", rootStatePre, rootStatePost));
-					modelWriter.logState(componentRoot);
-					modelWriter.logTransitionString(rootStatePre, Util.componentToString(componentTarget), rootStatePost);
+						logger.log(Level.FINER, String.format("last buttonpress changed root component state! [%s] -> [%s]\n", previousRootComponent, rootStatePost));
+						modelWriter.logState(componentRoot);
+						modelWriter.logTransitionString(previousRootComponent, Util.componentToString(componentTarget), rootStatePost);
+					}
+					previousRootComponent = rootStatePost;
 				}
 
 				if (componentRoot != null && componentList != null) {
