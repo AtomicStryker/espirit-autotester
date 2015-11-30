@@ -271,6 +271,41 @@ des Wertes für den Test von FirstSpirit, gesetzt werden --
 sind dennoch zu vermeiden.
 
 
+\subsection{Beispiele für gefundene Probleme jEdit}
+
+Als primärer Texteditor hat jEdit vermutlich robustere Textverarbeitung,
+zumindest verglichen mit den anderen Testkandidaten. In der Praxis
+hat die Applikation ein der FirstSpirit-Ausnahmebehandlung ähnelndes
+Verfahren, welches grundsätzlich jede Ausnahme abfängt und mit einem
+Fehlerschirm quittiert, anstatt einen Absturz des Programms zuzulassen.
+
+Dennoch treten noch unbehandelte Ausnahmen auf, wie z.B. die
+folgende:
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme bei Texteingabe}]
+about to pseudo click 
+component EnhancedMenuItem: [Alle ersetzen|null|null]
+[...] Parse error at line 3, column 12.  Encountered: .0
+[...] at org.gjt.sp.jedit.bsh.Parser.generateParseException([...])
+[...] at org.gjt.sp.jedit.bsh.Parser.jj_consume_token([...])
+\end{lstlisting}
+
+Offensichtlich wird auch hier mit Regex oder einem ähnlichen
+Symbolverfahren gearbeitet, um ein Suchfeld mit Funktion zu hinterlegen,
+und die Eingaben werden vor Kompilation nicht oder nur unzureichend 
+auf Zulässigkeit geprüft.
+
+Darüber hinaus fielen nur die üblichen Schwierigkeiten bei der Eingabe
+ungültiger Pfade in Datei-Auswahldialogen auf. Diese sind aber zu erwarten
+und nicht weiter erwähnenswert. Es gelten die üblichen Empfehlungen,
+das Testprogramm sowohl von wichtigen Dateisystemen als auch
+der Druckerwarteschlange abzukapseln. Im Verlauf der Tests haben die
+automatischen Fehlerberichterstatter den jeweiligen Entwicklern sicher
+einige merkwürdig anmutende Logdateien übermittelt.
+
+
+
+
 \section{Resultate yEd}\label{section:testresultsyed}
 
 \begin{figure}
@@ -436,7 +471,7 @@ irgendwie möglich. Man kann ihn also als ein Komplement bzw. eine Addition
 zu klassischen Tests verstehen bzw. Einsetzen.
 
 Ein Durchlauf des Autotesters ist verglichen mit Unit Tests und den
-meisten Regressionstests sehr langsam. Ein vollständiger Durchlauf
+meisten Regressionstests eher langsam. Ein vollständiger Durchlauf
 über FirstSpirit dauert ungefähr 20 Minuten. Leider gibt es für die
 Emulation menschlicher Eingaben und der Wartezeit für die Verarbeitung
 dieser Eingaben durch das Programm keine guten Alternativen.
@@ -446,3 +481,20 @@ beinhalten, die das Ergebnis zusätzlich beeinflussen. Auch handelt es
 sich bei der Entwicklerversion von FirstSpirit um ein massives
 Konstrukt mit Serverbedingt behäbigen Reaktionszeiten und gewaltigem
 Funktionsumfang, also vielen (beinahe eintausend) zu testenden Elementen.
+
+Auch wurden im Verlauf dieser Arbeit nur relativ alte und bewährte
+Applikationen getestet, welche auf jahrelange Entwicklung und Nutzung
+zurückblicken können und daher auch selbst unwahrscheinliche
+Fehlerquellen bereits erlebt und behoben haben. Unzuverlässige
+Applikationen der Java-Swing Schnittstelle sind längst in Vergessenheit
+geraten.
+
+Das Konzept an sich wäre aber insbesondere in den Anfangsphasen
+eines Projekts von besonderem Wert, wenn nur Entwickler daran
+arbeiten und noch keine Tester beteiligt werden bzw. noch nicht
+genug Funktionalität vorliegt, um sinnvoll zu testen. Explorative,
+destruktive Eingaben sind immer möglich, wenn überhaupt
+Eingaben getätigt werden können. Mit dem Autotester können
+sehr schnell unvorhergesehene Situationen herbeigeführt
+und noch in der Entwicklungsumgebung analysiert und evtl.
+behoben werden.

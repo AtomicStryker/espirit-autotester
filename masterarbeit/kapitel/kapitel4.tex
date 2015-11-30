@@ -147,6 +147,13 @@ heißt dies, es gibt keine Antwort, die man schlicht ablesen könnte.
 Jegliche Reaktion muss aus dem Verhalten des zu testenden Programms
 bzw. Überwachung seines Zustands geschlossen werden.
 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/autotester.png}
+	\caption{Schematischer Ablauf des Autotesters}
+	\label{fig:autotesterschematic}
+\end{figure}
+
 Den Zustand eines nicht-trivialen Java-Programms erschließend
 zu überwachen, ist ein hoffnungsloses Unterfangen. Es gibt zu
 viele unabhängige Kontrollfäden bzw. Threads und interagierende
@@ -234,12 +241,6 @@ die während des Tests auftreten, zu erkennen. Eine schematische Darstellung
 des Ablaufs und der Kontrollflüsse findet sich in Abbildung 
 \ref{fig:autotesterschematic} auf Seite \pageref{fig:autotesterschematic}.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.85\textwidth]{bilder/autotester.png}
-	\caption{Schematischer Ablauf des Autotesters}
-	\label{fig:autotesterschematic}
-\end{figure}
 
 \begin{algorithm} \SetAlgoLined
 	\KwData{Laufender Test $T$, neues Fenster/Popup $P$}
