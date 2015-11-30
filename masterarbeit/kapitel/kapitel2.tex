@@ -568,3 +568,201 @@ Für das hier vorgestellte Konzept stellen sich im Bezug auf diese Arbeit einige
 Wie schnell sollten Eingaben erfolgen? Müssen Eingaben zwangsläufig funktional korrekt erfolgen?
 Auf welcher Abstraktionsebene erfolgen die Eingaben und welche Möglichkeiten zur Datenmanipulation
 gibt es überhaupt? Wird die Nachstellung eines bösartigen Angriffs beabsichtigt?
+
+
+%%% TeX-master: "../main.tex"
+% kapitel3.tex
+\section{\glqq{}Vollautomatische\grqq{} GUI-Tests}\label{chapter:introfullautoguitesting}
+
+
+In diesem Kapitel werden existierende GUI-Testverfahren betrachtet, welche das Prädikat
+\glqq{}vollautomatisch\grqq{} zumindest teilweise für sich beanspruchen. Diese Behauptung wird
+auf Wahrheitsgehalt überprüft, eventuelle Fallstricke, Nachteile und Einschränkungen werden aufgezeigt
+und Schlussfolgerungen für das hier vorgestellte Konzept werden gezogen, soweit möglich.
+
+
+
+\subsection{GUITest: a Java library for fully automated GUI robustness testing}
+
+Existierende Arbeiten analogen Inhalts sind z.B. \textbf{\glqq{}GUITest: a Java library for fully automated
+GUI robustness testing\grqq{}} \cite{GUITestBauersfeld}: Eine Java-Bibliothek 
+(allerdings speziell für das Betriebssystem Mac OSX entwickelt), die
+vollautomatisch mögliche Inputs in einer beliebigen (allerdings hier nur an einer getesteten)
+Applikation der \glqq{}Mac OSX Accessibility API\grqq{} aufspürt und durchführt.
+
+Ähnlich wie die bei der Java Swing API existiert hierbei eine objektorientierte Baumstruktur,
+der sogenannte \glqq{}Widget Tree\grqq{} bzw. Widget-Baum, welcher alle Elemente der graphischen Oberfläche enthält
+und insbesondere genormte Klassen und Schnittstellen zum Beispiel für Schalter
+und Knöpfe enthält. Dies erlaubt eine vollautomatische Verarbeitung:
+Jede tatsächlich implementierte Funktion lässt sich durch ein vorher definiertes
+\glqq{}Eingabealphabet\grqq{} erreichen und auslösen.
+
+Ein Unterschied zum
+hier vorgestellten Konzept ist, dass das Tool nicht auf die Applikation beschränkt sein müsste. Es wird
+explizit erwähnt, dass die Shutdown- und Reset-Tasten des Host-Betriebssystems ausgenommen werden
+mussten. Dieser Umstand ist damit zu erklären, dass das Betriebssystem Mac OSX eine allgemeine
+Schnittstelle für graphische Anwendungsoberflächen bereitstellt und vermutlich auch voraussetzt,
+dass für OSX zertifizierte Anwendungen diese implementieren. Folglich handelt es sich um eine
+Testapplikation allgemein für OSX-Programme, welches allerdings hier nur mit einem Programm
+getestet wurde. Das in dieser Arbeit implementierte Konzept ist für das im direkten Vergleich 
+wesentlich allgemeingültigere Java Swing ausgelegt und kann auf jeder Plattform ausgeführt werden, 
+die Unterstützung für eine JVM bietet. Mac OSX zählt auch dazu.
+
+Eine Gemeinsamkeit bzw. logische Konsequenz des vollautomatischen Testvorgangs ist, dass nur
+die Robustheit getestet werden kann. Ohne Kontext ist es nicht möglich, dem Verhalten eines
+Programms Begriffe wie \glqq{}korrekt\grqq{} oder \glqq{}falsch\grqq{} zuzuordnen. Lediglich auftretende
+Fehler und der Eingabeweg bis zu Ihrem Auftreten sind von Interesse.
+Die möglichen Eingaben durch die \glqq{}Mac OSX Accessibility API\grqq{} sind stärker normiert als bei
+Java Swing, wodurch weniger Variation möglich ist. Auch prüft dieses Programm nicht mögliche
+Textfeldeingaben wie das hier vorgestellte Konzept, wobei dies seitens der OSX-API möglich gewesen wäre.
+
+Anderere Unterschiede finden sich im Vorgehen: Die Autoren wünschen einen vollautomatischen
+Testvorgang, scheuen sich aber nicht, programmspezifische Implementationen vorzunehmen, um
+bestimmte kontextuelle Features zu testen. Als Beispiel dient hier das Ziehen, sogenanntes
+\glqq{}Click-And-Drag\grqq{}, von Clip-Art aus der Word-Kommandoleiste in das Word-Dokument.
+Sie räumen ein, dass ihre Applikation lediglich ein Standard-Set von Aktionen für
+normierte Eingabeverarbeiter ableitet und für ein besseres Testergebnis gewisse
+kontextuelle Aktionen notwendig werden. So wird der Tester in jedem Fall angewiesen,
+ein Word-Dokument zu öffnen (ein vollautomatisches Werkzeug würde dies nur durch Zufall erreichen),
+darüber hinaus arbeitet der Tester in einem vom Betriebssystem beschränkten Useraccount,
+um Änderungen bzw. Schäden am Betriebssystem durch zufällige Eingaben zu verhindern.
+
+Von den neun zum Absturz führenden Eingabesequenzen, die GUITest schließlich fand,
+konnten die Autoren drei nicht menschlich reproduzieren und zitieren zeitabhängigkeit
+der Eingaben, die den Absturz hervorrufen sollen. Dies impliziert, dass die gewählten Warte-Intervalle
+zu kurz gewählt waren, um wirklich menschliche Eingaben nachstellen zu können. Wenn es
+menschlich machbare Eingaben wären, wären die resultierenden Abstürze auch reproduzierbar.
+Hieraus ist die Lehre zu ziehen, bei durch Menschen zeitlich nicht machbaren Fehlern die Toleranzen
+des Testprogramms so lange zu lockern, bis der Fehler nicht mehr auftritt oder ein Mensch
+denselben Fehler überhaupt erzeugen kann.
+
+
+\subsection{A GUI Crawling-Based Technique for Android Mobile Application Testing}
+
+Ein anderes Beispiel wäre \textbf{\glqq{}A GUI Crawling-Based Technique for Android Mobile Application
+Testing\grqq{}}\cite{AGCBTFAMAT}. Hierbei wird in zwei separaten Schritten zunächst eine graphische Applikation
+vollautomatisch auf mögliche Eingaben und anzeigbare Bildschirme durchsucht, also ein
+\glqq{}Wegnetz\grqq{} ähnlich dem Vorschlagskonzept durch das Programm gelegt, bzw.
+ein Modell des Programms inferiert oder generiert, um dann in einem zweiten
+Schritt mit üblichen (regressiven) Test-Applikationen und Vorgehensweisen Abläufe zu
+planen und tatsächlich zu prüfen. Der Unterschied und die Einschränkung hier ist
+hauptsächlich die Android-GUI-API sowie die Testumgebung eines Android-Emulators am
+PC-System. Auch ist der zweite Vorgehensschritt nicht vollautomatisch und erfordert in jedem Fall
+erheblichen Kontext bzw. Nutzerangaben.
+
+Zu beachten ist die Besonderheit, dass der Crawler-Bestandteil der Applikation nicht
+einfach nur nach möglichen Eingabekomponente sucht, sondern tatsächlich die
+eingabeverarbeitenden Komponenten, die \glqq{}Event Handler\grqq{}, identifiziert
+und Rückschlüsse daraus zieht. So werden die möglichen Eingabetypen ausgelesen --
+dies ist für ein Android-Gerät wichtig, da mehr als nur einfache \glqq{}Klicks\grqq{}
+möglich sein könnten, wie Gestik oder gar sensorische Eingaben wie das Schütteln
+des Geräts. Auf einem PC sind diese Eingaben zwar seit der Einführung von
+Desktop-Touchscreens theoretisch möglich, aber es existiert keine normierte
+Definition abseits des Android-Umfelds und folglich ignoriert diese Arbeit
+eventuell vorhandene spezifische Implementationen.
+
+Aus den so gefundenen möglichen Eingabewerten wird zufällig gewählt,
+die Applikation ist also nichtdeterministisch. Eine Besonderheit von Android
+kommt den Autoren entgegen: So etwas wie Popups oder seperate Fenster existieren nicht.
+Wenn eine Applikation die graphische Darstellung verändert, enthält entweder
+der aktuelle Komponentenbaum die veränderten Komponenten, oder der
+Komponentenbaum selbst wurde geändert -- die Applikation ist in einem neuen Fenster.
+Der von Android erzwungenermaßen implementierte \glqq{}Zurück\grqq{} Knopf ist
+eine weitere Annehmlichkeit. Es besteht keine Notwendigkeit, mühsam einen Zustand wieder
+von vorne herzustellen, wenn auch einfach von einem Folgezustand rückwärts
+gegangen werden kann.
+
+Ein Einsatz des vorgestellten Konzepts auf Android ist zwar theoretisch möglich, jedoch setzt
+man dort eine spezielle Variante von Swing für die graphischen Oberflächen ein, 
+wodurch eine Anpassung bzw. Erweiterung des Programms sehr wahrscheinlich notwendig wäre. 
+Auch stellt das Android-Betriebssystem seine eigenen Herausforderungen
+bezüglich Nutzbarkeit und insbesondere auch Programminteraktion -- das Konzept
+einer Android-Applikation als virtueller alleiniger Nutzer seines eigenen Systems
+erschwert offensichtlich jegliche programmübergreifende Tätigkeiten.
+
+Der Testansatz der Autoren vergleicht insbesondere auch die Instruktionen in den gefundenen
+eingabeverarbeitenden Komponenten -- dies ist etwas, was das hier vorgestellte Konzept nicht
+vorsieht. Hier wird nur mit den Daten gearbeitet, nicht mit Instruktionen. Abweichende
+Instruktionen (verglichen mit vorherigen Durchläufen) werden also Regression bzw. mögliche Fehler markiert.
+Die Autoren weisen darauf hin, dass ihr Test so auch in der graphischen Oberfläche
+unsichtbare Fehler in der Implementation aufdecken kann. Dagegen gehalten werden kann,
+dass viele beliebige und insbesondere gewollte Änderungen von Instruktionen in
+der Applikation so als Regression markiert werden. Dies führt dazu, dass eher ein
+Differenz-Analysetool vorliegt als ein tatsächlicher Fehlertester.
+
+Die Autoren weisen auch darauf hin, dass der Ansatz komplett zufälliger Eingaben
+suboptimal ist -- eine gewisse Auswahl von häufig Fehlern erzeugenden Eingaben
+bzw. klassenartige Prüfung wäre vermutlich eine effektivere Strategie, um Fehler
+herbeizuführen.
+
+
+\subsection{Monkey und monkeyrunner}
+
+Ebenfalls speziell für Android konzipiert sind sind die Werkzeuge
+\textbf{Monkey}\footnote{ \url{ https://developer.android.com/tools/help/monkey.html }}
+und \textbf{monkeyrunner}
+\footnote{ \url{ https://developer.android.com/tools/help/monkeyrunner_concepts.html }}.
+Hierbei handelt es sich von Google selbst für Entwickler bereitgestellte
+Schnittstellen und Applikationen, die z.B. für automatische Tests 
+der von ihnen entwickelten Anwendungen für Android dienen können oder sollen.
+Ersteres ist hierbei als \glqq{}stress-test\grqq{} bezeichnet und letzteres
+als \glqq{}Fernsteuerung durch eine API für Geräte und Emulatoren von 
+einem Arbeitsplatz aus\grqq{}. Monkey wird mittels der Android Debug Bridge
+\footnote{ \url{ https://developer.android.com/tools/help/adb.html }}
+bzw. \textbf{adb} direkt auf dem zu testenden Gerät ausgeführt. Es erzeugt
+einen pseudozufälligen Strom von Ereignissen wie beispielsweise
+Berührungen und Gestiken seitens eines Nutzers oder auch Systemeregnisse,
+welche vom Android-Gerät selbst ausgehen würden.
+
+Im Betrieb beobachtet Monkey das System
+des Gerätes und hält Ausschau nach drei Konditionen: Erstens, der
+Kontrollfluss wird auf die von Monkey zu prüfenden Klassenpfade bzw.
+Pakete beschränkt. Jeder Versuch, den aktuellen Kontrollfluss in ein
+anderes Paket bzw. ein anderes Programm zu leiten wird unterbunden.
+Zweitens, sollte die getestete Applikation eine unbehandelte Ausnahme
+erfahren, stoppt Monkey den Testvorgang und gibt die Fehlermeldung der
+Ausnahme aus. Drittens wird die Reaktion der getesteten Anwendung
+kontinuerlich validiert -- sollte ein Fehler des Typs \glqq{}Anwendung
+reagiert nicht mehr\grqq{} auftreten, bleibt Monkey ebenfalls stehen
+und erstattet Bericht. Zu beachten ist, dass Monkey nicht selbsttätig
+oder gezielt Bildschirmwechsel vornimmt oder auch nur irgendwie
+auf die Inhalte der getesteten Applikation eingeht -- einfach gesagt ist es egal,
+ob Knöpfe vorhanden sind oder nicht, es wird einfach wild auf dem
+gesamten Bildschirm herumgetippt. Dies ist im Rahmen von Android-Anwendungen
+eine zulässige Teststrategie, da typischerweise die gesamte Oberfläche
+eines beliebigen Bildschirms der Bedienung einem einzigen Programm dient.
+Auch ist die Reaktion der Applikation abgesehen von den erwähnten
+Fehlern und Ausnahmezuständen uninteressant, also muss auch nicht auf
+diese gewartet werden. Wenn der Entwickler bestimmte Anwendungsfälle
+oder -bildschirme testen will, muss Monkey programmatisch dorthin
+geleitet werden. Abgesehen von den zufälligen Eingaben verhält sich
+Monkey also doch wie klassischer automatischer Unit-Test.
+
+monkeyrunner ist nicht eine Erweiterung oder Weiterentwicklung von Monkey,
+sondern komplett unabhängig. Im Vergleich zu Monkey hat es viel eher die
+Features üblicher Testsuites: Es kann mehrere Android-Geräte
+gleichzeitig kontrollieren, diese können physikalisch angeschlossene oder
+auf in Emulatoren virtualisierte Instanzen sein. Auf diesen kann parallel
+oder auch nacheinander ein Testprogramm durchgeführt werden. monkeyrunner
+erlaubt, einen programmatisch definierten Eingabeablauf vollautomatisch
+durchzuführen, und nimmt währenddessen Screenshots des Geräts auf.
+Als besondere Variante des Regressionstests können die Aufnahmen eines
+als \glqq{}korrekt\grqq{} bekannten Durchlaufs mit folgenden Bildserien
+verglichen werden, um so visuelle Differenzen herauszustellen. Dies sagt
+natürlich wenig über die internen Zustände eines Programms aus, aber
+man kann argumentieren, dass nur für den Nutzer sichtbare Reaktionen
+für den Test einer graphischen Oberfläche von Interesse sind. Ein durch
+Regression abweichendes Verhalten der Applikation bzw. Ergebnis einer
+Bedienungssequenz wird so sehr schnell gefunden. Die für Regressionstests
+üblichen Schwierigkeiten bestehen -- bei einer gewünschten Programmänderung
+muss ein vollständiger neuer Sollzustand definiert werden, um zukünftige
+Durchläufe damit vergleichen zu können.
+
+Es bietet weiterhin modular erweiterbare Automation mittels Python-basierter
+Module und Anwendungen an. Python ist eine dynamisch kompilierte Skriptsprache
+\footnote{ \url{ https://www.python.org/ }}, die schnelle Entwicklungsprozesse
+und Iteration erleichtern soll. In dieser Hinsicht ist monkeyrunner zwar
+als automatisches Testwerkzeug nutzbar, dies ist aber nicht sein einziger
+Zweck bzw. seine Spezialität. Die Bedienung erfordert aber in jedem Fall
+einen Entwickler, nicht einfach nur einen Tester.
+
