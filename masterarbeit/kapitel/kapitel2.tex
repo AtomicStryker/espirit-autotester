@@ -6,7 +6,7 @@
 Dieses Kapitel stellt zunächst einige für graphische Nutzeroberflächen wichtige 
 Grundlagen und Konzepte vor, speziell bezüglich der für Tests bzw. deren Umsetzung
 relevanten Asynchronität und der daraus folgenden Herausforderungen.
-Im folgenden Abschnitt werden die verschiedenen Ansätze für Tests von GUI
+Im folgenden Abschnitt werden die verschiedenen Ansätze für diese Tests
 und ihre jeweiligen Einsatzgebiete und Limitationen vorgestellt und verglichen.
 Schließlich befasst sich das Kapitel mit einigen in der Industrie 
 verbreiteten bzw. \glqq{}State of the Art\grqq{}-Lösungen
@@ -27,24 +27,24 @@ Programme mit einer graphischen Oberfläche stellen einen Sonderfall für
 die Philosophie einer normalen Implementation dar. Ein gewöhnliches Programm wird
 gestartet, läuft und erledigt eine Aufgabe, und beendet sich nach
 Durchführung dieser Aufgabe selbst. Üblicherweise ist dies eine Datenverarbeitung
-irgendeiner Art, die Daten liegen in irgendeiner Form vor oder werden 
+irgendeiner Art, die Daten liegen in passender Form vor oder werden 
 als Datenstrom eingeholt, und vielleicht gibt der Nutzer noch weitere Parameter
-oder Argumente mit dem Startbefehl durch. Eine erste Erweiterung dieses
+oder Argumente mit dem Startbefehl weiter. Eine erste Erweiterung dieses
 Konzepts ist, dass eine Anwendung anhalten kann, um den Nutzer nach einer
 Eingabe zu fragen. Dies stellt allerdings noch keine besonderen Anforderungen
 an die Anwendung -- schließlich muss nichts getan werden, während auf
 die Nutzereingabe gewartet wird.
 
-Eine Anwendung mit einer graphischen Oberfläche dahingegen steht vor
-einem Dilemma: Es kann mit Sicherheit nur davon ausgegangen werden, dass ein
-einziger Prozessor bzw. Kontrollfluss vorliegt. Es gibt aber im üblichen Fall
-eine Vielzahl von Prozessen, die bearbeitet werden müssen. Hier eine exemplarische
+Eine Anwendung mit einer graphischen Oberfläche hingegen steht vor
+einem Dilemma: Es kann mit Sicherheit nur davon ausgegangen werden, dass eine
+einzige CPU bzw. ein einziger Kontrollfluss vorliegt. Es gibt aber im üblichen Fall
+eine Vielzahl von Prozessen, die gleichzeitig bearbeitet werden müssten. Hier eine exemplarische
 Auflistung, in absteigender Wichtigkeit bzw. Priorität für den Prozessor
 sortiert:
 
 \begin{itemize}
-  \item \textsc{Eingaben} getroffene Eingaben müssen aus entsprechenden Puffern ausgelesen werden
-  \item \textsc{Oberfläche} die Darstellung der graphischen Oberfläche selbst
+  \item \textsc{Eingaben} Getroffene Eingaben müssen aus entsprechenden Puffern ausgelesen werden
+  \item \textsc{Oberfläche} Die Darstellung der graphischen Oberfläche selbst
   \item \textsc{Reaktion} Eingaben verlangen häufig irgendeine Tätigkeit oder Reaktion
   \item \textsc{Aufgabe} Die Applikation hat nach wie vor eine Aufgabe zu erfüllen
 \end{itemize}
@@ -78,16 +78,16 @@ Sie erhält normalerweise Prozessorzeit, wenn keine der anderen Tätigkeiten dri
 danach verlangt. Dies würde dazu führen, dass entweder die graphische Oberfläche
 nicht mit den aktuellen Zustandsinformationen befüllt wird, keine Eingaben entgegen
 nimmt oder auf diese nicht reagiert. Dies ist insbesondere dann ein Problem, wenn der
-Nutzer beispielsweise beabsichtigte, den Hauptprozess zu unterbrechen oder zu pausieren.
+Nutzer beispielsweise beabsichtigt, den Hauptprozess zu unterbrechen oder zu pausieren.
 Viele Applikationen befolgen diese Philosophie nicht, dementsprechend ist es nicht
 möglich, einen einmal gestarteten Prozess vor vollständiger Beendigung zu stoppen,
 ohne das ganze Programm vom Betriebssystem beenden zu lassen.
 
 Das Betriebssystem ist für die Zuteilung der Prozessorzeit an Kontrollflüsse
 zuständig, es existieren hierfür diverse Ansätze \cite{ArpaciDusseau14-Book}, 
-und alle Betriebssysteme implementieren sogenannte \glqq{}Scheduler\grqq{}.
+und die bekanntesten Betriebssysteme implementieren sogenannte \glqq{}Scheduler\grqq{}.
 Dem obigen Prinzip folgend, haben die graphischen Nutzeroberflächen normalerweise
-kritische Priorität bzw. \glqq{}Echtzeit\grqq{}-Anforderungen, das heisst, sie
+kritische Priorität bzw. \glqq{}Echtzeit\grqq{}-Anforderungen, das heißt, sie
 werden anderen Prozessen vorgezogen. Moderne Betriebssysteme 
 \cite{Stallings:2004:OS:993867} haben dennoch
 Fortschrittsgarantien für alle lauffähigen Prozesse, die mittels verschiedener
@@ -100,7 +100,7 @@ auch vorankommen, obwohl einige wichtiger sind als andere.
 
 Im Kontext des Testens von Software stellt dies eine Herausforderung dar,
 weil gewöhnliches \glqq{}Debugging\grqq{} die Verfolgung von Kontrollflüssen
-mithilfe von Breakpoints\footnote{url{https://en.wikipedia.org/wiki/Breakpoint}}
+mithilfe von Breakpoints\footnote{ url{ https://en.wikipedia.org/wiki/Breakpoint } }
 beinhaltet. Dieses Konzept fällt bei Abwesenheit eines monolithischen Programmflusses
 aber auseinander. Es besteht nur noch die Möglichkeit, innerhalb des gewünschten
 Unterprozesses auf hoffentlich korrekt empfangene Eingabesignale bzw. weitergeleitete
@@ -149,8 +149,8 @@ Bedienungsweise zu leiten.
 Die Korrektheit einer Oberfläche bezeichnet z.B. das Öffnen eines erwarteten
 Unterfensters oder die Ausführung der gewählten Funktion als Reaktion auf eine
 Nutzereingabe. Es wird nicht einfach nur verlangt, dass etwas passiert, es soll
-auch etwas sein, dass vom jeweiligen Schalter und dem Nutzungskontext abhängig ist.
-Wenn dieser Effekt ausserhalb der graphischen Oberfläche zu finden ist, z.B.
+auch etwas sein, das vom jeweiligen Schalter und dem Nutzungskontext abhängig ist.
+Wenn dieser Effekt außerhalb der graphischen Oberfläche zu finden ist, z.B.
 als Änderung einer Datei im Betriebssystem, muss der Test ebenfalls die Grenzen
 der getesteten Oberfläche verlassen und die gewünschte Änderung nachprüfen.
 
@@ -169,7 +169,7 @@ Programm unterstützen muss. Er nutzt die graphische Oberfläche, um Eingaben zu
 und stellt sicher, dass Schaltflächen die vom Nutzer erwarteten oder zumindest
 dokumentierte Verhaltensmuster aufweisen. Selbst wenn eine Oberfläche Probleme aufweist,
 werden diese häufig als akzeptabel eingestuft, wenn eine gewünschte Funktion
-bei Korrekter Bedienung ausführbar ist. Ein Beispiel für ein solches häufig nicht als kritisch 
+bei korrekter Bedienung ausführbar ist. Ein Beispiel für ein solches häufig nicht als kritisch 
 eingestuftes Problem ist das temporäre Nichtantworten einer Programmoberfläche
 aufgrund einer rechenintensiven internen Tätigkeit. Idealerweise ist eine
 graphische Oberfläche tatsächlich nur eine Oberfläche und gibt Instruktionen als
@@ -222,7 +222,7 @@ fehlerhaftem Verhalten.
 
 Entsprechende Tests gibt es auch für graphische Oberflächen, bei denen Code nicht zwangsläufig
 einen Antwortwert zurückliefert. So kann z.B. ein Test darin bestehen, eine Schaltfläche zu betätigen,
-und anschliessend zu prüfen, ob ein erwartetes Fenster geöffnet wurde. Hier wird die Problematik
+und anschließend zu prüfen, ob ein erwartetes Fenster geöffnet wurde. Hier wird die Problematik
 komplexer, da bei einem korrekt verkapselten Programm das Öffnen eines neuen Fensters asynchron
 und damit technisch gesehen zu einem nicht vorhersehbaren Zeitpunkt erfolgt. Für praktische Zwecke
 kann allerdings vorgegeben werden, dass für eine korrekte Eingabeverarbeitung die Öffnung dieses 
@@ -253,7 +253,7 @@ oder unerwarteten Reaktion geführt hat.
 
 Alle bisherigen Verfahren bezogen sich in irgendeiner Form auf menschliche Nutzung der
 Oberflächen. Es gibt auch vollautomatische Ansätze, die nicht erfordern, dass ein Mensch
-die korrekte Nutzung vorgibt. Diese nutzen meist Programmierschnittstellen aus,
+die korrekte Nutzung vorgibt. Diese nutzen meist Programmierschnittstellen,
 auf denen graphische Oberflächen aufbauen. Diese Schnittstellen bieten Gemeinsamkeiten
 über alle Programme hinweg, die zum vollautomatischen Testen verwendet werden können.
 Dazu zählen insbesondere normierte Schaltflächen und sonstige Eingabemöglichkeiten
@@ -279,14 +279,15 @@ Annahmen bezüglich des Programmzustands und der Eingaben ausgegangen wird.
 
 Und obwohl solch ein vollautomatischer Test idealerweise keinerlei Angaben
 über das zu testende Programm benötigt, sind in der Praxis doch Anpassungen
-naheliegend. So macht es wenig Sinn, wieder und wieder einen Knopf zu testen,
+naheliegend. So ist es wenig zweckdienlich, wieder und wieder ein- und 
+denselben Knopf zu testen,
 der das Programm beendet und damit auch den Test. Eine völlig zufällige
 Testanordnung würde zwar dennoch zwangsläufig irgendwann alle Möglichkeiten
 ausgeschöpft haben, aber dieses simple Eingeständnis verringert die
 Anzahl nötiger Testläufe erheblich.
 
-Weiterhin kann jede Anwendung Bedienelemente enthalten, dessen Betätigung
-den weiteren Test sinnlos macht -- als ein Beispiel sei eine Login-Maske genannt,
+Weiterhin kann jede Anwendung Bedienelemente enthalten, deren Betätigung
+den weiteren Test sinnlos macht -- als Beispiel sei eine Login-Maske genannt,
 in der falsche Eingaben schlicht zur Beendigung des Programms führen.
 Ein anderes Beispiel wären z.B. Schaltflächen wie
 \glqq{}Projekt schließen\grqq{}, \glqq{}Alles löschen\grqq{} oder auch 
@@ -337,11 +338,11 @@ durch automatisierte Wiederholung verglichen und geprüft. Dieselbe Serie von Ei
 bei Testdurchläufen eine identische Ausgabe zu diesem Soll hervorrufen, ansonsten
 wird ein Fehler im Programm vermutet. Dieser Fehler kann auch eine gewünschte Programmveränderung sein.
 
-Da allerdings hier ein Tester und nicht ein Entwickler die Tests erstellt und pflegt, ist dieses
+Da hier allerdings ein Tester und nicht ein Entwickler die Tests erstellt und pflegt, ist dieses
 Verfahren arbeitszeittechnisch wesentlich effizienter als vorherige Methoden. Ein Tester muss
-nicht die Innereien des Programms verstehen oder verstehen können. Er muss das Programm lediglich
+nicht die internen Abläufe bzw. Zustände des Programms verstehen oder verstehen können. Er muss das Programm lediglich
 bedienen können. Ebenso sind keine Programmierkenntnisse notwendig. Der Tester folgt sogenannten
-\glqq{}On-Screen\grqq{} Anweisungen, die Schritt für Schritt durch die korrekte Aufnahme einer
+\glqq{}On-Screen\grqq{}-Anweisungen, die Schritt für Schritt durch die korrekte Aufnahme einer
 Nutzungsabfolge für spätere automatische Wiedergabe leiten. Das Resultat ist ein typischer
 Regressionstest. Spätere Iterationen desselben Programms werden mit denselben Eingaben
 bedient, und es wird unterstellt, dass auch dieselben (korrekten) Ausgaben erfolgen.
@@ -362,7 +363,7 @@ und darüber hinaus mit Regressionstests zu überprüfen.
 \textbf{Maveryx} \footnote{\url{ http://www.maveryx.com/en/products/what-is-maveryx.html }} 
 ist ein weiteres Programm für die automatische Durchführung von Tests auf Nutzeroberflächen.
 Eine Besonderheit, mit der hier geworben wird, ist die Unnötigkeit der Aufnahme
-eines Testdurchlaufs bzw. einer Struktur der GUI für die Durchführung anschliessender
+eines Testdurchlaufs bzw. einer Struktur der GUI für die Durchführung anschließender
 Tests. Prinzipiell funktioniert Maveryx in drei Segmenten: Es gibt den sogenannten
 \glqq{}Finder\grqq{}, welcher eine GUI während der Laufzeit mithilfe der
 \glqq{}Java Accessibility Layer\grqq{} (hiermit sind vermutlich AWT, Swing, SWT etc. gemeint)
@@ -372,7 +373,7 @@ arbeiten zusammen, um zunächst mithilfe von Textsuche ein zu testendes Element 
 dem vom Finder erstellten XML-Baum zu finden, im Viewer darzustellen und mithilfe
 des Robots pseudo-menschliche Nutzereingaben zu tätigen.
 
-Anstelle die zu prüfenden Elemente also durch Nutzung und Aufnahme der Eingaben
+Anstatt die zu prüfenden Elemente also durch Nutzung und Aufnahme der Eingaben
 oder auch direkt programmatisch und hochspezifisch vorzugeben, würde ein Tester bei
 Maveryx den Finder über das zu testende Programm laufen lassen. Die resultierende
 XML-Datei würde dann begutachtet, um sich Testfälle anhand der Elementnamen bzw. sonstiger
@@ -409,7 +410,7 @@ sich die Frage, ob ohne einen zumindest simulierten Bildschirm ein vollständige
 Test einer graphischen Oberfläche machbar oder sinnvoll ist. Zur Computer
 Vision gibt es aber keine weiteren Informationen, und die Demonstrationsvideos
 zeigen auch nur manuell angestoßene Testreihen auf einem nutzergesteuerten Rechner.
-Auch scheint das Konzept einzelne Fenster spezifisch für einen Test zu instanzieren,
+Auch scheint das Konzept einzelne Fenster spezifisch für einen Test zu instanziieren,
 was dem Test einer vollständigen laufenden Applikation widersprechen würde. Dieses
 Verfahren ähnelt eher einem Unit-Test, wo eine einzelne Komponente abgeschnitten
 vom Rest des Programms gestartet und getestet wird.
