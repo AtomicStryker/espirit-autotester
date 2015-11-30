@@ -228,8 +228,8 @@ und damit technisch gesehen zu einem nicht vorhersehbaren Zeitpunkt erfolgt. Fü
 kann allerdings vorgegeben werden, dass für eine korrekte Eingabeverarbeitung die Öffnung dieses 
 Fensters innerhalb eines gewissen Zeitraums erfolgen muss.
 
-Solche Tests müssen ebenfalls von Entwicklern implementiert werden, was einen erheblichen und
-teuren Zeitaufwand bedeutet. Um dies zu optimieren, wurde ein neuer Ansatz erdacht: Anstatt
+Solche Tests müssen ebenfalls von Entwicklern implementiert werden, was einen erheblichen
+Zeitaufwand zusätzlich zur Entwicklung selbst bedeutet. Um dies zu optimieren, wurde ein neuer Ansatz erdacht: Anstatt
 in Codeform vorgeben zu müssen, was das erwartete Verhalten einer graphischen Oberfläche ist,
 wird ein naiver Testablauf durch einen Menschen bzw. Tester vom Computer aufgenommen. Diese Aufnahme der
 vorgenommenen Eingaben kann dann beliebig oft wieder abgespielt werden. Die Ausgaben bzw.
@@ -238,8 +238,8 @@ Durchlaufs mit identischen Eingaben verglichen werden. Dies sind sogenannte
 \glqq{}Regressionstests\grqq{} \cite{regression}. Damit lässt sich vor allem sicherstellen,
 dass bestehende Funktionalität einer Oberfläche durch spätere Änderungen nicht zerstört wird.
 
-Die Vorteile sind offensichtlich: Es ist kein teurer Entwickler beteiligt, lediglich ein
-erheblich günstigerer Tester, und ein einmal aufgenommener Testablauf kann ohne weitere
+Die Vorteile sind offensichtlich: Es ist kein Entwickler beteiligt, sondern ein
+darauf spezialisierter Tester, und ein einmal aufgenommener Testablauf kann ohne weitere
 menschliche Beteiligung beliebig oft vorgenommen werden. Ein Nachteil ist allerdings, dass
 nur die vom Tester aufgenommenen Aktionen getestet werden können, insbesondere können
 meist die Parameter oder die Testreihenfolge nachträglich nicht verändert werden. Auch
@@ -340,7 +340,8 @@ wird ein Fehler im Programm vermutet. Dieser Fehler kann auch eine gewünschte P
 
 Da hier allerdings ein Tester und nicht ein Entwickler die Tests erstellt und pflegt, ist dieses
 Verfahren arbeitszeittechnisch wesentlich effizienter als vorherige Methoden. Ein Tester muss
-nicht die internen Abläufe bzw. Zustände des Programms verstehen oder verstehen können. Er muss das Programm lediglich
+nicht die internen Abläufe bzw. Zustände des Programms bzw. des zu testenden Programmsegments 
+verstehen oder verstehen können. Er muss das Programm lediglich
 bedienen können. Ebenso sind keine Programmierkenntnisse notwendig. Der Tester folgt sogenannten
 \glqq{}On-Screen\grqq{}-Anweisungen, die Schritt für Schritt durch die korrekte Aufnahme einer
 Nutzungsabfolge für spätere automatische Wiedergabe leiten. Das Resultat ist ein typischer
@@ -393,12 +394,12 @@ die Elemente der zu testenden Nutzeroberfläche vom verantwortlichen Programmier
 für den Tester sinnvoll erscheinend benannt wurden. Wenn z.B. die Elemente
 einfach nummeriert wurden, oder von chinesischen oder indischen Subkontraktoren
 in ihren jeweiligen Sprachen sinnvoll benannt, könnte es schwierig werden,
-in der erstellten XML die zu testenden Elemente zu finden. Maveryx scheint
+in der erstellten XML-Datei die zu testenden Elemente zu finden. Maveryx scheint
 eine Vorgabe der zu prüfenden Objekte zur Laufzeit durch Anklicken oder
 Auswahl nicht anzubieten. Auch stellt sich die Frage, ob ein Tester ohne weiteres
 in der Lage ist, die von Maveryx verlangte Skriptsprache zur Testdefinition
 zu erlernen -- es handelt sich schließlich quasi um eine Programmiersprache.
-Wenn man einen Entwickler zur Bedienung benötigt, ist der Hauptvorteil
+Wenn man einen Entwickler zur Bedienung benötigt, ist einer der Hauptvorteile
 automatisierter Tests fraglich.
 
 Es wird weiterhin damit geworben, dass kein Bildschirm und keine Bildverarbeitung
