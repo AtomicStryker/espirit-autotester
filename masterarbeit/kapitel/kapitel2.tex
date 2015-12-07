@@ -118,6 +118,105 @@ getätigt wird, muss irgendwie erkannt werden können, dass eine Antwort zu eine
 beliebigen späteren Zeitpunkt kausal damit zusammenhängt.
 
 
+\section{Grundlagen: Black-Box, White-Box}
+
+
+Im Bereich der Softwaretests allgemein unterscheidet man zwischen
+sogenannten \glqq{}Black-Box\grqq{} und 
+\glqq{}White-Box\grqq{}-Ansätzen. Letzteres wird im
+deutschen manchmal auch Glasbox genannt. Der Begriff stammt
+aus dem Militär, eroberte feindliche Funkgeräte durften wegen eventueller
+Sprengfallen nicht geöffnet werden. Diese Fallen sollten sicherstellen,
+dass eventuelle Geheimnisse bezüglich des Kommunikationswegs wie
+z.B. eine Verschlüsselungsmethode nicht eingesehen werden konnten.
+Also ist eine \glqq{}Black-Box\grqq{} ein Konstrukt nicht einsehbaren
+Inhalts. In der Softwareentwicklung wird der Begriff genutzt,
+um Programme oder Bibliotheken zu bezeichnen, für die kein
+Quellcode vorliegt bzw. deren interne Funktionalität nicht einsehbar 
+ist\cite{bookblackbox}. Insbesondere im Fall der objektorientierten
+Programmierung ist dies ein schwerer Nachteil. Eine solche Black-Box
+kann nur mittels Ein- und Ausgaben mit der Umwelt bzw. der
+Testumgebung kommunizieren, und es kann dementsprechend
+schwierig werden, Fehler zu finden bzw. Korrektheit sicherzustellen.
+Insbesondere, wenn diese Ein- und Ausgaben nur in Form von Objektinstanzen
+geschehen soll, ist Einsicht in die Funktionsparameter bzw. eine sichtbare
+Programmschnittstelle zwingend erforderlich.
+
+Beim Black-Box-Test ist ein Hauptproblem, dass Fallunterscheidung
+zum Testen aller möglichen Eingabeklassen eigentlich voraussetzt,
+die möglichen Fälle zu kennen. Man würde im Quellcode nachlesen,
+welche Form einer Eingabe einen gewissen Codeblock ausführt bzw.
+einen bestimmten Kontrollfluss zur Folge hat, und einen Testfall
+mit genau dieser Eingabeform vorsehen -- z.B. einer ganzen Zahl, einer
+Zeichenkette bestimmter Länge, oder eine Serie von Bits in einem
+bestimmten Format. Im Fall der Black-Box existiert diese Information
+nicht, es gibt eine unbekannte Anzahl von Eingabeklassen. Folglich
+muss für einen umfassenden Test jede Form von zulässiger
+Eingabeklasse ausprobiert werden, und im Fall von Robustheitstests
+auch unzulässige Eingaben.
+
+Auch der Zustand einer solchen Black-Box kann nur über seine Ausgaben
+implizit überwacht werden. Ansätze wie der von Angluin\cite{angluin}
+haben zum Ziel, die wiederholbaren Zustände innerhalb einer Black-Box
+durch Kontrolle der Eingaben und Ausgaben abzubilden. Wenn auf eine
+identische Eingabe eine abweichende Antwort erfolgt, muss die Black-Box
+einen internen Zustand besitzen, der sich zwischen den Eingaben verändert hat.
+Diese Änderung muss durch die Eingaben eingetreten sein -- für die Zwecke
+des Black-Box-Tests existiert außer der Box und der Testumgebung nichts,
+die Umwelt ist isoliert. Ein Problem dieses Ansatzes ist, dass man nie
+sicher sein kann, ob eine Abfolge von immer derselben Eingabe oder
+eine bestimmte, sehr lange Kombination von Eingaben nicht irgendwann
+doch eine Zustandsänderung zur Folge hat. Auch ist es im Fall von
+Zeichenketten wenig praktikabel, jede mögliche Zeichenkette
+als Eingabe auszuprobieren. Die Zahl der Möglichkeiten ist viel zu hoch,
+als dass man jemals einen irgendwie sinnvollen Anteil prüfen könnte.
+
+Als Kompromiss werden häufig typische Eingabeklassen geraten und
+jeweils einer oder mehrere Vertreter getestet. So ist es beispielsweise 
+selten sinnvoll, die Zahlen von null bis einhundert auszuprobieren.
+Sinnvolle Vertreter wären beispielsweise null und eins wegen ihrer
+besonderen mathematischen Eigenschaften, eine beliebige einstellige
+Zahl über eins, sowie eine beliebige zweistellige Zahl und einhundert.
+Sollte keine besondere Funktionalität im Programm vorliegen, die
+gerade auf irgendwelche Zahlen des Intervalls von null bis hundert
+abzielt, sind damit alle üblicherweise zu erwartenden Eingabeklassen 
+abgedeckt. Eine solche Prüfung lässt sich durch zufällige Elemente
+bei der Auswahl der Eingaben und Wiederholung verbessern,
+es können mehr potentielle Kontrollflüsse getestet werden.
+Black-Box-Tests dienen häufig dazu, ein Programm oder eine
+Bibliothek auf eine bestimmte Spezifikation hin zu testen.
+Es gibt also vorgegebene Eingaben und erwartete Antworten.
+Gibt eine Black-Box für jede Eingabe die korrekte Antwort,
+gilt der Test als bestanden -- unabhängig davon, wie die
+Antwort intern implementiert wurde. Sekundäre Spezifikationen
+wie die Geschwindigkeit der Antwort könnten ebenfalls eine
+Rolle spielen.
+
+Im Gegensatz dazu steht der White-Box-Test\cite{bookwhitebox}.
+Hier liegt der Quellcode vor oder die Instruktionen können zumindest
+eingesehen werden (zum Beispiel mittels eines Dekompilierers).
+Ein Test ist also nicht auf die Schnittstellen angewiesen, sondern
+kann direkt auf die internen Funktionen des zu prüfenden
+Konstrukts zugreifen. Auch müssen Kontrollflüsse nicht geraten,
+rekonstruiert oder erahnt werden, sondern sind direkt einsehbar.
+Tests werden dementsprechend häufig so erstellt, dass jeder
+Codepfad bzw. Kontrollfluss des Programms zumindest ein Mal
+durchlaufen wird, oder dass jede Zeile Programmcode zumindest
+ein Mal ausgeführt wird. Es ist gewissermaßen die online-Variante
+einer statischen Analyse. Der Aufwand ist gegenüber Black-Box-Tests
+erheblich geringer. Mögliche Nachteile des White-Box-Tests gegenüber
+Black-Box sind zum Beispiel die Nichterfüllung der Spezifikation,
+wenn im Quellcode schlicht keine passende Implementation vorliegt,
+oder auch die Vermeidung von potentiell problematischen Eingaben.
+
+In der Praxis wird häufig eine Kombination von beiden Ansätzen
+genutzt -- Black-Box zum Prüfen einer erforderlichen Spezifikation
+mit einer ganzen Eingabefamilie und White-Box, um die Korrektheit
+einer Implementation sicherzustellen. Im Fall, wo kein Quellcode
+vorliegt, muss grundsätzlich ein Black-Box-Test eingesetzt werden.
+
+
+
 \section{Grundlagen: Unterschiede Testverfahren}\label{section:testingapproaches}
 
 
