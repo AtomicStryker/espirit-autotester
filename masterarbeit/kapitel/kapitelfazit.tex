@@ -33,7 +33,7 @@ der Eingabe, die vermutlich zu ihrem Erscheinen geführt hat, verknüpft,
 und ebenfalls systematisch auf Komponenten durchsucht und getestet.
 
 Es bestehen sowohl Möglichkeiten der manuellen Vorgabe von
-Ausnahmen im Testablauf als auch vollautomatische Routinen,
+Ausnahmen im Test\-ablauf als auch vollautomatische Routinen,
 die vorzeitige Beendigung des Tests verhindern und die
 Effizienz des Testablaufs erhöhen. Nach nur einigen wenigen iterativen
 Durchläufen mit menschlicher Beobachtung sollte es möglich sein, 
@@ -41,20 +41,26 @@ jede beliebige Java-Swing-Applikation mit dem Autotester vollständig
 prüfen zu lassen. Bei einem vorzeitigen Beenden muss lediglich die
 Logdatei auf die zuletzt getätigten Eingaben geprüft werden,
 um dann eine simple Ausnahmeregel in die Konfigurationsdatei zu schreiben.
+Es wäre auch denkbar, Befehle der Anwendungen an das
+Betriebssystem abzufangen und so eine Beendigung zu unterbinden
+oder automatisch fortzufahren. Da aber zumindest eins der
+geprüften Programme, FirstSpirit, über einen eigenen
+globalen Abfangmechanismus für Systembefehle verfügt und diese nur
+schlecht verschachtelt werden können, wurde davon abgesehen.
 
 Nach jedem erfolgreichem Durchlauf erstellt der Tester
 eine Textdatei im graphML-Format, welche mit den meisten
 verfügbaren Applikationen zur Graphvisualisierung in ein
 ansprechendes Format gebracht werden kann. So ist es möglich,
 ein Abbild der getesteten Oberfläche und aller ihrer Zustände 
-zu schaffen, welches gewissermaßen von einem blinden Maler stammt.
+zu schaffen, ohne die Struktur zu kennen oder aus dem Quellcode auszulesen.
 Bei Betrachtung dieses Graphen kann ein Mensch häufig
 ohne jegliche Kenntnis des Programms Annahmen über seinen Zweck
 und den Bedienungsablauf treffen.
 
 Der Autotester schafft es regelmäßig, ohne irgendeine Kenntnis des zu
 testenden Programms oder seiner Funktion alle Möglichkeiten
-der Eingabe auszuprobieren, und dabei manchmal Fehler durch unerwartete
+der Eingabe auszuprobieren und dabei manchmal Fehler durch unerwartete
 Eingaben im getesteten Programm auszulösen.
 Indem diese gefundenen Fehler dann behoben werden, erhöht sich die
 Softwarequalität des getesteten Programms. Das Ziel des Konzepts
@@ -66,7 +72,7 @@ künstlicher Intelligenz schlicht von Menschen vorgegeben werden müssen.
 \subsection{mögliche Erweiterungen}
 
 Die größte Einschränkung, wenn man sie denn als solche bezeichnen
-kann, ist die auf Java-Anwendungen, die die Swing-API verwenden.
+kann, ist die auf Java-Anwendungen, welche die Swing-API verwenden.
 Ein Java-Entwickler ist natürlich nicht gezwungen, diese zu verwenden,
 und es gibt beispielsweise mit SWT
 \footnote{ \url{ https://www.eclipse.org/swt/ }} zumindest eine 
@@ -103,7 +109,7 @@ tatsächlich der Mauszeiger zu diesen Koordinaten bewegt
 und betätigt werden (dies könnte durch Nebeneffekte seitens
 der Anwendung verhindert werden). Ebenso müsste der Computer
 versuchen, aus der Änderung eines Großteils des Bildes
-in Quadratischer Form auf das Auftreten eines Popups zu 
+in quadratischer Form auf das Auftreten eines Popups zu 
 schließen und entsprechend zu reagieren, und dies möglichst,
 ohne ein Popup mit der Anzeige eines gewünschten Bildes
 oder einer sonstigen Information innerhalb desselben

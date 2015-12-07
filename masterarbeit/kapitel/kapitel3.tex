@@ -514,15 +514,15 @@ wahrscheinlich sogar unmöglich machen.
 
 \subsection{Repräsentation der Programmzustände als Graph}
 
-Eine eigene Graphimplementation für das Projekt zu verfassen wäre
-außerhalb des Rahmens, daher wurde nach einem möglichst verbreitetem
+Eine eigene Graphimplementation für die Zustandsvisualisierung wäre
+außerhalb des Rahmens dieser Arbeit, daher wurde nach einem möglichst verbreitetem
 Datenstandard und passenden Bibliotheken gesucht. Die Wahl fiel auf
-die quelloffenen Projekte der Graphbibliothek \textbf{JGraphT} \footnote{\url{ http://http://jgrapht.org/ }} 
+die quelloffenen Projekte der Graphbibliothek \textbf{JGraphT} \footnote{\url{ http://jgrapht.org/ }} 
 sowie der Visualisierungsplattform \textbf{Gephi} \footnote{\url{ http://gephi.github.io/ }}.
 Das gewählte Datenformat ist \textbf{.graphml} \footnote{\url{ http://graphml.graphdrawing.org/specification.html }}.
-Es handelt sich hierbei um einfache Textdateien im \textbf{xml}-Format,
-welche auch menschlich noch lesbar und verständlich sind, und notfalls
-auch editiert oder korrigiert werden könnten. 
+Es handelt sich hierbei um einfache Textdateien im \textbf{XML}-Format,
+welche auch manuell noch lesbar und verständlich sind, und notfalls
+auch per Hand editiert oder korrigiert werden könnten. 
 
 Innerhalb des Testers erstellt JGraphT während des Testvorgangs 
 ein Datenmodell des Graphen der getesteten Applikation. Nach erfolgreichem
@@ -532,8 +532,9 @@ Diese Datei ist dann zwar vollständig und auch von Menschen lesbar,
 aber noch absolut undurchsichtig. Visualisierung ist notwendig,
 um die Informationen in eine verständliche Form zu bringen.
 Hierzu wird wahlweise Gephi verwendet. Es öffnet graphml-Dateien
-und erlaubt die automatische Neuanordnung eines Graphen auf dem
-Bildschirm, um maximale Ansehnlichkeit zu erzielen.
+und erlaubt die automatische Neuanordnung der Knoten 
+eines Graphen auf dem Bildschirm, um maximale Anschaulichkeit 
+bzw. Übersicht mit minimalen Kantenkreuzungen zu erzielen.
 
 Nach einigen Probeläufen erwies sich der in Gephi mitgelieferte 
 Yifan-Hu-Algorithmus \cite{hu2005efficient} als gut geeignet,
@@ -545,7 +546,7 @@ Diese relativ umfangreichen Zeichenketten erfordern für eine minimale
 Lesbarkeit noch manuelles Verschieben und Sortieren der Graphknoten.
 Ist dies aber erfolgt, erhält man aus dem Durchlauf eines blind testenden
 Programms aber tatsächlich eine deckende Abbildung der getesteten
-Applikation bzw. Ihrer möglichen Fensterdarstellungen. Zu sehen
+Applikation bzw. ihrer möglichen Fensterdarstellungen. Zu sehen
 ist ein solches finales Resultat auf Seite \pageref{fig:model_freespirit_06.10.2015}.
 
 Einige Anmerkungen zu diesen Bildern: Der Knotensortieralgorithmus
@@ -571,7 +572,7 @@ Das Ziel eines vollautomatischen Tests kann leider nur annähernd erreicht werde
 wenn gleichzeitig andere Anforderungen wie \glqq{}Die Testzeit ist nicht unendlich lang\grqq{}
 in Betracht gezogen werden müssen. Um auch die gewünschte graphische Oberfläche zu
 testen und einige Fallstricke zu vermeiden, bietet der Autotester eine Konfigurationsdatei
-nach dem Java \glqq{}Properties\grqq{} Standard, in der einige Angaben gemacht werden können bzw. müssen:
+nach dem Java-\glqq{}Properties\grqq{}-Standard, in der einige Angaben gemacht werden können bzw. müssen:
 
 \begin{itemize}
   \item \textsc{targetGUISimpleClassName} der Klassenname der zu testenden Oberfläche
@@ -591,9 +592,9 @@ Die gewählte Zeit vor dem Testbeginn sind zehn Sekunden. FirstSpirit ist eine s
 vernetzte Applikation. Als unantastbare Schaltflächen definiert wurden der globale Knopf
 zum Beenden von FirstSpirit, ein Knopf, der zum Start eines externen Internetbrowsers führt
 (nicht Bestandteil des Tests), der Knopf, der in Standard-Dateiauswahlfenstern das Erstellen eines neuen
-Ordners ermöglicht (wäre als Standard-Ausnahme vermutlich sogar sinnvoller), sowie drei
-Debug-Schaltflächen, die die Logdatei des Testablaufs mit den Ausgaben des Programms selbst
-überschwemmen können.
+Ordners ermöglicht (dies wäre als Standard-Ausnahme vermutlich sogar sinnvoller), sowie drei
+Debug-Schaltflächen, welche bei Betätigung die Logdatei des Testablaufs mit den 
+Ausgaben des Programms selbst überschwemmen.
 
 Als einziges ignoriertes Fenster wurde die \glqq{}FirstSpirit Zwischenablage\grqq{} definiert. Durch eine
 Eigenart in der Implementation sind die resultierenden Fenster technisch gesehen immer neuartige
@@ -619,7 +620,7 @@ ausgelesen werden. Zusätzlich bieten sich verschiedene Parameter bzw. Argumente
 für die JVM an, die z.B. zusätzliche Speicherallokation oder einen anderen
 Algorithmus für den Garbage Collector erlauben. Auch ist es bei gewissen Anwendungen,
 darunter FirstSpirit, möglich, direkt im Programmstart Parameter wie Login-Daten
-oder Programmports zu spezifizieren, um eine Testblockierende Login-Maske
+oder Programmports zu spezifizieren, um eine testblockierende Login-Maske
 zu überspringen.
 
 Alternativ hätte ein System vorgesehen werden können, welches gewisse Eingaben
@@ -634,7 +635,7 @@ wird vermutlich quelloffen verfügbar sein, und eine Implementation
 dieser Idee kann von interessierten Parteien umgesetzt werden.
 
 
-\subsection{\glqq{}minimale\grqq{} Angaben in der Praxis}
+\subsection{\glqq{}Minimale\grqq{} Angaben in der Praxis}
 
 In der weitergehenden Nutzung des Autotesters mit verschiedenen
 Programmen wurde klar, dass eine gewisse Anpassungs- oder
@@ -650,9 +651,9 @@ eine maximale Prüftiefe oder etwas Ähnliches zu erweitern.
 
 Auch müssen eventuelle Abstürze des getesteten Programms
 abgefangen oder verhindert werden. Unerwartetes Beenden
-der Abwendung macht die gewonnenen Erkenntnisse abseits
+der Anwendung macht die gewonnenen Erkenntnisse abseits
 der Konsole unbrauchbar, da eigentlich auf einen
-vollständigen Graphen sowie eine Logdateie hin gearbeitet wurde.
+vollständigen Graphen sowie eine Logdatei hingearbeitet wurde.
 Eine Methodik, die auch Logdateien von unerwartet beendeten
 Durchläufen sichert, wäre sinnvoll. In der Praxis läuft
 die Nutzung der Autotesters nun so ab, dass ein Entwickler
@@ -661,7 +662,7 @@ sowie das Anwendungsfenster der zu testenden Applikation
 angibt. Der Autotester leistet hierbei Unterstützung, er
 gibt die für ihn sichtbaren Anwendungsfenster an. Anschließend
 lässt der Entwickler den Autotester laufen, bis sich die Anwendung
-selbst beendet oder unerwartet beendet wird, liest die Logdatei
+selbst beendet oder unerwartet beendet wird, liest die Logdatei,
 um den Grund bzw. die ausschlaggebende Eingabe zu ermitteln,
 und setzt evtl. ein Fenster oder eine Komponente auf die
 Blacklist in der Konfigurationsdatei. Er passt gleichzeitig
@@ -670,8 +671,8 @@ Verarbeitungsgeschwindigkeit der Anwendung auf dem jeweiligen
 Computer an. Je nach Anwendung sind hier nun viele oder
 sehr wenige Angaben nötig, um konsistent volle Durchläufe
 zu ermöglichen. FirstSpirit hat neun Einträge
-in seiner Konfigurationsdatei, jEdit und yEd haben beide
+in seiner Konfigurationsdatei, jEdit und yEd haben jeweils
 acht. Tendenziell sind allerdings bei yEd die meisten Eingaben
 und Fenster vom Test ausgeschlossen, da zwischenzeitlich
-partielle Angaben für den Ausschluß implementiert und auch
+partielle Angaben für den Ausschluss implementiert und auch
 direkt genutzt wurden.

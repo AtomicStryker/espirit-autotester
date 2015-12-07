@@ -25,8 +25,9 @@ Wie in den Graphdarstellungen auf Seiten \pageref{fig:model_firstspirit_notext} 
 FirstSpirit etwa 34 einzigartige Fenster bzw. Zustände. Sie gehen fast alle vom
 Hauptfenster des Programms bzw. dem Zustand zu Beginn des Tests aus,
 nur einige wenige sind dahingegen tiefer abzweigend. Die Zahl einer im
-Laufe eines vollen Durchgangs betätigter Eingabeelemente liegt im Vergleich bei
-über 800. Dies legt nahe, dass umfangreiche interne Zustandsänderungen
+Laufe eines vollen Durchgangs betätigten Eingabeelemente liegt im Vergleich bei
+über 800. Diese im Vergleich zur Zahl getesteter Fenster relativ geringe 
+Menge legt nahe, dass umfangreiche interne Zustandsänderungen
 möglich sind, die nicht direkt in von außen sichtbaren geänderten
 Programmzuständen resultieren. Oder auch, dass eine Menge Eingabeelemente
 existieren oder als solche erkannt wurden, deren Betätigung kein messbares
@@ -48,10 +49,11 @@ ist das von der e-Spirit AG genutzte Beispielprojekt \glqq{}Mithras\grqq{}
 erheblich beschädigt. Zufällige Betätigung diverser Löschbefehle hat
 Elemente aus dem Projekt entfernt bzw. Verknüpfungen gelöscht, die für
 eine korrekte Funktion spezifischer Bestandteile nötig wären. Obwohl
-dies natürlich Auswirkungen auf das Testverfahren hat, zeigt sich doch,
-dass dennoch in etwa dieselbe Anzahl von Eingabeelementen getestet wird,
-die graphische Oberfläche also nicht zwangsläufig auf ein korrekt funktionierendes
-geladenes Projekt angewiesen ist, um alle möglichen Eingaben auszuprobieren.
+dies natürlich Auswirkungen auf das Testverfahren hat, zeigte sich im 
+Verlauf der Testreihen, dass auch im derart beschädigten Projekt 
+dennoch in etwa dieselbe Anzahl von Eingabeelementen getestet wird.
+Die graphische Oberfläche ist also nicht zwangsläufig auf ein korrekt funktionierendes
+geladenes Projekt angewiesen, um alle möglichen Eingaben auszuprobieren.
 
 In einer Produktivumgebung würde der Autotester folgendermaßen integriert:
 Im Gegensatz zu Unit-Tests mit JUnit können keine festen Maßstäbe angelegt
@@ -70,7 +72,7 @@ die Dateien des Mithras-Projekts.
 
 Die Logdateien und Ergebnis-Graphen jeder Instanz würden dann wieder zentral
 gesammelt und könnten dann auf Gemeinsamkeiten und Abweichungen untersucht
-werden. Instanzen, die nicht korrekt beendeten, sind natürlich von besonderem
+werden. Instanzen die den Test nicht korrekt beenden sind natürlich von besonderem
 Interesse. FirstSpirit hat eine eigene Schnittstelle, um Fehlerberichte von
 aufgetretenen Ausnahmen weiterzureichen. Diese Berichte sowie in den Logdateien
 erwähnte Fehlermeldungen könnten dann von Entwicklern genutzt werden, um
@@ -212,14 +214,16 @@ ignorierten Komponenten komplett frei zu lassen. Dies wurde implementiert.
 Ebenso fiel auf, dass zwar Zustandsänderungen in Form von sich öffnenden Fenstern
 korrekt behandelt wurden, jEdit aber den Zustand des Hauptfensters selbst
 ändern kann -- dies würde in FirstSpirit auch passieren, wenn der Tester in der
-Lage wäre, das Projekt zu wechseln. (Bei einer unendlich langen Testreihe
-wird er dies irgendwann hinbekommen, aber so viel Zeit haben wir nicht)
+Lage wäre, das Projekt zu wechseln. Bei einer unendlich langen Testreihe
+wird dies aufgrund zufälliger Eingaben irgendwann eintreten, 
+aber ein zielstrebigeres Vorgehen erscheint sinnvoller.
 Der Tester wurde mit Hinblick auf mögliche interne Zustandsänderungen
 des aktuell getesteten Fensters erweitert und nimmt dies nun korrekt in
 das Modell auf.
 
 Zu sehen ist dies z.B. im Modell von jEdit[\ref{fig:model_jedit}]
-auf Seite \pageref{fig:model_jedit} oder im textfreien Fall
+auf Seite \pageref{fig:model_jedit} oder noch besser in der Darstellung
+desselben Graphen ohne die Zustandsbezeichnungen
 [\ref{fig:model_jedit_notext}] auf Seite \pageref{fig:model_jedit_notext}.
 Man beachte den sichtbaren Unterschied zu den Modellen von FirstSpirit:
 Es existieren gewissermaßen zwei zentrale Zustände anstatt nur einem.
@@ -227,15 +231,16 @@ Der zweite Zustand entsteht, weil ein Text in das Editorfeld eingegeben
 wurde, wodurch das aktuell geöffnete Dokument in den
 \glqq{}[geändert]\grqq{}-Zustand wechselt. Da dieser Zustand
 für das Programm selbst vermutlich praktisch überhaupt keine
-interne Änderung darstellt, könnte man sie auch als Einen 
-gemeinsamen Fall ansehen,
-wodurch jEdit eine FirstSpirit stark ähnelnde sternförmige Struktur
-aufweisen würde. Dies ist aber aufgrund der baumförmigen
+interne Änderung darstellt, könnte man sie auch als einen 
+gemeinsamen Fall ansehen, wodurch der auf jEdit erstellte 
+Zustandsgraph eine sternförmige Struktur
+aufweisen würde, dem Zustandsgraphen von FirstSpirit ähnelnd.
+Dies ist aber aufgrund der baumförmigen
 Architektur von Java-Swing und objektorientierter Programmierung
-im Allgemeinen, und graphischen Nutzeroberflächen im Besonderen
+im Allgemeinen, sowie graphischen Nutzeroberflächen im Besonderen
 auch nicht anders zu erwarten. Bei dieser Gelegenheit wurde
 der stärkegewichtete 
-Fruchterman Reingold Algorithmus\cite{SPE:SPE4380211102}
+Fruchterman-Reingold-Algorithmus\cite{SPE:SPE4380211102}
 als Alternative zum bisher verwendeten Yifan Hu\cite{hu2005efficient}
 entdeckt. Im Vergleich produziert dieser weniger saubere Trennung
 der Knoten, dafür aber eine eckigere Anordnung, die den 
@@ -260,9 +265,9 @@ Zustände. Es spricht für die Swing-API, dass keine
 zusätzliche Erweiterung oder Anpassung der erkundenden
 oder Eingaben vornehmenden Algorithmen notwendig wurde.
 Eine Ausnahme wurde für die verschiedenen Farbeinstellfelder
-des Texteditors gesetzt - jeden einzelnen Knopf in der Farbpallette
+des Texteditors gesetzt -- jeden einzelnen Knopf in der Farbpallette
 auszuprobieren verlängerte den Test erheblich (200 Knöpfe),
-und aufgrund der Menüanordnung wurden mehrere Farbpalletten
+und aufgrund der Menüanordnung wurden mehrere Farbpaletten
 als separate Zustände aufgefasst. Zwar ist jEdit im Vergleich
 zu FirstSpirit wesentlich reaktionsfreudiger -- so kann eine
 Pause zwischen Eingaben von 500ms, gerade ein Drittel
@@ -273,8 +278,10 @@ sind dennoch zu vermeiden.
 
 \subsection{Beispiele für gefundene Probleme jEdit}
 
-Als primärer Texteditor hat jEdit vermutlich robustere Textverarbeitung,
-zumindest verglichen mit den anderen Testkandidaten. In der Praxis
+Als ein Programm primär zur Textbearbeitung vermutet man in jEdit 
+robustere Behandlung von Zeichenketten,
+zumindest verglichen mit den anderen Testkandidaten, und daraus
+folgend weniger potentielle Angriffsfläche für den Autotester. In der Praxis
 hat die Applikation ein der FirstSpirit-Ausnahmebehandlung ähnelndes
 Verfahren, welches grundsätzlich jede Ausnahme abfängt und mit einem
 Fehlerschirm quittiert, anstatt einen Absturz des Programms zuzulassen.
@@ -362,21 +369,22 @@ kürzere Zeichenketten verglichen werden müssen.
 
 Für den Autotester hat Verschleierung keinerlei Bedeutung, da Aufrufe
 an die Swing-API (oder Systemaufrufe oder Aufrufe an nicht verschleierte 
-Bibliotheken) nicht versteckt werden können. Oder: So lange ein Programm
-lauffähig ist, ist es maschinell auch lesbar. Die zur Identifikation von Komponenten
-benutzten Informationen wie Fenstertitel lassen sich ebenfalls nicht verschleiern,
-ohne den Nutzen der Anwendung zu zerstören. Was dem Autotester eher
+Bibliotheken) nicht versteckt werden können. Oder: Ist ein Programm
+lauffähig, ist es maschinell auch lesbar. Die zur Identifikation von Komponenten
+benutzten Informationen wie Fenstertitel lassen sich ebenfalls kaum verschleiern,
+ohne den Nutzen der Anwendung negativ zu beeinträchtigen. Was dem Autotester eher
 zu schaffen macht, ist die erhebliche Komplexität des Programms und
 insbesondere auch die vielen Beispielprojekte, die über Schaltflächen
 zugänglich sind. Seiner Natur entsprechend, probiert der Tester diese
-natürlich alle aus, was in Änderungen des Hauptfensters resultiert, was
-weitere Tests nach sich zieht etc. Betrachtet man die visualisierten
+natürlich alle aus. Dies resultiert in Änderungen des Hauptfensters,
+welche widerrum weitere Tests nach sich ziehen und so weiter. 
+Betrachtet man die visualisierten
 Ausgaben des Zustandsgraphen \ref{fig:screenshot_yed_yh} und 
 \ref{fig:screenshot_yed_rf}  auf Seiten \pageref{fig:screenshot_yed_yh} 
 und \pageref{fig:screenshot_yed_rf}, sieht man den Unterschied zu vorherigen
 Anwendungen sofort. Der Graph erscheint verteilt, ohne klares Zentrum
 oder Ursprungspunkt. Dies liegt an den Beispielprojekten, die praktisch
-eigene Mini-Ursprungspunkte darstellen. Daraus folgen fast 1700
+eigene Mini-Ursprungspunkte darstellen. Daraus folgen fast 1.700
 Eingabeelemente und 74 Fenster, die vom Autotester durchsucht
 bzw. ausprobiert werden mussten. Erschwerend kam noch hinzu,
 dass eine Sprachumschaltung enthalten ist, welche die Metainformationen
@@ -431,7 +439,9 @@ folgende Fehler \glqq{}OutOfMemoryError: Java heap space\grqq{}
 deutet auf einen Programmierfehler in yEd hin, der zu einer Endlossschleife
 bis hin zum Absturz der Java Virtual Machine führt. Die Applikation \glqq{}hängt\grqq{}, bis
 dieser Absturz erfolgt. Leider verfügt die Logdatei des Autotesters nicht über einen
-detaillierten Kontext (woher auch), aber dies stellt einen schweren Fehler in yEd
+detaillierten Kontext bzw. müsste dieser spezifische Zustand für eine
+Reproduktion des Fehlers vom Programmstart aus Eingabe für Eingabe nachgestellt werden, 
+aber diese Ausnahme stellt einen schweren Fehler in yEd
 dar und sollte baldmöglichst behoben werden.
 
 \begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme yEd durch Schaltfläche \glqq{}Knotenüberlappungen auflösen\grqq{}}]
@@ -468,7 +478,7 @@ nach dem die Abwesenheit von Fehlern nicht bewiesen werden kann,
 zielt der Autotester in eine andere Richtung. Es wird versucht, so viele
 unerwartete Situationen und resultierende Fehler zu erzeugen, wie
 irgendwie möglich. Man kann ihn also als ein Komplement bzw. eine Addition
-zu klassischen Tests verstehen bzw. Einsetzen.
+zu klassischen Tests verstehen bzw. einsetzen.
 
 Ein Durchlauf des Autotesters ist verglichen mit Unit Tests und den
 meisten Regressionstests eher langsam. Ein vollständiger Durchlauf
@@ -479,7 +489,7 @@ Man bedenke allerdings: Derselbe Test durch einen Menschen würde
 noch erheblich länger dauern und die üblichen menschlichen Fehlerquellen
 beinhalten, die das Ergebnis zusätzlich beeinflussen. Auch handelt es
 sich bei der Entwicklerversion von FirstSpirit um ein massives
-Konstrukt mit Serverbedingt behäbigen Reaktionszeiten und gewaltigem
+Konstrukt mit serverbedingt behäbigen Reaktionszeiten und gewaltigem
 Funktionsumfang, also vielen (beinahe eintausend) zu testenden Elementen.
 
 Auch wurden im Verlauf dieser Arbeit nur relativ alte und bewährte
