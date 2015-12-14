@@ -281,7 +281,7 @@ public class CrawlerTester {
 					logger.log(Level.FINE, String.format("paused thread %s for popup handling\n", peek));
 					if (!peek.componentListToTest.isEmpty()) {
 						modelWriter.logState(popup);
-						modelWriter.logTransition(peek.rootWindow, peek.componentListToTest.get(Math.min(peek.indexCurrentComponentTested, peek.componentListToTest.size())), popup);
+						modelWriter.logTransition(peek.rootWindow, peek.componentListToTest.get(Math.min(peek.indexCurrentComponentTested, peek.componentListToTest.size()-1)), popup);
 					} else {
 						logger.log(Level.WARNING, String.format("paused thread %s for popup handling, but did not have any components in there! immaculate transition?!\n", peek));
 					}
