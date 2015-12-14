@@ -15,6 +15,8 @@ Als zweite Applikation wurde der beliebte Texteditor \textbf{jEdit}
 \footnote{\url{ http://www.jedit.org/ }} gewählt. Die dritte ist
 die Java-Graphvisualisierungssuite \textbf{yEd}
 \footnote{\url{ http://www.yworks.com/products/yed }}.
+Als viertes Testsubjekt dient das \glqq{}Mind-Mapping\grqq{}-Tool \textbf{FreeMind}
+\footnote{\url{ http://freemind.sourceforge.net/wiki/index.php/Main_Page }}.
 
 
 
@@ -461,6 +463,96 @@ at java.lang.Thread.run(Thread.java:745)
 \end{lstlisting}
 
 
+\section{Resultate FreeMind}\label{section:testresultsfreemind}
+
+Bei FreeMind handelt es sich um ein Werkzeug zur Erstellung
+sogenannter \glqq{}Mind Maps\grqq{}\cite{3478717310}, graphartiger
+Strukturen mit Glyphen und Beschriftungen zur Visualisierung
+von abstrakten Konzepten oder Gedankengängen. Die Bedienung ähnelt
+stark der eines Zeichenprogramms oder auch eines Graphvisualisierers wie
+yEd.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/screenshot_freemind.png}
+	\caption{Screenshot FreeMind, man beachte die vier Instanztabs}
+	\label{fig:screenshot_freemind}
+\end{figure}
+
+
+Mit einer Laufzeit von 50 Minuten, 3877 betätigten Elementen,
+und 87 erkannten Zuständen ist FreeMind mit Abstand der umfangreichste
+durchgeführte Test. Zum Teil ist diese Zahl auf das extrem umfangreiche
+Konfigurationsmenü mit 650 Eingabeelementen zurückzuführen,
+hinzu kommt die gleichzeitige Bearbeitung mehrerer Projekte in Tabs,
+welche für den Autotester jeweils neue Zustände darstellen -- separate Konfiguration
+für jeden einzelnen miteingeschlossen.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/model_freemind_notext.png}
+	\caption{mit Gephi und dem Yifan Hu Algorithmus\cite{hu2005efficient}
+    visualierte Graphausgabe des Autotesters über FreeMind, hoher Zoomfaktor, keine Beschriftungen.}
+	\label{fig:screenshot_freemind}
+\end{figure}
+
+
+\subsection{Beispiele für gefundene Probleme FreeMind}
+
+Die Eingabe eines HTML-Codeblock in das Suchfenster \glqq{}Search and Replace\grqq{}
+lässt FreeMind abstürzen:
+%\begin{lstlisting}<a href="\xE2\x80\x85javascript:javascript:alert(1)" id="fuzzelement1">test</a>\end{lstlisting}
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme FreeMind durch HTML-Suchbegriff}]
+java.lang.StackOverflowError
+at java.security.AccessController.doPrivileged(Native Method)
+at java.security.ProtectionDomain$1.doIntersectionPrivilege(...)
+at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+at java.awt.EventDispatchThread.pumpOneEventForFilters(...)
+[...]
+at java.awt.WaitDispatchSupport$4.run(...)
+[...]
+at javax.swing.JOptionPane.showMessageDialog(...)
+at de.calcom.cclib.text.FindReplaceDialog.message
+(FindReplaceDialog.java:816)
+\end{lstlisting}
+
+Scheinbar begibt sich das Programm bei der Verarbeitung dieser und anderer
+Zeichenketten in eine Endlossschleife, die vom Programm selbst
+nicht erkannt oder abgefangen wird. Für einen
+vollständigen Test wurde in Folge dieser Fehlermeldung
+und insbesondere des folgenden totalen Absturzes der FreeMind-Applikation
+das Suchfenster von weiteren Tests ausgeschlossen.
+
+Dies stellt einen schweren Fehler dar -- ein Suchbegriff sollte,
+wenn nicht alle Begriffe zulässig sind, vor Verarbeitung auf
+Validität geprüft werden. Außerdem sollte der Suchvorgang
+selbst (bzw. grundsätzlich jede I/O Aktivität) mit Ausnahmebehandlung
+abgesichert werden. Dies ist hier nicht der Fall. Die Anwendung
+hängt sich unwiderruflich auf.
+
+
+Die Eingabe einer nicht-Unicode-Zeichenkette in das allgemeine
+Suchfenster \glqq{}Suchen...\grqq{} führt ebenso zu einem
+Anhalten der gesamten Applikation. Dieses Suchfenster wurde daraufhin
+ebenfalls vom Test ausgeschlossen. Solch iteratives Vorgehen ist
+nötig, um trotz unsicherer Applikationen bzw. unbehandelter Ausnahmen 
+ein vollständiges Modell zu erhalten.
+
+Beim Testvorgang fiel weiterhin negativ auf, dass FreeMind das Öffnen gleichartiger
+Fenster nicht unterbindet. So ist es möglich, eine beliebige Anzahl von
+\glqq{}Speichern Unter...\grqq{} Dialogen gleichzeitig zu öffnen. Es wäre besser, bei einem bereits
+offenen Dialog das Öffnen von weiteren zu verhindern. Dies zieht sich durch
+diverse Fensterarten, die gemeinsam geöffnet werden können und dann
+unklickbare \glqq{}Stapel\grqq{} bilden. Insbesondere kritisch sind
+hierbei Tastenbelegungen -- es können gleichzeitig beliebig viele
+Auswahlfenster für eine Tastenbelegung geöffnet werden, wobei das
+Fenster selbst keine Informationen mehr darüber enthält, welche Funktion
+durch einen Tastendruck belegt werden soll.
+
+
 
 \section{Vergleich mit klassischen Tests}\label{section:testcomparisonclassic}
 
@@ -472,6 +564,8 @@ Informationen über ein Programm bzw. das gewünschte Verhalten notwendig.
 Einem vollautomatischen Ansatz stehen diese Informationen schlicht nicht
 zur Verfügung. Das hier vorgestellte Konzept ist auch nicht als Ersatz 
 klassischer Tests gedacht oder in irgendeiner Form äquivalent.
+Eher denkbar wäre ein komplementärer Einsatz, welcher klassische
+Testmethodiken ergänzt.
 
 Getreu dem Zitat von Dijkstra \footnote{ACM Turing Lecture 1972},
 nach dem die Abwesenheit von Fehlern nicht bewiesen werden kann,
