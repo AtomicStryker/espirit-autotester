@@ -113,4 +113,19 @@ in quadratischer Form auf das Auftreten eines Popups zu
 schließen und entsprechend zu reagieren, und dies möglichst,
 ohne ein Popup mit der Anzeige eines gewünschten Bildes
 oder einer sonstigen Information innerhalb desselben
-Fensters zu verwechseln.
+Fensters zu verwechseln. Auch ist die Zustandsverfolgung
+ohne Einblick in die Datenebene des Programms erheblich
+komplexer, schließlich ist jede Änderung der
+Nutzeroberfläche eigentlich ein neuer Zustand,
+dementsprechend wäre der aktuelle Ansatz völlig
+unzureichend, da die Zahl der resultierenden
+aufzunehmenden Zustände jeden Rahmen sprengen
+würde. Man müsste dann Alternativen, die auf anderen
+Informationen beruhen würden, in Betracht ziehen.
+Ein Beispiel wäre, die tatsächlichen Änderungen
+seitens des Programms im Dateisystem zu verfolgen
+-- dies stellt dass allerdings wieder eigene
+Probleme, da viele Applikationen mit
+Dateisystemoperationen warten, bis eine
+bestimmte Eingabe wie das Betätigen
+eines Speicherknopfes erfolgt.

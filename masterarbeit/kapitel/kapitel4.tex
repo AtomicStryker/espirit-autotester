@@ -165,6 +165,11 @@ aus. Anstatt diese Datei vorher auf Existenz zu überprüfen, versucht FreeSpiri
 die Datei zu öffnen, versagt, und erzeugt diese Ausnahme. Es wäre besser, eine
 Eingabe zunächst auf Existenz zu prüfen.
 
+Bei einem Einsatz des Autotesters in der Toolchain
+der FirstSpirit-Entwickler würden diese
+Fehlermeldungen über die integrierte Fehlerberichterstattung
+an das Bugtracking-Werkzeug weitergeleitet.
+
 
 \section{Resultate jEdit}\label{section:testresultsjedit}
 
@@ -444,7 +449,8 @@ dieser Absturz erfolgt. Leider verfügt die Logdatei des Autotesters nicht über
 detaillierten Kontext bzw. müsste dieser spezifische Zustand für eine
 Reproduktion des Fehlers vom Programmstart aus Eingabe für Eingabe nachgestellt werden, 
 aber diese Ausnahme stellt einen schweren Fehler in yEd
-dar und sollte baldmöglichst behoben werden.
+dar und sollte baldmöglichst behoben werden. Der Entwickler wurde
+mit diesen Informationen kontaktiert.
 
 \begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme yEd durch Schaltfläche \glqq{}Knotenüberlappungen auflösen\grqq{}}]
 espirit.mpoloczek.CrawlerTester pseudoClickButton
@@ -531,7 +537,8 @@ wenn nicht alle Begriffe zulässig sind, vor Verarbeitung auf
 Validität geprüft werden. Außerdem sollte der Suchvorgang
 selbst (bzw. grundsätzlich jede I/O Aktivität) mit Ausnahmebehandlung
 abgesichert werden. Dies ist hier nicht der Fall. Die Anwendung
-hängt sich unwiderruflich auf.
+hängt sich unwiderruflich auf. Auch hier wurde der Entwickler
+mit diesen Informationen kontaktiert.
 
 
 Die Eingabe einer nicht-Unicode-Zeichenkette in das allgemeine
