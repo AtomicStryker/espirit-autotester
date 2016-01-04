@@ -62,7 +62,7 @@ public class Config {
 		modelOutputFolder = properties.getProperty("modelOutputFolder");
 
 		final String str = properties.getProperty("blackListedAbstractButtons", "");
-		if (str != null) {
+		if (str != null && !str.isEmpty()) {
 			final String[] entries = str.split("(?<!\\\\),");
 			blackListedAbstractButtons = new BlackListedAbstractButton[entries.length];
 			for (int i = 0; i < entries.length; i++) {
