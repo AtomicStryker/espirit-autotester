@@ -17,6 +17,8 @@ die Java-Graphvisualisierungssuite \textbf{yEd}
 \footnote{\url{ http://www.yworks.com/products/yed }}.
 Als viertes Testsubjekt dient das \glqq{}Mind-Mapping\grqq{}-Tool \textbf{FreeMind}
 \footnote{\url{ http://freemind.sourceforge.net/wiki/index.php/Main_Page }}.
+Das letzte Programm ist der Audioverwalter und -player \textbf{Jajuk}
+\footnote{\url{ http://www.jajuk.info/ }}.
 
 
 
@@ -129,7 +131,7 @@ weiterleitet. Dennoch gibt es verschiedene Situationen, in denen Ausnahmen erzeu
 und Funktionen unterbrochen werden, die vermutlich besser behandelt werden könnten.
 Ein solches Beispiel lautet wie folgt:
 
-\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme bei Eingabe in Suchfeld}]
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme FirstSpirit bei Eingabe in Suchfeld}]
 CreateStoreElementDialog: [Bitte waehlen Sie eine Vorlage aus]
 espirit.mpoloczek.CrawlerTester pseudoClickButton
 about to pseudo click component FsTextField: []
@@ -150,7 +152,7 @@ anstatt jede zuzulassen bzw. eine Kompilation mit jeder Eingabe zu versuchen.
 
 Ein weiteres Beispiel, diesmal bei einem Datei-Auswahldialog:
 
-\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme bei ungültiger Dateiangabe}]
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme FirstSpirit bei ungültiger Dateiangabe}]
 espirit.mpoloczek.CrawlerTester pseudoClickButton
 about to pseudo click component JButton:
 [Oeffnen|JFileChooser.ApproveButton|Ausgewaehlte Datei oeffnen]
@@ -296,7 +298,7 @@ Fehlerschirm quittiert, anstatt einen Absturz des Programms zuzulassen.
 Dennoch treten noch unbehandelte Ausnahmen auf, wie z.B. die
 folgende:
 
-\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme bei Texteingabe}]
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme jEdit bei Texteingabe}]
 about to pseudo click 
 component EnhancedMenuItem: [Alle ersetzen|null|null]
 [...] Parse error at line 3, column 12.  Encountered: .0
@@ -416,7 +418,7 @@ und sogar zumindest ein kritisches Problem aufzudecken.
 
 Als erstes Beispiel diene der schlichte Fall unerwarteter Zeichenketten:
 
-\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme bei Eingabe einer Nicht-Zahl}]
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme yEd bei Eingabe einer Nicht-Zahl}]
 java.lang.NumberFormatException: For input string: "<a"
 at java.lang.NumberFormatException.forInputString[...]
 at java.lang.Integer.parseInt(Integer.java:580)
@@ -558,6 +560,129 @@ hierbei Tastenbelegungen -- es können gleichzeitig beliebig viele
 Auswahlfenster für eine Tastenbelegung geöffnet werden, wobei das
 Fenster selbst keine Informationen mehr darüber enthält, welche Funktion
 durch einen Tastendruck belegt werden soll.
+
+
+\section{Resultate Jajuk}\label{section:testresultsyed}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/screenshot_jajuk.png}
+	\caption{Screenshot Jajuk}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{bilder/model_jajuk_notext.png}
+	\caption{mit Gephi und dem Yifan Hu Algorithmus\cite{hu2005efficient}
+    visualierte Graphausgabe des Autotesters über Jajuk, hoher Zoomfaktor, keine Beschriftungen.}
+	\label{jajukmodel}
+\end{figure}
+
+
+Als nächste Applikation zum Testen wurde die Java Jukebox \glqq{}Jajuk\grqq{}
+in der letzten Version 1.10.7 gewählt,
+eine eigenständige Desktopapplikation zum Organisieren
+und Abspielen von Musikbibliotheken. Die Entwicklung von
+Jajuk wurde eingestellt, daher ist die Anwendung des
+Autotesters darauf eher ein Funktionstest desselben
+und weniger eine produktive Überprüfung des Programms.
+
+Wie in der Modellabbildung auf Seite \ref{jajukmodel} zu sehen ist, handelt es sich hierbei
+um ein weiteres um einen Hauptzustand zentriertes Programm. Es gibt noch
+einige weitere häufige Zustände, diese sind aber in diesem Fall z.B.
+\glqq{}Information\grqq{}  und \glqq{}Warnung\grqq{} und
+werden häufig verwendet.
+
+Die Laufzeit des Tests war mit 300 Sekunden überschaubar,
+es wurden knapp 400 Eingabeelemente in 25 Fenstern bearbeitet.
+Es mussten weniger Elemente vom Test ausgeschlossen werden
+als bei allen anderen Tests, dahingegen ist die Zahl der gefundenen
+Probleme höher. Die anderen Applikationen sind nicht
+in der Entwicklung eingestellt worden, daher wurden
+dort mit der Zeit auch noch mehr Probleme behoben.
+
+
+
+\subsection{Beispiele für gefundene Probleme Jajuk}
+
+Jajuk erfährt bei Auftreten einer Ausnahme keine sichtbaren
+Reaktionen und läuft einfach weiter, es gibt eine
+zentrale und globale Fehlerbehandlung. Es gibt eine sogenannte
+\glqq{}Debug-Ansicht\grqq{}, welche schlicht die Terminal-Ausgaben
+des Programms mit den Ausnahmen beinhaltet. Im Folgenden
+einige der gefundenen Ausnahmen und Fehler:
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme Jajuk beim Schliessen eines Albums}]
+java.lang.NullPointerException
+	at org.jajuk.ui.actions.FinishAlbumAction$1.run(.java:65)
+\end{lstlisting}
+
+Der Blick in den Code zeigt, dass hier ein das Album enthaltender Ordner unterstellt wird, dessen Existenz
+aber nie überpüft oder sichergestellt wird.
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme Jajuk Detail-Dialog}]
+Exception java.lang.NullPointerException
+	at org.jajuk.util.DetailsMessageDialog.<init>
+	(Messages.java:629)
+	at org.jajuk.util.Messages$3.run(Messages.java:355)
+	at java.awt.event.InvocationEvent.dispatch(...)
+\end{lstlisting}
+	
+Hier soll ein auf eine Eingabe folgender Detail-Dialog des Optionsbereichs
+dargestellt werden. Es wird auf den Optionsdialog des höheren Bereichs zugegriffen.
+Dieser kann zu diesem Zeitpunkt aber offensichtlich auch null bzw. ungültig sein,
+was nicht überprüft oder abgefangen wurde.
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme Jajuk ein Eingabe einer Nichtzahl}]
+java.lang.NumberFormatException: For input string: "<IMG SRC=...>"
+	at java.lang.NumberFormatException.forInputString(...)
+	at java.lang.Integer.parseInt(Integer.java:580)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at org.jajuk.ui.wizard.AlarmClockDialog.saveValues(...)
+\end{lstlisting}
+	
+Bei den Alarm-Timereinträgen wird die Texteingabe ohne weitere Prüfung
+als Zahl interpretiert, was bei der Eingabe eines beliebigen Texts
+nicht funktioniert.
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme Jajuk beim Reset der Ansicht}]
+java.lang.NullPointerException
+	at com.vlsolutions.swing.docking.
+	DockingDesktop.remove(DockingDesktop.java:1244)
+	[...]
+	at org.jajuk.ui.actions.RestoreViewsAction.perform(...)
+	at org.jajuk.ui.actions.JajukAction.actionPerformed(...)
+\end{lstlisting}
+	
+Beim Zurücksetzen der Ansichten von Jajuk findet eine ungültige Aktivität statt.
+Oder genauer gesagt die Bibliothek vlsosolutions, welche Oberflächenelemente bereitstellt.
+
+\begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme Jajuk bei Webansicht}]
+Exception in thread "Wikipedia Search Thread" 
+java.lang.NoSuchMethodError: sun.font.FontManager.
+getCompositeFontUIResource(...);
+	at org.lobobrowser.util.gui.FontFactory.createFont(...)
+	[...]
+	at org.jajuk.ui.widgets.JajukHtmlPanel.
+	showPage(JajukHtmlPanel.java:239)
+	at org.jajuk.ui.widgets.JajukHtmlPanel.
+	setUnknown(JajukHtmlPanel.java:176)
+	at org.jajuk.ui.views.WikipediaView$1.run(...)
+\end{lstlisting}
+	
+Die integrierte lobobrowser Web Engine hat diverse Probleme, welche vermutlich
+auf inzwischen nicht mehr gültige Java-Schnittstellen zurückzuführen sind.
+Hier ist der Java-Code schlicht zu alt, um noch fehlerfrei mit aktuellen Distributionen zusammenzuarbeiten.
+Jajuk wurde für Java 1.6 entwickelt, welches nicht mehr unterstützt wird.
+Scheinbar sollte eine Wikipedia-Seite dargestellt werden.
+Vielleicht hat auch einfach Wikipedia sein Layout verändert.
+
+
+Ein weiteres Problem trat auf, ohne das eine Ausnahme erzeugt wurde:
+Jajuk erlaubte es, eine eigene Quelle mit einem beliebigen HTML-Code
+als Ursprung einzurichten. Dies würde in beinahe keinem möglichen
+Fall eine zulässige Verwendung der Quellfunktion darstellen und hätte
+unterbunden werden sollen.
 
 
 
