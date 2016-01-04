@@ -113,7 +113,14 @@ public class CrawlerTester {
 	public void execute() {
 		threadSleep(delayToTestStartSeconds * 1000l);
 		initSwingPopupEventHook();
-		initTesterGUI();
+		SwingUtilities.invokeLater(new GUIRunner());
+	}
+
+	private class GUIRunner implements Runnable {
+		@Override
+		public void run() {
+			initTesterGUI();
+		}
 	}
 
 	private void initTesterGUI() {
