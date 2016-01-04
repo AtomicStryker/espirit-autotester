@@ -316,6 +316,11 @@ public class CrawlerTester {
 		logger.log(Level.FINER, String.format("about to pseudo click component %s\n", Util.componentToString(target)));
 		applicationHeartbeat();
 
+		if (config.isComponentBlacklisted(target)) {
+			logger.log(Level.FINER, String.format("component is blacklisted.\n"));
+			return;
+		}
+
 		ActionEvent event = new ActionEvent(target, 42, "");
 
 		final Window w = SwingUtilities.getWindowAncestor(target);
