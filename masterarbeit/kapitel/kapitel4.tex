@@ -587,11 +587,11 @@ Jajuk wurde eingestellt, daher ist die Anwendung des
 Autotesters darauf eher ein Funktionstest desselben
 und weniger eine produktive Überprüfung des Programms.
 
-Wie in der Modellabbildung auf Seite \ref{jajukmodel} zu sehen ist, handelt es sich hierbei
+Wie in der Modellabbildung auf Seite \pageref{jajukmodel} zu sehen ist, handelt es sich hierbei
 um ein weiteres um einen Hauptzustand zentriertes Programm. Es gibt noch
 einige weitere häufige Zustände, diese sind aber in diesem Fall z.B.
 \glqq{}Information\grqq{}  und \glqq{}Warnung\grqq{} und
-werden häufig verwendet.
+werden häufig wiederverwendet.
 
 Die Laufzeit des Tests war mit 300 Sekunden überschaubar,
 es wurden knapp 400 Eingabeelemente in 25 Fenstern bearbeitet.
@@ -655,7 +655,7 @@ java.lang.NullPointerException
 \end{lstlisting}
 	
 Beim Zurücksetzen der Ansichten von Jajuk findet eine ungültige Aktivität statt.
-Oder genauer gesagt die Bibliothek vlsosolutions, welche Oberflächenelemente bereitstellt.
+Oder genauer gesagt innerhalb der Bibliothek \glqq{}vlsosolutions\grqq{}, welche Oberflächenelemente bereitstellt.
 
 \begin{lstlisting}[float=!ht,label=fmjson,caption={Ausnahme Jajuk bei Webansicht}]
 Exception in thread "Wikipedia Search Thread" 
@@ -670,16 +670,16 @@ getCompositeFontUIResource(...);
 	at org.jajuk.ui.views.WikipediaView$1.run(...)
 \end{lstlisting}
 	
-Die integrierte lobobrowser Web Engine hat diverse Probleme, welche vermutlich
+Die integrierte \glqq{}lobobrowser\grqq{} Web Engine hat diverse Probleme, welche vermutlich
 auf inzwischen nicht mehr gültige Java-Schnittstellen zurückzuführen sind.
 Hier ist der Java-Code schlicht zu alt, um noch fehlerfrei mit aktuellen Distributionen zusammenzuarbeiten.
 Jajuk wurde für Java 1.6 entwickelt, welches nicht mehr unterstützt wird.
 Scheinbar sollte eine Wikipedia-Seite dargestellt werden.
-Vielleicht hat auch einfach Wikipedia sein Layout verändert.
+Vielleicht hat Wikipedia auch einfach sein Layout bzw. seine HTML-Struktur verändert.
 
 
-Ein weiteres Problem trat auf, ohne das eine Ausnahme erzeugt wurde:
-Jajuk erlaubte es, eine eigene Quelle mit einem beliebigen HTML-Code
+Ein weiteres Problem trat auf, ohne dass eine Ausnahme erzeugt wurde:
+Jajuk erlaubte es, eine eigene Daten-Quelle mit einem beliebigen HTML-Code
 als Ursprung einzurichten. Dies würde in beinahe keinem möglichen
 Fall eine zulässige Verwendung der Quellfunktion darstellen und hätte
 unterbunden werden sollen.
