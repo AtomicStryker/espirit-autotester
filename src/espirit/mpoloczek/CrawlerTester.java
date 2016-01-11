@@ -84,7 +84,7 @@ public class CrawlerTester {
 	private static String previousRootComponent;
 
 
-	public CrawlerTester(final String configPath) {
+	public CrawlerTester(final String configPath, final String optionalOutputPath) {
 
 		logger = Util.getLogger("CrawlerTester");
 		config = new Config();
@@ -93,6 +93,9 @@ public class CrawlerTester {
 			delayToTestStartSeconds = Integer.valueOf(config.properties.getProperty("testStartDelayInSeconds"));
 			testerThreadStack = new Stack<TesterThread>();
 			TesterThread.logger.setLevel(Level.FINE);
+			if (!optionalOutputPath.isEmpty()) {
+				config.modelOutputFolder = optionalOutputPath;
+			}
 		} else {
 			final Window[] allWindows = Window.getWindows();
 			logger.log(Level.INFO, "Invalid config specified, maybe you want to find a target GUI? I'll print all open GUIs now");
@@ -111,7 +114,7 @@ public class CrawlerTester {
 	}
 
 	public void execute() {
-		threadSleep(delayToTestStartSeconds * 1000l);
+		threadSleep(delayToTestStartSeconds * 1000L);
 		initSwingPopupEventHook();
 		SwingUtilities.invokeLater(new GUIRunner());
 	}
