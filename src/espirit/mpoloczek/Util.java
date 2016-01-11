@@ -49,6 +49,7 @@ public class Util {
 		final Logger l = Logger.getLogger(s);
 		l.setLevel(Level.FINER);
 		handler.setLevel(Level.FINER);
+		l.setUseParentHandlers(false);
 		for (final Handler h : l.getHandlers()) {
 			l.removeHandler(h);
 		}
