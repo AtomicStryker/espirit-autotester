@@ -40,7 +40,7 @@ public class Config {
 
 		} catch (final IOException e1) {
 
-			logger.log(Level.INFO, String.format("Reading [%s] as filepath didn't work, trying it as resource...\n", filePath));
+			logger.log(Level.INFO, String.format("Reading [%s] as filepath [%s] didn't work, trying it as resource...\n", filePath, path.toFile().getAbsolutePath()));
 			final InputStream inStream = getClass().getClassLoader().getResourceAsStream(filePath);
 			try {
 				properties.load(inStream);
