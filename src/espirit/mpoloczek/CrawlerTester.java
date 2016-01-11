@@ -145,8 +145,8 @@ public class CrawlerTester {
 
 		@SuppressWarnings("serial") final JButton aborter = new JButton(new AbstractAction("Abort Autotest") {
 			public void actionPerformed(final ActionEvent e) {
-				while (!testerThreadStack.empty()) {
-					testerThreadStack.peek().isThreadAborted = true;
+				for (final TesterThread t : testerThreadStack) {
+					t.isThreadAborted = true;
 				}
 			}
 		});
