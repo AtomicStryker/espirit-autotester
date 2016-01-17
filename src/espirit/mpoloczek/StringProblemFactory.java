@@ -6,7 +6,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
 
-
+/**
+ *
+ * Master-Abschlussarbeit Matthäus Poloczek
+ * TU Dortmund, Matrikel-Nr. 126826
+ * e-Spirit 2015/2016
+ *
+ */
 public class StringProblemFactory {
 
 	private final ArrayList<String> problemStrings;

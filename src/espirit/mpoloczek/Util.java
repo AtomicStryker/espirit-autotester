@@ -12,7 +12,13 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ *
+ * Master-Abschlussarbeit Matthäus Poloczek
+ * TU Dortmund, Matrikel-Nr. 126826
+ * e-Spirit 2015/2016
+ *
+ */
 public class Util {
 
 	private static final ConsoleHandler handler = new ConsoleHandler();

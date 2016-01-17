@@ -50,7 +50,11 @@ import java.util.logging.Logger;
 
 
 /**
- * Master-Abschlussarbeit Matthäus Poloczek, TU Dortmund, e-Spirit 2015
+ *
+ * Master-Abschlussarbeit Matthäus Poloczek
+ * TU Dortmund, Matrikel-Nr. 126826
+ * e-Spirit 2015/2016
+ *
  */
 public class CrawlerTester {
 

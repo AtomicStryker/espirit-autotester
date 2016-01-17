@@ -10,7 +10,13 @@ import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ *
+ * Master-Abschlussarbeit Matthäus Poloczek
+ * TU Dortmund, Matrikel-Nr. 126826
+ * e-Spirit 2015/2016
+ *
+ */
 class TesterThread extends Thread {
 
 	static final Logger logger = Util.getLogger("TesterThread");

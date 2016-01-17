@@ -19,7 +19,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 //import java.util.regex.Pattern;
 
-
+/**
+ *
+ * Master-Abschlussarbeit Matthäus Poloczek
+ * TU Dortmund, Matrikel-Nr. 126826
+ * e-Spirit 2015/2016
+ *
+ */
 public class ModelWriter {
 
 	private final DirectedGraph<String, DefaultEdge> graph;
