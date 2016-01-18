@@ -34,7 +34,9 @@ public class Config {
 
 	public boolean loadConfigFile(final String filePath) {
 
-		final Path path = Paths.get(URI.create("file:/" + filePath));
+		final String tryPath = "file:/" + filePath;
+		logger.log(Level.INFO, String.format("Reading [%s] as URI, attempt: [%s]", filePath, tryPath));
+		final Path path = Paths.get(URI.create(tryPath));
 		properties = new Properties();
 
 		try {
