@@ -32,22 +32,50 @@ public class ModelWriter {
 	private final Logger logger;
 	//private final Pattern suffixCatcher = Pattern.compile("^(.*)-(\\d*)$");
 
+
+	/***
+	 * Helper class to write and track transitions to a jGraphT graph object,
+	 * and eventually print that to a graphml file after testing.
+	 */
 	public ModelWriter() {
 
 		graph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
 		logger = Util.getLogger("ModelWriter");
 	}
 
+
+	/***
+	 * Write a new state to the graph, ideally immediatly after it popped up and was checked against the blacklists
+	 * @param stateRootComponent Java AWT Component representing the new state, typically a new Window
+	 */
 	public void logState(final Component stateRootComponent) {
 
 		wrappedAddVertex(stateRootComponent);
 	}
 
+
+	/***
+	 * Write a transition from one state to another to the graph, also noting down the input component
+	 * which was deemed responsible for the transition to occur.
+	 * @param prevState Java AWT Component representing the previous state
+	 * @param transitioner Java AWT Component that accepted some input and resulted in the transition
+	 * @param resultState Java AWT Component representing the resulting state
+	 */
 	public void logTransition(final Component prevState, final Component transitioner, final Component resultState) {
 
 		logTransitionString( wrappedToString(prevState), wrappedToString(transitioner), wrappedToString(resultState));
 	}
 
+
+	/***
+	 * Write a transition from one state to another to the graph, also noting down the input component
+	 * which was deemed responsible for the transition to occur. Since the Component instances
+	 * may have changed because of inputs, this method accepts the respective String representations instead.
+	 * see @Util.componentToString as to how these representations are made.
+	 * @param prevState String representing the previous state,
+	 * @param transString String representing the component that triggered the transition
+	 * @param resultState String representing the resulting state
+	 */
 	public void logTransitionString(String prevState, final String transString, final String resultState) {
 
 		wrappedAddVertex(transString);
@@ -72,6 +100,13 @@ public class ModelWriter {
 		graph.addEdge(resultState, prevState);
 	}
 
+
+	/***
+	 * Writes a file tagged with the current date (as of execution of this method) in format
+	 * model_dd.MM.yyyy_HH.mm.ss.graphml in the GraphML file format to the target folder.
+	 * Prints any I/O errors while doing so to the console, but does not stop.
+	 * @param modelOutputFolder target output folder path
+	 */
 	public void exportToFile(final String modelOutputFolder) {
 		@SuppressWarnings("unchecked")
 		final GraphMLExporter<String, DefaultEdge> gml =

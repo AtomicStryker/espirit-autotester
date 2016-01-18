@@ -32,6 +32,15 @@ public class Config {
 	public String modelOutputFolder;
 	private final Logger logger = Util.getLogger("Config");
 
+
+	/***
+	 * Takes a local or absolute filepath and attempts to load a config file at that path.
+	 * Will print some information while attempting to locate the intended target and
+	 * especially any I/O errors occuring while doing so.
+	 *
+	 * @param filePath relative or absolute filepath to try and locate a config file at
+	 * @return true when a config file was found and loaded successfully, false otherwise
+	 */
 	public boolean loadConfigFile(final String filePath) {
 
 		final String tryPath = "file:/" + filePath;
@@ -126,6 +135,12 @@ public class Config {
 		}
 	}
 
+
+	/***
+	 * Wrapper for the configs blacklists, checks all of them for components against input
+	 * @param component Java AWT instance to check for having been blacklisted by config
+	 * @return true if the component matches any of the blacklists, false otherwise
+	 */
 	public boolean isComponentBlacklisted(final Component component) {
 
 		String name = component.getClass().getName();
@@ -145,6 +160,12 @@ public class Config {
 		return false;
 	}
 
+
+	/***
+	 * Data holder class for Blacklist instances, all of the entries
+	 * are optional (but one should be valid, for obvious reasons).
+	 * Optional means not null but empty! if unused.
+	 */
 	public static class BlackListedAbstractButton {
 		String title;
 		String command;

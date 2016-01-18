@@ -23,8 +23,12 @@ public class Util {
 
 	private static final ConsoleHandler handler = new ConsoleHandler();
 
-	/**
-	 * Get a slightly better or atleast more concise description of most elements over their respective .toString()
+	/***
+	 * Get a slightly better or atleast more concise String description of most Java AWT Components
+	 * over their respective .toString() implementations, for testing purposes.
+	 * Also removes certain contextual elements such as memory location.
+	 * @param c Java AWT component instance to represent in unified String format
+	 * @return some error String if input is null, otherwise a unified simple representation
 	 */
 	public static String componentToString(final Component c) {
 		if (c == null) {
@@ -51,6 +55,12 @@ public class Util {
 		return ": []".equals(answer) ? c.toString() : answer;
 	}
 
+
+	/***
+	 * Central method to get per-class Logging, wraps around Apache Logger
+	 * @param s Logger target name, usually the class to log in
+	 * @return new named Logger instance to use when printing information and errors
+	 */
 	public static Logger getLogger(final String s) {
 		final Logger l = Logger.getLogger(s);
 		l.setLevel(Level.FINER);

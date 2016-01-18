@@ -19,6 +19,15 @@ public class Launcher {
 					"Automatic mode:\n" +
 					"  java -cp autotest.jar[;<your_class_path>] espirit.mpoloczek.Launcher <your_main_class> <your_test_config> [<output_folder>]\n";
 
+
+	/***
+	 * JAR main class main method, to launch the application with the required inputs or help gathering those
+	 * If launched with no arguments, prints some help on how to launch correctly.
+	 * If launched with an invalid config file path, the test application will launch but no testing will occur.
+	 * @param args expects at least one arguments, the target testable applications Main class
+	 *             first argument is a filepath to the test config file
+	 *             second and optional argument is the filepath to the model output folder
+	 */
 	public static void main(final String[] args) {
 
 		final Method mainMethod;
