@@ -1,6 +1,5 @@
 package espirit.mpoloczek;
 
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -317,14 +316,20 @@ public class CrawlerTester {
 		}
 	}
 
-
-	public void pseudoClickButton(final Component target, @Nullable final Container root, @Nullable final ArrayList<Component> adjacentComponents) {
+	/***
+	 * Performs a fake input action (or rather, queues one with the EDT) depending on the type of the
+	 * target component. Buttons get pushed, checkboxes get randomly checked, text fields get texted.
+	 * @param target Java AWT Component to cause fake inputs for
+	 * @param root Container containing the target, can be null
+	 * @param adjacentComponents list of adjacent input components relative to the target, can be null
+     */
+	public void pseudoClickButton(final Component target, final Container root, final ArrayList<Component> adjacentComponents) {
 
 		logger.log(Level.FINER, String.format("about to pseudo click component %s\n", Util.componentToString(target)));
 		applicationHeartbeat();
 
 		if (config.isComponentBlacklisted(target)) {
-			logger.log(Level.FINER, String.format("component is blacklisted.\n"));
+			logger.log(Level.FINER, "component is blacklisted.\n");
 			return;
 		}
 
@@ -400,7 +405,7 @@ public class CrawlerTester {
 	}
 
 
-	private boolean isBlackListedButton(final AbstractButton fsb, @Nullable final Object w) {
+	private boolean isBlackListedButton(final AbstractButton fsb, final Object w) {
 		for (final Config.BlackListedAbstractButton bab : config.blackListedAbstractButtons) {
 			if (bab != null) {
 
@@ -666,7 +671,7 @@ public class CrawlerTester {
 			while (!Thread.interrupted()) {
 				final long curTime = System.currentTimeMillis();
 
-				if (lastAction > 0 && curTime - lastAction > 10000l) {
+				if (lastAction > 0 && curTime - lastAction > 10000L) {
 					// nothing happened for 10 seconds! are we deadlocked?!
 					lastAction = -1;
 					logger.log(Level.SEVERE, "No actions were taken for 10 seconds, deadlock situation??");
