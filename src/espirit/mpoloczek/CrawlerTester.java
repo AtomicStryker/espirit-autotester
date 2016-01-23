@@ -87,6 +87,13 @@ public class CrawlerTester {
 	private static String previousRootComponent;
 
 
+	/***
+	 * Read the config parameter and the optional output path and attempt to do the revelant I/O operations. Also setup
+	 * the TesterThread stack and all other modules of the autotester such as the string list, the model tracker,
+	 * and the deadlock detection thread.
+	 * @param configPath configuration file path as provided by the launch arguments
+	 * @param optionalOutputPath file path to write the model to, optional, can be empty
+     */
 	public CrawlerTester(final String configPath, final String optionalOutputPath) {
 
 		logger = Util.getLogger("CrawlerTester");
@@ -116,6 +123,10 @@ public class CrawlerTester {
 		deadLockDetector = new TimerRunner();
 	}
 
+	/***
+	 * Starting point for this class. Before the test commences, wait for the configured delay, then prepare
+	 * the popup event hook to catch new states, then initiate the test.
+	 */
 	public void execute() {
 		threadSleep(delayToTestStartSeconds * 1000L);
 		initSwingPopupEventHook();
@@ -203,7 +214,11 @@ public class CrawlerTester {
 		timerThread.start();
 	}
 
-	// TODO figure out why the logger prints to console twice, eventually
+	/***
+	 * Invoked when the final component was tested. Before printing the model to a file and killing the process,
+	 * this method invokes a longer wait in case any late popups occur. In that case testing is resumed,
+	 * until this method is invoked again.
+	 */
 	public void onTestingFinished() {
 
 		threadSleep(config.sleepTimeMillisBetweenFakeMouseClicks * 10);
@@ -448,6 +463,17 @@ public class CrawlerTester {
 	}
 
 
+	/***
+	 * Recursive crawling method designed to examine each Java AWT Component for accepting inputs, or else
+	 * containing other Java AWT Components to crawl over. Invoking this on the root component of any given
+	 * Java GUI tree with an empty list should result in a full list of all contained components which accept
+	 * inputs, existing at that moment in time. This may include buttons not currently visible (such as in dropdown
+	 * menus).
+	 *
+	 * @param component Java AWT Component instance to check, can be null (to terminate)
+	 * @param componentList list to add valid input receiving components to
+	 * @param logLevel for the crawling instance, for example on pre-post checks we dont need as fine logging
+     */
 	private void detectChildren(final Component component, final ArrayList<Component> componentList, final Level logLevel) {
 
 		final String compdesc = Util.componentToString(component);
@@ -520,7 +546,10 @@ public class CrawlerTester {
 		}
 	}
 
-
+	/***
+	 * Simple wrapper around Thread.sleep to get the tester to wait
+	 * @param millis time in milliseconds the invoker is to wait
+     */
 	public void threadSleep(final long millis) {
 		try {
 			applicationHeartbeat();
@@ -531,13 +560,21 @@ public class CrawlerTester {
 		}
 	}
 
-
+	/***
+	 * to prove to the background timer we are still alive and testing,
+	 * invoked on every successful input action
+	 */
 	public void applicationHeartbeat() {
-		// to prove to the background timer we are still alive and kicking
+
 		deadLockDetector.lastAction = System.currentTimeMillis();
 	}
 
-
+	/***
+	 * Attempts to close any given Window instance by first causing an input event identic to a user having
+	 * pressed the ESCAPE button, then clicking the "X" window close button.
+	 * @param rootWindow Window to be removed
+	 * @param killer Killing thread description, for logging purposes
+     */
 	public void killWindow(final Window rootWindow, final String killer) {
 
 		final EDTCompliantWindowMurderer murder = new EDTCompliantWindowMurderer();
@@ -546,6 +583,9 @@ public class CrawlerTester {
 		SwingUtilities.invokeLater(murder);
 	}
 
+	/***
+	 * Seperate Runnable created to remove superfluous or fully tested Window instances.
+	 */
 	class EDTCompliantWindowMurderer implements Runnable {
 
 		Window windowCast;
@@ -566,7 +606,9 @@ public class CrawlerTester {
 		}
 	}
 
-
+	/***
+	 * Seperate Runnable to cause generic actionPerformed callbacks, like a real mouse click on a button would
+	 */
 	class EDTCompliantActionPerformer implements Runnable {
 
 		ActionEvent event;
@@ -632,11 +674,13 @@ public class CrawlerTester {
 		}
 	}
 
+	/***
+	 * EDT compliant seperate Runnable to input JTextField instances
+	 */
 	static class EDTCompliantTextSetter implements Runnable {
 
 		JTextComponent jTextComponent;
 		String textToSet;
-
 
 		@Override
 		public void run() {
@@ -650,10 +694,12 @@ public class CrawlerTester {
 		}
 	}
 
+	/***
+	 * EDT compliant seperate Runnable to perform a button selection in multiboxes
+	 */
 	class EDTCompliantSelector implements Runnable {
 
 		AbstractButton buttonToSelect;
-
 
 		@Override
 		public void run() {
@@ -662,6 +708,11 @@ public class CrawlerTester {
 		}
 	}
 
+	/***
+	 * Seperate Timer thread supposed to do something when a deadlock is detected.
+	 * Contains a timer field which is updated by the pseudo input whenever an input is performed.
+	 * Currently no action is implemented to do anything other than log the deadlock.
+	 */
 	class TimerRunner implements Runnable {
 
 		long lastAction;
