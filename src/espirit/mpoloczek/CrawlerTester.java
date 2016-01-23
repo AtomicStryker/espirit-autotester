@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * Master-Abschlussarbeit Matth‰us Poloczek
+ * Master-Abschlussarbeit Matth√§us Poloczek
  * TU Dortmund, Matrikel-Nr. 126826
  * e-Spirit 2015/2016
  *
